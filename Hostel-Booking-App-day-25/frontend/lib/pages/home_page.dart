@@ -45,7 +45,8 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) 
+  { 
     return WillPopScope
     (
       onWillPop: () async => false,
@@ -163,7 +164,7 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     Padding
                     (
                       padding: const EdgeInsets.fromLTRB(0,0,0,25),
@@ -198,7 +199,7 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     Padding
                     (
                       padding: const EdgeInsets.fromLTRB(0,0,0,25),
@@ -255,7 +256,7 @@ class _HomePageState extends State<HomePage>
                 //print(snapshot.data);
                 if(snapshot.data == null)
                 {
-                  return Text("loading...", style: TextStyle(fontSize: 18),);
+                  return const Text("loading...", style: TextStyle(fontSize: 18),);
                 }
                 else
                 {
@@ -283,7 +284,7 @@ class _HomePageState extends State<HomePage>
                                 child: Container
                                 (                    
                                   width: 325,
-                                  margin: EdgeInsets.fromLTRB(15, 15, 15, 45),
+                                  margin: const EdgeInsets.fromLTRB(15, 15, 15, 45),
                                   decoration: BoxDecoration
                                   (
                                     boxShadow: 
@@ -396,8 +397,7 @@ class _HomePageState extends State<HomePage>
                                         snapshot.data[i].hostelType, 
                                         style: TextStyle(color: Colors.white, fontSize: 15)
                                       ),     
-                                      
-                                      SizedBox(height: 25,)
+                                      const SizedBox(height: 25,)
                                     ]
                                   ),
                                 ),

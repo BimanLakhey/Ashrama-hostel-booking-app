@@ -262,7 +262,6 @@ class _SavedPageState extends State<SavedPage>
                                         snapshot.data[i].hostelType, 
                                         style: TextStyle(color: Colors.white, fontSize: 15)
                                       ),     
-                                      
                                       SizedBox(height: 25,)
                                     ]
                                   ),

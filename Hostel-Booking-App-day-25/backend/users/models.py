@@ -32,9 +32,10 @@ class Hostel(models.Model):
         return f"{self.id}"
 
 class BookedHostel(models.Model):
-    hostelID = models.ForeignKey(Hostel, on_delete=models.CASCADE)
-    userID = models.ForeignKey(User, on_delete=models.CASCADE)
+    hostelID = models.CharField(max_length=50)
+    userID = models.CharField(max_length=50)
     bookingDate = models.DateTimeField(auto_now_add=True)
+    roomID = models.CharField(max_length=50)
 
     def __str__(self):
         return f"{self.id}"

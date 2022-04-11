@@ -20,7 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordControl = TextEditingController();
 
 
-  void getUserData() async {
+  void getUserData() async 
+  {
     var response = await http.post(Uri.parse('${BaseUrl.baseUrl}loginUser/'), body: {'username': userNameControl.text, 'userPassword': passwordControl.text});
     var jsonData = json.decode(response.body);
     if(response.statusCode == 200)
@@ -128,8 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                     (
                       controller: userNameControl,
                       decoration: const InputDecoration
-                      (
-                        
+                      ( 
                         hintText: "Enter your username",
                         labelText: "Username"
                       ),
