@@ -9,8 +9,8 @@ from rest_framework.response import Response
 from rest_framework.status import *
 from rest_framework import status, permissions
 from .models import Hostel, SavedHostel, User
-from django.http import HttpResponse, JsonResponse
 from .serializers import HostelSerializer, SavedHostelSerializer, UpdateHostelSerializer, UpdateUserSerializer, UserSerializer, UserLoginSerializer
+from django.http import Http404
 
 # Create your views here.
 
@@ -104,25 +104,24 @@ class UpdateHostel(generics.UpdateAPIView):
     serializer_class = UpdateHostelSerializer
 
 
-class SavedHostels(generics.ListAPIView):
+class SavedHostels(generics.ListCreateAPIView):
     queryset = SavedHostel.objects.all()
+    # hostel = Hostel.objects.get(id=hostel_id);
     serializer_class = SavedHostelSerializer
     # permission_classes = (partial(CustomPermissionForUser, ['GET', 'HEAD', 'POST']))
 
+
+    def get_object(self, pk):
+        try:
+            return SavedHostel.objects.get(pk=pk)
+        except SavedHostel.DoesNotExist:
+            raise Http404
+        
+    def delete(self, request, pk, format=None):
+        savedHostel = self.get_object(pk)
+        savedHostel.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     filter_fields = (
-        'userID_id',
+        'userID',
     )
-    # def get(self, request, format=None):
-    #     user_id = request.session['user_id']
-    #     user = User.objects.get(pk=user_id)
-    #     savedHostels = SavedHostel.objects.filter(userID=user)
-    #     if len(savedHostels) > 0:
-    #         serializer = SavedHostelSerializer(savedHostels, many=True)
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-    #     else:
-    #         data = {"No history": "You haven't saved any hostels yet!"}
-    #         return Response(data)
-
-
-
-

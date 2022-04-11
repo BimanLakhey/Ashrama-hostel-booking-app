@@ -31,7 +31,8 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
     getHostelData();
     //updateUserData();
   }
-  void getHostelData() async {
+  void getHostelData() async 
+  {
     var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/${hostelID}'));
     var jsonData = json.decode(response.body);
     
@@ -93,7 +94,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                       ),
                     ),
                     height: 200,
-                    child: Image.network(BaseUrl.baseUrl + hostelPhoto.toString(), fit: BoxFit.fill),
+                    child: Image.network(BaseUrl.savedBaseUrl + hostelPhoto.toString(), fit: BoxFit.fill),
                   ),
                 ),
                 Padding

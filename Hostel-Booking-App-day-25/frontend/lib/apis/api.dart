@@ -22,9 +22,10 @@ class Hostels{
 }
 
 class SavedHostels{
-  final String userID, hostelID, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelPhoto;
+  final String id, userID, hostelID, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelPhoto;
 
   SavedHostels(
+    this.id,
     this.userID,
     this.hostelID,
     this.hostelName,
@@ -78,18 +79,19 @@ Future getHostels() async
 
 Future getSavedHostels() async
 {
-  var savedResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}savedHostels/?userID_id=$loggedUserID'), headers: {'Cookie': '${Cookie.cookieSession}'});
+  var savedResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}savedHostels/?userID=$loggedUserID'), headers: {'Cookie': '${Cookie.cookieSession}'});
   var savedJsonData = json.decode(savedResponse.body);
   List<SavedHostels> savedHostels = [];
 
   for (var h in savedJsonData)
   {
-    var hostelResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/${h["hostelID_id"]}'));
+    var hostelResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/${h["hostelID"]}'));
     var jsonData = json.decode(hostelResponse.body);
     SavedHostels details = SavedHostels
     (
-      h["userID_id"].toString(),
-      h["hostelID_id"] = jsonData["id"].toString(), 
+      h["id"].toString(),
+      h["userID"].toString(),
+      h["hostelID"] = jsonData["id"].toString(), 
       h["hostelName"] = jsonData["hostelName"], 
       h["hostelCity"] = jsonData["hostelCity"], 
       h["hostelStreet"] = jsonData["hostelStreet"], 

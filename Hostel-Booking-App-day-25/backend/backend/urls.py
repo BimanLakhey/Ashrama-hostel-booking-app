@@ -18,8 +18,9 @@ urlpatterns = [
     path('userDetails/', UserDetails.as_view(), name="User Details"),
     path('hostelDetails/', HostelsDetails.as_view(), name="Hostel Details"),
     path('hostelProfile/<int:pk>/', ViewHostelProfile.as_view(), name="Hostel profile"),
-    # path('saveHostel/', SaveHostel.as_view(), name="Save hostel"),
+    # path('saveHostel/', snippet_list, name="Save hostel"),
     path('savedHostels/', SavedHostels.as_view(), name="Saved hostels"),
+    path('savedHostels/<int:pk>', SavedHostels.as_view(), name="Saved hostels"),
     # path('savedHostels/', SaveHostel.as_view(), name="Saved hostels"),
     # path('', include(router.urls))
 

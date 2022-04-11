@@ -16,7 +16,7 @@ class User(models.Model):
     ownerLicense = models.CharField(max_length=50, null=True)
 
     def __str__(self):
-        return f"{self.username}" + " - " + f"{self.id}"
+        return f"{self.id}"
 
 class Hostel(models.Model):
     hostelName = models.CharField(max_length=50, unique=True, null=False)
@@ -29,7 +29,7 @@ class Hostel(models.Model):
     hostelOwnerID = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.hostelName}" + " - " + f"{self.id}"
+        return f"{self.id}"
 
 class BookedHostel(models.Model):
     hostelID = models.ForeignKey(Hostel, on_delete=models.CASCADE)
@@ -40,8 +40,8 @@ class BookedHostel(models.Model):
         return f"{self.id}"
 
 class SavedHostel(models.Model):
-    hostelID = models.ForeignKey(Hostel, related_name='hostels', on_delete=models.CASCADE)
-    userID = models.ForeignKey(User, related_name='users', on_delete=models.CASCADE)
+    hostelID = models.CharField(max_length=50)
+    userID = models.CharField(max_length=50)
  
     def __str__(self):
-        return f"{self.userID}"
+        return f"{self.id}"

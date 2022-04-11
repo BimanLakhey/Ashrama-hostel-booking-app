@@ -1,15 +1,48 @@
 //@dart = 2.9
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_booking_app/Model/hostel_model.dart';
 import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
-import 'package:hotel_booking_app/pages/saved_page.dart';
+import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/drawer.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:hotel_booking_app/utils/search.dart';
+import 'package:http/http.dart' as http;
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> 
+{
+  // HostelModel hostelModel = HostelModel();
+  bool isFavourite = false;
+  String hostelID;
+  String userID;
+
+  void saveHostel() async 
+  {
+    var response = await http.post
+    (
+      Uri.parse('${BaseUrl.baseUrl}savedHostels/'), 
+      // headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8',},
+      body: {'hostelID': hostelID, 'userID': userID}
+    );
+    var jsonData = json.decode(response.body);
+    if(response.statusCode == 201)
+    {
+      print("saved!");
+    }
+    else
+    {
+      print("failed!");
+    }
+  }
 
   @override
   Widget build(BuildContext context) { 
@@ -51,6 +84,7 @@ class HomePage extends StatelessWidget {
             ),
             SingleChildScrollView
             (
+              physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               child: Padding
               (
@@ -221,7 +255,7 @@ class HomePage extends StatelessWidget {
                 //print(snapshot.data);
                 if(snapshot.data == null)
                 {
-                  return Container(child: Text("loading...", style: TextStyle(fontSize: 18),));
+                  return Text("loading...", style: TextStyle(fontSize: 18),);
                 }
                 else
                 {
@@ -239,8 +273,8 @@ class HomePage extends StatelessWidget {
                           (
                             children: 
                             [
-                              
-                              InkWell(
+                              InkWell
+                              (
                                 onTap: () 
                                 {
                                   HostelProfilePage.hostelID = snapshot.data[i].id;
@@ -253,7 +287,7 @@ class HomePage extends StatelessWidget {
                                   decoration: BoxDecoration
                                   (
                                     boxShadow: 
-                                    [
+                                    const [
                                       BoxShadow
                                       (
                                         color: Colors.black54,
@@ -287,12 +321,42 @@ class HomePage extends StatelessWidget {
                                           ),
                                           color: Colors.white
                                         ),
-                                        child: Image.network(
-                                          snapshot.data[i].hostelPhoto, 
-                                          fit: BoxFit.fill,
-                                        ),
+                                        child: Stack
+                                        (
+                                          fit: StackFit.expand,
+                                          children: <Widget>
+                                          [
+                                            Image.network(snapshot.data[i].hostelPhoto,fit: BoxFit.fill),
+                                            Padding
+                                            (
+                                              padding: const EdgeInsets.all(5.0),
+                                              child: Align
+                                              (
+                                                alignment: Alignment.topRight,
+                                                child: IconButton
+                                                (
+                                                  icon: const Icon
+                                                  (
+                                                    Icons.favorite_outline, 
+                                                    color: Colors.cyanAccent,
+                                                  ), 
+                                                  onPressed: () 
+                                                  {
+                                                    setState(() 
+                                                    {
+                                                      hostelID = snapshot.data[i].id;
+                                                      userID = loggedUserID;
+                                                      saveHostel();
+                                                    });  
+                                                  },
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        )
                                       ),
-                                      Padding(
+                                      Padding
+                                      (
                                         padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
                                         child: Row
                                         (
@@ -307,7 +371,8 @@ class HomePage extends StatelessWidget {
                                           ],
                                         ),
                                       ),
-                                      Padding(
+                                      Padding
+                                      (
                                         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                                         child: Row
                                         (

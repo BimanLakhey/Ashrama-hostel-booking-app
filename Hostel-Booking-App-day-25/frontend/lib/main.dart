@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/pages/confirmation_page.dart';
 import 'package:hotel_booking_app/pages/enter_number_page.dart';
 import 'package:hotel_booking_app/pages/final_signup_page.dart';
-//import 'package:hotel_booking_app/pages/home_page.dart';
 import 'package:hotel_booking_app/pages/hostel_details_page.dart';
 import 'package:hotel_booking_app/pages/hostel_owner_details_page.dart';
 import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
@@ -12,8 +11,7 @@ import 'package:hotel_booking_app/pages/profile_page.dart';
 import 'package:hotel_booking_app/pages/singnup_page.dart';
 import 'package:hotel_booking_app/pages/reset_password_page.dart';
 import 'package:hotel_booking_app/pages/splash_screen.dart';
-import 'package:hotel_booking_app/pages/test.dart';
-//import 'package:hotel_booking_app/pages/  test.dart';
+// import 'package:hotel_booking_app/pages/test.dart';
 import 'package:hotel_booking_app/utils/bottom_navigation.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 

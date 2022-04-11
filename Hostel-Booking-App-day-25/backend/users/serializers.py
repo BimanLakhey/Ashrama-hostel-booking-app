@@ -1,9 +1,7 @@
-from django.db.models import Q # for queries
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import Hostel, SavedHostel, User
 from django.core.exceptions import ValidationError
-from uuid import uuid4
 
 baseURL = "http://192.168.0.200:8000";
 
@@ -12,8 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())]
-        )
-    userFName = serializers.CharField(
+        ) 
+    userFName = serializers.CharField( 
         required=True)
     userLName = serializers.CharField(
         required=True)
@@ -214,12 +212,15 @@ class UpdateHostelSerializer(serializers.ModelSerializer):
 
 
 class SavedHostelSerializer(serializers.ModelSerializer):
+
+    userID = serializers.CharField()
+    hostelID = serializers.CharField()
+    
     class Meta:
         model = SavedHostel
         fields = [
-            'hostelID_id',
-            'userID_id',
+            'id',
+            'hostelID',
+            'userID',
         ]
-        
-
         

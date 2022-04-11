@@ -4,7 +4,8 @@ part 'hostel_model.g.dart';
 
 
 @JsonSerializable()
-class HostelModel {
+class HostelModel 
+{
   int? hostelID;
   String? hostelName;
   String? hostelCity;

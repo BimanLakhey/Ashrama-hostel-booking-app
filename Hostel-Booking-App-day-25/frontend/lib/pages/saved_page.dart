@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/Model/hostel_model.dart';
 import 'package:hotel_booking_app/apis/api.dart';
+import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:hotel_booking_app/utils/search.dart';
@@ -24,12 +25,7 @@ class _SavedPageState extends State<SavedPage>
   Future mySavedHostels;
   final bool isSaved = false;
   String hostelID;
-  String hostelName;
-  String hostelCity;
-  String hostelStreet;
-  String hostelType;
-  String hostelPhone;
-  String hostelPhoto;
+  String userID;
 
   @override
   void initState() {
@@ -37,25 +33,23 @@ class _SavedPageState extends State<SavedPage>
     super.initState();
   }
 
-  // getHostelData() async {
-  //   var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/$hostelID'));
-  //   var jsonData = json.decode(response.body);
-  //   print("called!");
+  void removeHostel(String id) async 
+  {
+    var response = await http.delete
+    (
+      Uri.parse('${BaseUrl.baseUrl}savedHostels/$id'), 
+    );
+    var jsonData = json.decode(response.body);
+    if(response.statusCode == 204)
+    {
+      print("deleted!");
+    }
+    else
+    {
+      print("failed!");
+    }
+  }
 
-    
-  //   // setState(() {
-  //   //   hostelModel = HostelModel.fromJson({"data": jsonData});
-      
-  //   // });
-  //   hostelID = jsonData["id"].toString();
-  //   hostelName = jsonData["hostelName"];
-  //   hostelPhoto = jsonData["hostelPhoto"];
-  //   hostelCity = jsonData["hostelCity"];
-  //   hostelStreet = jsonData["hostelStreet"];
-  //   hostelType = jsonData["hostelType"];
-  //   hostelPhone = jsonData["hostelPhone"];
-  //   hostelPhoto = jsonData["hostelPhoto"];
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,29 +88,14 @@ class _SavedPageState extends State<SavedPage>
                     child: ListView.builder
                     (
                       scrollDirection: Axis.vertical,
-
+        
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, i)
                       {
-                        print("snapshot.data[i].hostelID");
                         return SingleChildScrollView
                         (       
-                          child: snapshot.data[i].hostelID != "null"
-                          ? Center
-                          (
-                            child: Container
-                            (
-                              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                              width: 150,
-                              height: 150,
-                              decoration: BoxDecoration
-                              (
-                                color: Colors.cyan
-                              ),
-                              child: Text('Hostel Name: ' + snapshot.data[i].hostelName, style: TextStyle(color: Colors.white,))
-                            )
-                          )
-                          :
+                          child: snapshot.data.length == 0
+                          ? 
                           Container
                           (
                             height: 800,
@@ -156,6 +135,142 @@ class _SavedPageState extends State<SavedPage>
                               ),
                             ),   
                           )
+                          :
+                          Column
+                          (
+                            children: 
+                            [
+                              InkWell
+                              (
+                                onTap: () 
+                                {
+                                  HostelProfilePage.hostelID = snapshot.data[i].hostelID;
+                                  Navigator.pushNamed(context, MyRoutes.hostelProfileRoute);
+                                },
+                                child: Container
+                                (                    
+                                  width: 325,
+                                  margin: EdgeInsets.fromLTRB(15, 15, 15, 45),
+                                  decoration: BoxDecoration
+                                  (
+                                    boxShadow: 
+                                    const [
+                                      BoxShadow
+                                      (
+                                        color: Colors.black54,
+                                        offset: Offset(1, 5),
+                                        blurRadius: 6,
+                                      )
+                                    ],
+                                    border: Border.all(color: Colors.cyan),
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: Colors.cyan
+                                  ),        
+                                  child: Column
+                                  (
+                                    children: 
+                                    [
+                                      Container
+                                      (
+                                        clipBehavior: Clip.antiAlias,                                       
+                                        width: 350,
+                                        height: 125,
+                                        decoration: BoxDecoration
+                                        (
+                                          border: Border.all(color: Colors.cyan),
+                                          borderRadius: const BorderRadius.only
+                                          (
+                                            topLeft: Radius.circular(15),
+                                            topRight: Radius.circular(15),
+                                            bottomLeft: Radius.circular(45),
+                                            bottomRight: Radius.circular(45),
+                                          ),
+                                          color: Colors.white
+                                        ),
+                                        child: Stack
+                                        (
+                                          fit: StackFit.expand,
+                                          children: <Widget>
+                                          [
+                                            Image.network(BaseUrl.savedBaseUrl + snapshot.data[i].hostelPhoto,fit: BoxFit.fill),
+                                            Padding
+                                            (
+                                              padding: const EdgeInsets.all(5.0),
+                                              child: Align
+                                              (
+                                                alignment: Alignment.topRight,
+                                                child: IconButton
+                                                (
+                                                  icon: const Icon
+                                                  (
+                                                    Icons.favorite_outline, 
+                                                    color: Colors.cyanAccent,
+                                                  ), 
+                                                  onPressed: () 
+                                                  {
+                                                    
+                                                    setState(() 
+                                                    {
+                                                      hostelID = snapshot.data[i].id;
+                                                      removeHostel(hostelID);
+                                                      mySavedHostels = getSavedHostels();
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        )
+                                      ),
+                                      Padding
+                                      (
+                                        padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
+                                        child: Row
+                                        (
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: 
+                                          [
+                                            Text
+                                            (
+                                              snapshot.data[i].hostelName, 
+                                              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                        child: Row
+                                        (
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: 
+                                          [
+                                            Row(
+                                              children: [
+                                                
+                                                Text(snapshot.data[i].hostelCity, style: TextStyle(color: Colors.white, fontSize: 15)),
+                                                Text(", ", style: TextStyle(color: Colors.white, fontSize: 15)),
+                                                Text(snapshot.data[i].hostelStreet, style: TextStyle(color: Colors.white, fontSize: 15)),
+                                              ],
+                                            ),
+                                               
+                                          ],
+                                        ),
+                                      ),
+                                      Text
+                                      (
+                                        snapshot.data[i].hostelType, 
+                                        style: TextStyle(color: Colors.white, fontSize: 15)
+                                      ),     
+                                      
+                                      SizedBox(height: 25,)
+                                    ]
+                                  ),
+                                ),
+                              ),              
+                            ],
+                          )
+
                         );
                       },
                     ),
