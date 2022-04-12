@@ -18,11 +18,12 @@ urlpatterns = [
     path('userDetails/', UserDetails.as_view(), name="User Details"),
     path('hostelDetails/', HostelsDetails.as_view(), name="Hostel Details"),
     path('hostelProfile/<int:pk>/', ViewHostelProfile.as_view(), name="Hostel profile"),
-    # path('saveHostel/', snippet_list, name="Save hostel"),
     path('savedHostels/', SavedHostels.as_view(), name="Saved hostels"),
+    path('roomDetails/', RegisterRoom.as_view(), name="Room details"),
+    path('roomDetails/<int:pk>', RegisterRoom.as_view(), name="Room details"),
     path('savedHostels/<int:pk>', SavedHostels.as_view(), name="Saved hostels"),
-    # path('savedHostels/', SaveHostel.as_view(), name="Saved hostels"),
-    # path('', include(router.urls))
+    path('bookedHostels/', BookedHostels.as_view(), name="Booked hostels"),
+    path('bookedHostels/<int:pk>', BookedHostels.as_view(), name="Booked hostels"),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

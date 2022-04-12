@@ -3,6 +3,7 @@ import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:http/http.dart' as http;
 
 String? loggedUserID;
+String? loggedUserAddress;
 bool loginValid = false;
 bool userSignedUp = false;
 
@@ -18,6 +19,16 @@ class Hostels{
     this.hostelPhone,
     this.hostelTotalRooms,
     this.hostelPhoto,
+  );
+}
+
+class Rooms{
+  final String id, roomType, roomPrice;
+
+  Rooms(
+    this.id,
+    this.roomType, 
+    this.roomPrice, 
   );
 }
 
@@ -37,26 +48,51 @@ class SavedHostels{
   );
 }
 
-// class HostelDetails{
-//   final String id, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelTotalRooms, hostelPhoto;
+class BookedHostels{
+  final String id, userID, hostelID, roomID, roomType, bookingDate, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelPhoto;
 
-//   HostelDetails(
-//     this.id,
-//     this.hostelName, 
-//     this.hostelCity, 
-//     this.hostelStreet,
-//     this.hostelType,
-//     this.hostelPhone,
-//     this.hostelTotalRooms,
-//     this.hostelPhoto,
-//   );
-// }
-
-//getting data of all the hostels
+  BookedHostels(
+    this.id,
+    this.userID,
+    this.hostelID,
+    this.roomID,
+    this.roomType,
+    this.bookingDate,
+    this.hostelName,
+    this.hostelCity,
+    this.hostelStreet,
+    this.hostelType,
+    this.hostelPhone,
+    this.hostelPhoto,
+  );
+}
 
 Future getHostels() async
 {
   var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/'));
+  var jsonData = json.decode(response.body);
+  List<Hostels> hostels = [];
+
+  for (var h in jsonData)
+  {
+    Hostels details = Hostels(
+      h["id"].toString(),
+      h["hostelName"], 
+      h["hostelCity"], 
+      h["hostelStreet"],
+      h["hostelType"],
+      h["hostelPhone"],
+      h["hostelTotalRooms"],
+      h["hostelPhoto"],
+    ); 
+    hostels.add(details);
+  }
+  return hostels;
+}
+
+Future getNearbyHostels() async
+{
+  var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/?hostelStreet=${loggedUserAddress}'));
   var jsonData = json.decode(response.body);
   List<Hostels> hostels = [];
 
@@ -104,87 +140,66 @@ Future getSavedHostels() async
   return savedHostels;
 }
 
-//getting data of a particular hostel
-// Future getHostelData() async
-// {
-//   String hostelID = '1';
-//   var response = await http.get(Uri.parse('${BaseUrl.baseUrl}/hostelProfile/1'));
-//   var jsonData = json.decode(response.body);
-//   List<HostelDetails> hostelDetails = [];
-//   for (int i = 0; i <= jsonData.length; i++)
-//   {
-//     HostelDetails details = HostelDetails(
-//       jsonData[i].id,
-//       jsonData[i].hostelName,
-//       jsonData[i].hostelCity,
-//       jsonData[i].hostelStreet,
-//       jsonData[i].hostelType,
-//       jsonData[i].hostelPhone,
-//       jsonData[i].hostelTotalRooms,
-//       jsonData[i].hostelPhoto,
-//     ); 
-    
-//     print(jsonData[i].id);
-//     hostelDetails.add(details);
-//   }
-//   return hostelDetails;
-// }
+Future getBookedHostels() async
+{
+  var savedResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}bookedHostels/?userID=$loggedUserID'), headers: {'Cookie': '${Cookie.cookieSession}'});
+  var savedJsonData = json.decode(savedResponse.body);
+  List<BookedHostels> bookedHostels = [];
 
+  for (var h in savedJsonData)
+  {
+    var hostelResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/${h["hostelID"]}'));
+    var hostelJsonData = json.decode(hostelResponse.body);
 
-//  void login(String username , userPassword) async {
-//     try{
-      
-//       final response = await http.post(
-//         Uri.parse('$baseUrl/loginUser/'),
-//         body: {
-//           'username' : username,
-//           'userPassword' : userPassword
-//         }
-//       );
+    // var roomResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}roomDetails/${h["roomID"]}'));
+    // var roomJsonData = json.decode(roomResponse.body);
+    BookedHostels details = BookedHostels
+    (
+      h["id"].toString(),
+      h["userID"].toString(),
+      h["hostelID"] = hostelJsonData["id"].toString(), 
+      h["roomID"], 
+      h["roomType"], 
+      h["bookingDate"], 
+      h["hostelName"] = hostelJsonData["hostelName"], 
+      h["hostelCity"] = hostelJsonData["hostelCity"], 
+      h["hostelStreet"] = hostelJsonData["hostelStreet"], 
+      h["hostelType"] = hostelJsonData["hostelType"], 
+      h["hostelPhone"] = hostelJsonData["hostelPhone"], 
+      h["hostelPhoto"] = hostelJsonData["hostelPhoto"], 
+    ); 
+    bookedHostels.add(details);
+  }
+  return bookedHostels;
+}
 
-//       var data = json.decode(response.body) as Map <String, dynamic>;
-//       if(response.statusCode == 200){
-    
-//         loginValid = true;
-//         print(data);
-//       }
-//       else {
-//         loginValid = false;
-//       }
-//     }catch(e){
-//       print("hello!");
-//       print(e.);
-//     }
-//   }// For login
+Future getRooms() async
+{
+  var roomResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}roomDetails/'), headers: {'Cookie': '${Cookie.cookieSession}'});
+  var roomJsonData = json.decode(roomResponse.body);
+  List<Rooms> rooms = [];
 
+  for (var h in roomJsonData)
+  {
+    Rooms details = Rooms
+    (
+      h["id"].toString(),
+      h["roomType"],
+      h["roomPrice"]    
+    ); 
+    rooms.add(details);
+  }
+  return rooms;
+}
 
-void signup(String username, String userFName , String userLName, String userEmail, String userPassword, String userAddress, String userPhone, String totalHostels, String ownerLicense) async {
-    try{
-      
-      final response = await http.post(
-        Uri.parse('${BaseUrl.baseUrl}/registerUser/'),
-        body: {
-          'username': username,
-          'userFName' : userFName,
-          'userLName' : userLName,
-          'userEmail' : userEmail,
-          'userPassword' : userPassword,
-          'userPhone' : userPhone,
-          'userAddress' : userAddress,
-          'totalHostels' : totalHostels,
-          'ownerLicense' : ownerLicense,
-        }
-      );
-      if(response.statusCode == 200)
-      {
-        userSignedUp = true;
-      }
-      else
-      {
-        print(response.statusCode);
-        userSignedUp = false;
-      }
-    }catch(e){
-      print("failed!");
-    }
-  }// For Register
+  // void getRooms() async
+  // {
+  //   var response = await http.get(Uri.parse('${BaseUrl.baseUrl}roomDetails/'));
+  //   var jsonData = json.decode(response.body);
+  //   if(response.statusCode == 200)
+  //   {
+  //     rID = jsonData["id"].toString();
+  //     roomType = jsonData["roomType"];
+  //     roomPrice = jsonData["roomType"];
+  //   }
+  // }

@@ -1,12 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hotel_booking_app/Model/hostel_model.dart';
 import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
-import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:http/http.dart' as http;
 
 class HostelProfilePage extends StatefulWidget {
@@ -25,12 +24,27 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
   String? hostelCity;
   String? hostelStreet;
   String? totalPrice;
+  String? hostelPhone; 
+  String? hostelTotalRooms; 
   bool dataLoaded = false;
-  Color borderColor = Colors.black;
-  Color fontColor = Colors.black;
+  Color borderColor = Colors.cyan;
+  Color fontColor = Colors.white;
+  Color backgroundColor = Colors.cyan;
+  Color buttonFontColor = Colors.cyan;
+  Color ratingColor = Colors.white;
+  Color dividerColor = Colors.white;
+  Color containerColor = Colors.white;
+  String? hID;
+  String? uID;
+  String? rID;
+  String? bookedDate;
+  String? roomType;
+  String? roomPrice;
+  Future? myRooms;
   @override
   void initState()
   {
+    myRooms = getRooms();
     super.initState();
     getHostelData();
     //updateUserData();
@@ -50,6 +64,27 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
     hostelPhoto = jsonData["hostelPhoto"];
     hostelCity = jsonData["hostelCity"];
     hostelStreet = jsonData["hostelStreet"];
+    hostelPhone = jsonData["hostelPhone"];
+    hostelTotalRooms = jsonData["hostelTotalRooms"];
+  }
+
+  void bookHostel() async 
+  {
+    var response = await http.post
+    (
+      Uri.parse('${BaseUrl.baseUrl}bookedHostels/'), 
+      // headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8',},
+      body: {'hostelID': hID, 'userID': uID, 'roomType': roomType, 'bookingDate': bookedDate, 'roomID': rID}
+    );
+    var jsonData = json.decode(response.body);
+    if(response.statusCode == 201)
+    {
+      print("booked!");
+    }
+    else
+    {
+      print("failed!");
+    }
   }
 
   @override
@@ -73,8 +108,9 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
             ),
             title: Text(hostelName.toString()),
             centerTitle: true,
-            foregroundColor: Colors.white
+            foregroundColor: fontColor
           ),
+          backgroundColor: backgroundColor,
           body: SingleChildScrollView
           (
             child: Column
@@ -88,10 +124,9 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                   child: Container
                   (
                     clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration
+                    decoration: const BoxDecoration
                     (
-                      border: Border.all(color: borderColor, width: 3),
-                      borderRadius: const BorderRadius.only
+                      borderRadius: BorderRadius.only
                       (
                         topLeft: Radius.circular(0),
                         topRight: Radius.circular(0),
@@ -122,6 +157,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                       ),
                       RatingBar.builder
                       (
+                        unratedColor: ratingColor,
                         initialRating: 0,
                         minRating: 0,
                         allowHalfRating: true,
@@ -143,14 +179,25 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                 ),
                 Padding
                 (
-                  padding: const EdgeInsets.fromLTRB(15, 0, 0, 25),
+                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 25),
                   child: Row
                   (
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: 
                     [
                       Text(hostelCity.toString() + ', ' + hostelStreet.toString(), style: TextStyle(fontSize:15, color: fontColor),),
+                      Text(hostelPhone.toString(), style: TextStyle(fontSize:15, color: fontColor),),
                     ]
                   ),
+                ),
+                Padding
+                (
+                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 25),
+                  child: Text
+                  (
+                    "Total available rooms: ${hostelTotalRooms.toString()}",
+                    style: TextStyle(fontSize:15, color: fontColor),
+                  )
                 ),
                 Padding
                 (
@@ -166,14 +213,24 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         height: 45,
                         decoration: BoxDecoration
                         (
-                          border: Border.all(color: borderColor, width: 2),
+                          boxShadow: 
+                          const [
+                            BoxShadow
+                            (
+                              color: Colors.black54,
+                              offset: Offset(1, 5),
+                              blurRadius: 6,
+                            )
+                          ],
+                          color: containerColor,
+                          border: Border.all(color: containerColor, width: 2),
                           borderRadius: BorderRadius.circular(35)
                         ),
                         child: TextButton.icon
                         (
                           style: TextButton.styleFrom
                           (
-                            primary: fontColor
+                            primary: buttonFontColor
                           ),
                           onPressed: () {},
                           icon: const Icon(Icons.details_outlined), 
@@ -185,14 +242,24 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         width: 125,
                         height: 45,
                         decoration: BoxDecoration(
-                          border: Border.all(color: borderColor, width: 2),
+                          boxShadow: 
+                          const [
+                            BoxShadow
+                            (
+                              color: Colors.black54,
+                              offset: Offset(1, 5),
+                              blurRadius: 6,
+                            )
+                          ],
+                          color: containerColor,
+                          border: Border.all(color: containerColor, width: 2),
                           borderRadius: BorderRadius.circular(35)
                         ),
                         child: TextButton.icon
                         (
                           style: TextButton.styleFrom
                           (
-                            primary: borderColor
+                            primary: buttonFontColor
                           ),
                           onPressed: () {},
                           icon: const Icon(Icons.reviews_outlined), 
@@ -204,46 +271,8 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                 ), 
                 Padding
                 (
-                  padding: const EdgeInsets.fromLTRB(15, 25, 0, 0),
-                  child: Text("Location", style: TextStyle(fontSize: 20, color: fontColor)),
-                ),
-                Padding
-                (
-                  padding: const EdgeInsets.all(15),
-                  child: Container
-                  (
-                    clipBehavior: Clip.antiAlias,
-                      decoration: BoxDecoration
-                      (
-                        border: Border.all(width: 2),
-                        borderRadius: const BorderRadius.only
-                        (
-                          topLeft: Radius.circular(0),
-                          topRight: Radius.circular(0),
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30),
-                        ),
-                      ),
-                    width: 400,
-                    child: Center
-                    (
-                      child: Text
-                      (
-                        hostelCity.toString() + ", " + hostelStreet.toString(), 
-                        style: TextStyle
-                        (
-                          color: fontColor,
-                          fontSize: 25
-                        )
-                      )
-                    ),
-                    height: 150,
-                  ),
-                ),
-                Padding
-                (
-                  padding: const EdgeInsets.fromLTRB(15, 25, 0, 0),
-                  child: Text("Amenities", style: TextStyle(fontSize: 20, color: fontColor)),
+                  padding: const EdgeInsets.fromLTRB(15, 50, 0, 0),
+                  child: Text("Where you will be", style: TextStyle(fontSize: 20, color: fontColor)),
                 ),
                 Padding
                 (
@@ -253,6 +282,62 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration
                     (
+                      boxShadow: 
+                      const 
+                      [
+                        BoxShadow
+                        (
+                          color: Colors.black54,
+                          offset: Offset(1, 5),
+                          blurRadius: 6,
+                        )
+                      ],
+                      color: containerColor,
+                      border: Border.all(width: 2, color: borderColor),
+                      borderRadius: const BorderRadius.all
+                      (
+                        Radius.circular(30)
+                      ),
+                    ),
+                    width: 400,
+                    child: Center
+                    (
+                      child: Text
+                      (
+                        hostelCity.toString() + ", " + hostelStreet.toString(), 
+                        style: TextStyle
+                        (
+                          color: buttonFontColor,
+                          fontSize: 25
+                        )
+                      )
+                    ),
+                    height: 150,
+                  ),
+                ),
+                Padding
+                (
+                  padding: const EdgeInsets.fromLTRB(15, 40, 0, 0),
+                  child: Text("What this place offers", style: TextStyle(fontSize: 20, color: fontColor)),
+                ),
+                Padding
+                (
+                  padding: const EdgeInsets.all(15),
+                  child: Container
+                  (
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration
+                    (
+                      boxShadow: 
+                      const [
+                        BoxShadow
+                        (
+                          color: Colors.black54,
+                          offset: Offset(1, 5),
+                          blurRadius: 6,
+                        )
+                      ],
+                      color: containerColor,
                       border: Border.all(color: borderColor, width: 2),
                       borderRadius: BorderRadius.all(Radius.circular(30))
                     ),
@@ -268,9 +353,9 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                       {
                         return TextButton.icon
                         (
-                          icon: Icon(Icons.tiktok, color: fontColor,), 
+                          icon: Icon(Icons.tiktok, color: buttonFontColor,), 
                           onPressed: () {  }, 
-                          label: Text("Amenity", style: TextStyle(color: fontColor),),
+                          label: Text("Amenity", style: TextStyle(color: buttonFontColor),),
                         );
                       }),
                     ),
@@ -278,7 +363,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                 ),
                 Padding
                 (
-                  padding: const EdgeInsets.fromLTRB(15, 25, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(15, 40, 0, 0),
                   child: Text("Choose your preferred room", style: TextStyle(fontSize: 20, color: fontColor)),
                 ),
                 Padding
@@ -289,23 +374,206 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration
                     (
+                      boxShadow: 
+                      const [
+                        BoxShadow
+                        (
+                          color: Colors.black54,
+                          offset: Offset(1, 5),
+                          blurRadius: 6,
+                        )
+                      ],
+                      color: containerColor,
                       border: Border.all(color: borderColor, width: 2),
                       borderRadius: BorderRadius.all(Radius.circular(30))
                     ),
                     width: 400,
-                    height: 150,
+                    height: 280,
                     child: Row
                     (
-                      children: [
-                        
+                      children: 
+                      [
+                        FutureBuilder
+                        (
+                          future: myRooms,
+                          builder: (context, AsyncSnapshot snapshot) 
+                          {
+                            if(snapshot.data == null)
+                            {
+                              return Center(child: Text("loading...", style: TextStyle(fontSize: 18),));
+                            }
+                            else
+                            {
+                              return Expanded
+                              (
+                                child: ListView.builder
+                                (
+                                  scrollDirection: Axis.horizontal,
+                    
+                                  itemCount: snapshot.data.length,
+                                  itemBuilder: (context, i)
+                                  {
+                                    return SingleChildScrollView
+                                    (       
+                                      child: Column
+                                      (
+                                        children: 
+                                        [
+                                          InkWell
+                                          (
+                                            onTap: () 
+                                            {
+                                              rID = snapshot.data[i].id;
+                                              roomPrice = snapshot.data[i].roomPrice;
+                                              roomType = snapshot.data[i].roomType;
+                                              setState(() {          
+                                              });
+                                            },
+                                            child: Container
+                                            (          
+                                              width: 195,
+                                              height: 225,      
+                                              margin: EdgeInsets.all(25),
+                                              decoration: BoxDecoration
+                                              (
+                                                color: backgroundColor,
+                                                boxShadow: 
+                                                const 
+                                                [
+                                                  BoxShadow
+                                                  (
+                                                    color: Colors.black54,
+                                                    offset: Offset(1, 5),
+                                                    blurRadius: 6,
+                                                  )
+                                                ],
+                                                border: Border.all(color: backgroundColor, width: 1),
+                                                borderRadius: BorderRadius.circular(15),
+                                              ),        
+                                              child: Column
+                                              (
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: 
+                                                [
+                                                  Align
+                                                  (
+                                                    alignment: Alignment.topLeft,
+                                                    child: Container
+                                                    ( 
+                                                      decoration: BoxDecoration
+                                                      (
+                                                        
+                                                        border: Border.all(color: backgroundColor),
+                                                        borderRadius: const BorderRadius.only
+                                                        (
+                                                          topLeft: Radius.circular(10),
+                                                          topRight: Radius.circular(10),
+                                                          bottomLeft: Radius.circular(10),
+                                                          bottomRight: Radius.circular(10)
+                                                        ),
+                                                      ),
+                                                      child: Container
+                                                      (
+                                                        decoration: BoxDecoration
+                                                        (
+                                                          boxShadow: 
+                                                          const [
+                                                            BoxShadow
+                                                            (
+                                                              color: Colors.black54,
+                                                              offset: Offset(1, 5),
+                                                              blurRadius: 5,
+                                                            )
+                                                          ],
+                                                          color: containerColor,
+                                                          
+                                                          borderRadius: const BorderRadius.only
+                                                          (
+                                                            topLeft: Radius.circular(10),
+                                                            topRight: Radius.circular(10),
+                                                            bottomLeft: Radius.circular(10),
+                                                            bottomRight: Radius.circular(10)
+                                                          ),
+                                                        ),       
+                                                        child: Padding
+                                                        (
+                                                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+                                                          child: Text
+                                                          (
+                                                            snapshot.data[i].roomType, 
+                                                            style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 25),
+                                                  Padding
+                                                  (
+                                                    padding: const EdgeInsets.all(5),
+                                                    child: Text('Price per month', style: TextStyle(color: fontColor, fontSize: 15)),
+                                                  ),
+                                                  Padding
+                                                  (
+                                                    padding: const EdgeInsets.all(5),
+                                                    child: Text('Rs.' + snapshot.data[i].roomPrice, style: TextStyle(color: fontColor, fontSize: 15, fontWeight: FontWeight.bold))
+                                                  ),
+                                                  Padding
+                                                  (
+                                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                                    child:  Divider(color: dividerColor, thickness: 1)
+                                                  ),
+                                                  Padding
+                                                  (
+                                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                                    child: ElevatedButton
+                                                    (
+                                                      onPressed: () 
+                                                      { 
+
+                                                        rID = snapshot.data[i].id;
+                                                        roomPrice = snapshot.data[i].roomPrice;
+                                                        roomType = snapshot.data[i].roomType;
+                                                        setState(() {
+                                                          
+                                                        });
+                                                      },
+                                                      child: Text
+                                                      (
+                                                        "Select",
+                                                        style: TextStyle
+                                                        (
+                                                          color: buttonFontColor
+                                                        ),
+                                                      ),
+                                                      style: ElevatedButton.styleFrom
+                                                      (
+                                                        primary: containerColor,
+                                                        side: BorderSide(width: 2, color: borderColor),
+                                                      )
+                                                    ),
+                                                  ),
+                                                ]
+                                              ),
+                                            ),
+                                          ),              
+                                        ],
+                                      )
+                                    );
+                                  }
+                                )
+                              );
+                            }
+                          }
+                        )
                       ]
                     )
                   ),
                 ),
                 Padding
                 (
-                  padding: const EdgeInsets.fromLTRB(15, 25, 0, 0),
-                  child: Text("Pricing details", style: TextStyle(fontSize: 20, color: fontColor)),
+                  padding: const EdgeInsets.fromLTRB(15, 40, 0, 0),
+                  child: Text("Choose your preferred date", style: TextStyle(fontSize: 20, color: fontColor)),
                 ),
                 Padding
                 (
@@ -315,8 +583,17 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration
                     (
+                      boxShadow: const [
+                        BoxShadow
+                        (
+                          color: Colors.black54,
+                          offset: Offset(1, 5),
+                          blurRadius: 6,
+                        )
+                      ],
+                      color: containerColor,
                       border: Border.all(color: borderColor, width: 2),
-                      borderRadius: BorderRadius.all(Radius.circular(30))
+                      borderRadius: const BorderRadius.all(Radius.circular(30))
                     ),
                     width: 400,
                     height: 150,
@@ -334,14 +611,121 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                             [
                               Text
                               (
-                                "Price to pay", 
-                                style: TextStyle(color: fontColor, fontSize: 18)
+                                "The date of booking:", 
+                                style: TextStyle(color: buttonFontColor, fontSize: 18)
                               ),
+                              bookedDate != null 
+                              ? Text
+                              (
+                                "$bookedDate", 
+                                style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                              )
+                              :
                               Text
                               (
-                                "Rs. $totalPrice", 
-                                style: TextStyle(color: fontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                                "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}", 
+                                style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                              )
+                            ]
+                          ),
+                          Padding
+                          (
+                            padding: const EdgeInsets.fromLTRB(0, 45, 0, 0),
+                            child: ElevatedButton
+                            (
+                              onPressed: () 
+                              {
+                                DatePicker.showDatePicker
+                                (
+                                  context,
+                                  showTitleActions: true,
+                                  minTime: DateTime.now(),
+                                  maxTime: DateTime.now().add(Duration(days: 14)), 
+                                  onConfirm: (date) 
+                                  {
+                                    bookedDate ="${date.year}-${date.month}-${date.day}" .toString();
+                                    setState(() {
+                                    });
+                                  }, 
+                                  currentTime: DateTime.now(), locale: LocaleType.en);    
+                              },
+                              child: Text
+                              (
+                                "Select booking date",
+                                style: TextStyle
+                                (
+                                  color: fontColor
+                                ),
                               ),
+                              style: ElevatedButton.styleFrom
+                              (
+                                primary: backgroundColor,
+                                minimumSize: Size(165, 50),
+                                side: BorderSide(width: 2, color: borderColor),
+                              )
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ),
+                ),
+                Padding
+                (
+                  padding: const EdgeInsets.fromLTRB(15, 40, 0, 0),
+                  child: Text("Book now and pay at the hostel", style: TextStyle(fontSize: 20, color: fontColor)),
+                ),
+                Padding
+                (
+                  padding: const EdgeInsets.all(15),
+                  child: Container
+                  (
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration
+                    (
+                      boxShadow: const [
+                        BoxShadow
+                        (
+                          color: Colors.black54,
+                          offset: Offset(1, 5),
+                          blurRadius: 6,
+                        )
+                      ],
+                      color: containerColor,
+                      border: Border.all(color: borderColor, width: 2),
+                      borderRadius: const BorderRadius.all(Radius.circular(30))
+                    ),
+                    width: 400,
+                    height: 150,
+                    child: Padding
+                    (
+                      padding: const EdgeInsets.all(15),
+                      child: Column
+                      (
+                        children: 
+                        [
+                          Row
+                          (
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: 
+                            [
+                              Text
+                              (
+                                "What you will pay per month:", 
+                                style: TextStyle(color: buttonFontColor, fontSize: 18)
+                              ),
+                              roomPrice != null 
+                              ? Text
+                              (
+                                "Rs. $roomPrice", 
+                                style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                              )
+                              :
+                              Text
+                              (
+                                "Rs. 0", 
+                                style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                              )
                             ]
                           ),
                           Padding
@@ -351,15 +735,26 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                             (
                               onPressed: () 
                               { 
-                                ScaffoldMessenger.of(context).showSnackBar
-                                (
-                                  const SnackBar(content: Text("booking unavailable!"))
-                                );
-                                //bookhostel()
+                                if(roomPrice != null)
+                                {
+                                  hID = hostelID;
+                                  uID = loggedUserID;
+                                  bookHostel();
+                                }
+                                else
+                                {
+                                  ScaffoldMessenger.of(context).showSnackBar
+                                  (
+                                    const SnackBar
+                                    (
+                                      content: Text('Please select a room!'),
+                                    )
+                                  );
+                                }
                               },
                               child: Text
                               (
-                                "Book now and pay later",
+                                "Book hostel",
                                 style: TextStyle
                                 (
                                   color: fontColor
@@ -367,8 +762,8 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                               ),
                               style: ElevatedButton.styleFrom
                               (
-                                primary: Colors.white,
-                                minimumSize: Size(150, 40),
+                                primary: backgroundColor,
+                                minimumSize: Size(165, 50),
                                 side: BorderSide(width: 2, color: borderColor),
                               )
                             ),

@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.light,
       theme: ThemeData
       (
-        appBarTheme: AppBarTheme
+        appBarTheme: const  AppBarTheme
         (
           centerTitle: true,
           foregroundColor: Colors.white

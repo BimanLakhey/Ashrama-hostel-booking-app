@@ -20,10 +20,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> 
 {
-  // HostelModel hostelModel = HostelModel();
   bool isFavourite = false;
   String hostelID;
   String userID;
+  Future myHostels;
+  @override
+  void initState() 
+  {
+    myHostels = getHostels();
+    super.initState();
+  }
+  // HostelModel hostelModel = HostelModel();
+
 
   void saveHostel() async 
   {
@@ -92,9 +100,10 @@ class _HomePageState extends State<HomePage>
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row
                 (
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: 
                   [
+                    
+                   
                     Padding
                     (
                       padding: const EdgeInsets.fromLTRB(0,0,0,25),
@@ -123,48 +132,13 @@ class _HomePageState extends State<HomePage>
                           (
                             primary: Colors.white
                           ),
-                          onPressed: () {},
-                          icon: const Icon(CupertinoIcons.placemark), 
-                          label: const Text("Nearby"),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 15),
-                    Padding
-                    (
-                      padding: const EdgeInsets.fromLTRB(0,0,0,25),
-                      child: Container
-                      (
-                        width: 125,
-                        height: 45,
-                        decoration: BoxDecoration
-                        (
-                          boxShadow: const 
-                          [
-                            BoxShadow
-                            (
-                              color: Colors.black54,
-                              offset: Offset(1, 5),
-                              blurRadius: 6,
-                            )
-                          ],
-                          color: Colors.cyan,
-                          border: Border.all(color: Colors.cyan, width: 2),
-                          borderRadius: BorderRadius.circular(35)
-                        ),
-                        child: TextButton.icon
-                        (
-                          style: TextButton.styleFrom
-                          (
-                            primary: Colors.white
-                          ),
-                          onPressed: () {},
+                          onPressed: () {myHostels = getHostels(); setState(() {});},
                           icon: const Icon(CupertinoIcons.hand_thumbsup), 
                           label: const Text("For you"),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 15),
+                    SizedBox(width: 75),
                     Padding
                     (
                       padding: const EdgeInsets.fromLTRB(0,0,0,25),
@@ -193,47 +167,14 @@ class _HomePageState extends State<HomePage>
                           (
                             primary: Colors.white
                           ),
-                          onPressed: () {},
-                          icon: const Icon(CupertinoIcons.money_dollar), 
-                          label: const Text("Cheapest"),
+                          onPressed: () {myHostels = getNearbyHostels(); setState(() {});},
+                          icon: const Icon(CupertinoIcons.placemark), 
+                          label: const Text("Nearby"),
                         ),
                       ),
                     ),
                     const SizedBox(width: 15),
-                    Padding
-                    (
-                      padding: const EdgeInsets.fromLTRB(0,0,0,25),
-                      child: Container
-                      (
-                        width: 125,
-                        height: 45,
-                        decoration: BoxDecoration
-                        (
-                          boxShadow: const 
-                          [
-                            BoxShadow
-                            (
-                              color: Colors.black54,
-                              offset: Offset(1, 5),
-                              blurRadius: 6,
-                            )
-                          ],
-                          color: Colors.cyan,
-                          border: Border.all(color: Colors.cyan, width: 2),
-                          borderRadius: BorderRadius.circular(35)
-                        ),
-                        child: TextButton.icon
-                        (
-                          style: TextButton.styleFrom
-                          (
-                            primary: Colors.white
-                          ),
-                          onPressed: () {},
-                          icon: const Icon(CupertinoIcons.percent), 
-                          label: const Text("Deals"),
-                        ),
-                      ),
-                    )
+                    
                   ],
                 ),
               ),
@@ -250,10 +191,10 @@ class _HomePageState extends State<HomePage>
             const SizedBox(height: 25),
             FutureBuilder
             (
-              future: getHostels(),
+              future: myHostels,
               builder: (context, snapshot) 
               {
-                //print(snapshot.data);
+                // print(snapshot.data);
                 if(snapshot.data == null)
                 {
                   return const Text("loading...", style: TextStyle(fontSize: 18),);
@@ -264,6 +205,7 @@ class _HomePageState extends State<HomePage>
                   (
                     child: ListView.builder
                     (
+                      physics: BouncingScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, i)
@@ -392,10 +334,17 @@ class _HomePageState extends State<HomePage>
                                           ],
                                         ),
                                       ),
-                                      Text
+                                      Align
                                       (
-                                        snapshot.data[i].hostelType, 
-                                        style: TextStyle(color: Colors.white, fontSize: 15)
+                                        alignment: Alignment.centerLeft,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                          child: Text
+                                          (
+                                            snapshot.data[i].hostelPhone, 
+                                            style: TextStyle(color: Colors.white, fontSize: 15)
+                                          ),
+                                        ),
                                       ),     
                                       const SizedBox(height: 25,)
                                     ]

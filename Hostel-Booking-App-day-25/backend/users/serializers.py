@@ -1,6 +1,7 @@
 from rest_framework import serializers
+import datetime
 from rest_framework.validators import UniqueValidator
-from .models import Hostel, SavedHostel, User
+from .models import BookedHostel, Hostel, Room, SavedHostel, User
 from django.core.exceptions import ValidationError
 
 baseURL = "http://192.168.0.200:8000";
@@ -174,43 +175,42 @@ class UpdateHostelSerializer(serializers.ModelSerializer):
 
         return instance
 
-# class SaveHostelsSerializer(serializers.Serializer):
-#     hostelID = serializers.CharField()
+class RoomSerializer(serializers.ModelSerializer):
+    
+    roomType = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator(queryset=Room.objects.all())]
+        ) 
+    roomPrice = serializers.CharField( 
+        required=True)
 
-#     def validate(self, data):
-#         hostelID = data.get("hostelName")
-#         print(hostelID)
-#         if not hostelID:
-#             raise ValidationError("hostel ID is required")
-#         try:
-#             hostel = Hostel.objects.get(hostelID=hostelID)
-#         except Hostel.DoesNotExist:
-#             raise ValidationError("Rider with this number does not exist")
+    class Meta:
+        model = Room
+        fields = (
+            'id',
+            'roomType',
+            'roomPrice',
+        )        
 
-#         return data
-
-#     def create(self, validated_data):
-#         userID_id = self.context.get("userID_id")
-#         hostelID_id = self.context.get("hostelID_id")
-#         hostelName = self.context.get("hostelName")
-#         hostelCity = self.context.get("hostelCity")
-#         hostelStreet = self.context.get("hostelStreet")
-#         hostelType = self.context.get("hostelType")
-#         hostelPhone = self.context.get("hostelPhone")
-#         hostelPhoto = self.context.get("hostelPhoto")
-#         hostel = Hostel.objects.get(id=hostelID_id)
-#         obj1 = SavedHostel()
-#         obj1.userID = userID_id
-#         obj1.hostelID = hostel.hostelID_id
-#         obj1.hostelName = hostel.hostelName
-#         obj1.hostelCity = hostel.hostelCity
-#         obj1.hostelStreet = hostel.hostelStreet
-#         obj1.hostelType = hostel.hostelType
-#         obj1.hostelPhone = hostel.hostelPhone
-#         obj1.hostelPhoto = hostel.hostelPhoto
-#         obj1.save()
-
-
+class BookedHostelSerializer(serializers.ModelSerializer):
+    
+    userID = serializers.CharField()
+    hostelID = serializers.CharField()
+    bookingDate = serializers.DateField()
+    roomType = serializers.CharField()
+    roomID = serializers.CharField()
+    
+    class Meta:
+        model = BookedHostel
+        fields = [
+            'id',
+            'hostelID',
+            'userID',
+            'roomType',
+            'bookingDate',
+            'roomID',
+        ]
+        
 class SavedHostelSerializer(serializers.ModelSerializer):
 
     userID = serializers.CharField()

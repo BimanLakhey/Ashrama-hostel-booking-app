@@ -29,7 +29,6 @@ class _ProfilePageState extends State<ProfilePage>
   String? passwordHolder = ProfilePage.passwordHolder;
   
   UserModel userModel = UserModel();
-  bool circular = true;
   String? profileImgUrl;
   TextEditingController username = TextEditingController();
   TextEditingController userFName = TextEditingController();
@@ -77,13 +76,14 @@ class _ProfilePageState extends State<ProfilePage>
     
     setState(() {
       userModel = UserModel.fromJson({"data": jsonData});
-      circular = false;
+      profilePhoto = true;
       
     });
     username.text = jsonData["username"];
     userFName.text = jsonData["userFName"];
     userLName.text = jsonData["userLName"];
     userEmail.text = jsonData["userEmail"];
+    userAddress.text = jsonData["userAddress"];
     userPhone.text = jsonData["userPhone"];
     profileImgUrl = jsonData["userPhoto"];
     userID = jsonData["user_id"];
@@ -140,16 +140,12 @@ class _ProfilePageState extends State<ProfilePage>
                         width: 100,
                         height: 100,
                         child: profilePhoto
-                        ? Image.file
-                        (
-                          ProfilePage.imageFile,
-                          fit: BoxFit.fill,
-                        )
-                        : Image.network
+                        ? Image.network
                         (
                           profileImgUrl.toString(),
-                          fit: BoxFit.fill,
+                          fit: BoxFit.contain,
                         )
+                        : SizedBox(child: CircularProgressIndicator())
                       ),
                     ),
                     IconButton
@@ -252,6 +248,20 @@ class _ProfilePageState extends State<ProfilePage>
                             enabled: isEnabled,
                             hintText: "Enter your email",
                             labelText: "Email",
+                          ),
+                        ),
+                        const SizedBox
+                        (
+                          height: 20.0,
+                        ),
+                        TextFormField
+                        (
+                          controller: userAddress,
+                          decoration: InputDecoration
+                          (
+                            enabled: isEnabled,
+                            hintText: "Enter your address",
+                            labelText: "Address",
                           ),
                         ),
                         const SizedBox

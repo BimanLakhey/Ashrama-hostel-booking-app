@@ -55,7 +55,8 @@ class _SavedPageState extends State<SavedPage>
   Widget build(BuildContext context) {
     // List<Hostels> hostelDetails = getHostels();
 
-    return WillPopScope(
+    return WillPopScope
+    (
       onWillPop: () async => false,
       child: Scaffold
       (
@@ -88,13 +89,13 @@ class _SavedPageState extends State<SavedPage>
                     child: ListView.builder
                     (
                       scrollDirection: Axis.vertical,
-        
+                      physics: BouncingScrollPhysics(),
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, i)
                       {
                         return SingleChildScrollView
                         (       
-                          child: snapshot.data.length == 0
+                          child: !snapshot.hasData
                           ? 
                           Container
                           (
@@ -246,8 +247,8 @@ class _SavedPageState extends State<SavedPage>
                                           children: 
                                           [
                                             Row(
-                                              children: [
-                                                
+                                              children: 
+                                              [  
                                                 Text(snapshot.data[i].hostelCity, style: TextStyle(color: Colors.white, fontSize: 15)),
                                                 Text(", ", style: TextStyle(color: Colors.white, fontSize: 15)),
                                                 Text(snapshot.data[i].hostelStreet, style: TextStyle(color: Colors.white, fontSize: 15)),
@@ -257,10 +258,17 @@ class _SavedPageState extends State<SavedPage>
                                           ],
                                         ),
                                       ),
-                                      Text
+                                      Align
                                       (
-                                        snapshot.data[i].hostelType, 
-                                        style: TextStyle(color: Colors.white, fontSize: 15)
+                                        alignment: Alignment.centerLeft,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                          child: Text
+                                          (
+                                            snapshot.data[i].hostelPhone, 
+                                            style: TextStyle(color: Colors.white, fontSize: 15)
+                                          ),
+                                        ),
                                       ),     
                                       SizedBox(height: 25,)
                                     ]

@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import *
 from rest_framework import status, permissions
-from .models import Hostel, SavedHostel, User
-from .serializers import HostelSerializer, SavedHostelSerializer, UpdateHostelSerializer, UpdateUserSerializer, UserSerializer, UserLoginSerializer
+from .models import BookedHostel, Hostel, Room, SavedHostel, User
+from .serializers import BookedHostelSerializer, HostelSerializer, RoomSerializer, SavedHostelSerializer, UpdateHostelSerializer, UpdateUserSerializer, UserSerializer, UserLoginSerializer
 from django.http import Http404
 
 # Create your views here.
@@ -99,10 +99,52 @@ class HostelsDetails(generics.ListAPIView):
     queryset = Hostel.objects.all()
     serializer_class = HostelSerializer
 
+    filter_fields = (
+        'hostelStreet',
+    )
+
 class UpdateHostel(generics.UpdateAPIView):
     queryset = Hostel.objects.all()
     serializer_class = UpdateHostelSerializer
 
+class RegisterRoom(generics.ListCreateAPIView):
+    # get method handler
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise Http404
+        
+    def delete(self, request, pk, format=None):
+        room = self.get_object(pk)
+        room.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    filter_fields = (
+        'id',
+    )
+
+class BookedHostels(generics.ListCreateAPIView):
+    queryset = BookedHostel.objects.all()
+    serializer_class = BookedHostelSerializer
+
+    def get_object(self, pk):
+        try:
+            return BookedHostel.objects.get(pk=pk)
+        except BookedHostel.DoesNotExist:
+            raise Http404
+        
+    def delete(self, request, pk, format=None):
+        bookedHostel = self.get_object(pk)
+        bookedHostel.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    filter_fields = (
+        'userID',
+    )
 
 class SavedHostels(generics.ListCreateAPIView):
     queryset = SavedHostel.objects.all()
@@ -125,3 +167,5 @@ class SavedHostels(generics.ListCreateAPIView):
     filter_fields = (
         'userID',
     )
+
+    

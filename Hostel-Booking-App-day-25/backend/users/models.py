@@ -31,11 +31,19 @@ class Hostel(models.Model):
     def __str__(self):
         return f"{self.id}"
 
+class Room(models.Model):
+    roomType = models.CharField(max_length=50, unique=True, null=False)
+    roomPrice = models.CharField(max_length=50, null=False)
+    
+    def __str__(self):
+        return f"{self.id}"
+
 class BookedHostel(models.Model):
     hostelID = models.CharField(max_length=50)
     userID = models.CharField(max_length=50)
-    bookingDate = models.DateTimeField(auto_now_add=True)
+    bookingDate = models.DateField()
     roomID = models.CharField(max_length=50)
+    roomType = models.CharField(max_length=50)
 
     def __str__(self):
         return f"{self.id}"
