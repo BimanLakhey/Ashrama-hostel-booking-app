@@ -7,6 +7,8 @@ import 'package:hotel_booking_app/pages/hostel_owner_details_page.dart';
 import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
 import 'package:hotel_booking_app/pages/hostel_room_details.dart';
 import 'package:hotel_booking_app/pages/login_page.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:hotel_booking_app/pages/manage_hostel_page.dart';
 import 'package:hotel_booking_app/pages/profile_page.dart';
 import 'package:hotel_booking_app/pages/singnup_page.dart';
 import 'package:hotel_booking_app/pages/reset_password_page.dart';
@@ -83,10 +85,11 @@ class MyApp extends StatelessWidget {
         MyRoutes.confirmationRoute: (context) => ConfirmationPage(),
         MyRoutes.signinRoute: (context) => FinalSignUpPage(),
         MyRoutes.enterNumberRoute: (context) => EnterNumberPage(),
-        MyRoutes.hostelDetailsRoute: (context) => HostelDetailsPage(),
+        MyRoutes.hostelDetailsRoute: (context) => RegisterHostelPage(),
         MyRoutes.hostelOwnerDetailsRoute: (context) => HostelOwnerDetailsPage(),
         MyRoutes.hostelRoomDetailsRoute: (context) => HostelRoomDetailsPage(),
         MyRoutes.hostelProfileRoute: (context) => HostelProfilePage(),
+        MyRoutes.manageHostelRoute: (context) => ManageHostelPage(),
       }
     );
   }

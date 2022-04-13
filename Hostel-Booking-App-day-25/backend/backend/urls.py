@@ -23,6 +23,7 @@ urlpatterns = [
     path('roomDetails/<int:pk>', RegisterRoom.as_view(), name="Room details"),
     path('savedHostels/<int:pk>', SavedHostels.as_view(), name="Saved hostels"),
     path('bookedHostels/', BookedHostels.as_view(), name="Booked hostels"),
+    path('registeredHostels/', RegisteredHostels.as_view(), name="Registered hostels"),
     path('bookedHostels/<int:pk>', BookedHostels.as_view(), name="Booked hostels"),
 
 

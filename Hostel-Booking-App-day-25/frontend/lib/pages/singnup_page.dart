@@ -40,7 +40,7 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController confirmPasswordControl = TextEditingController();
 
   void signUpUser() async {
-    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}/registerUser/'), body: {'username': userNameControl.text, 'userFName': firstNameControl.text, 'userLName': lastNameControl.text, 'userEmail': emailControl.text, 'userPhone': phoneNumControl.text, 'userAddress': addressControl.text, 'totalHostels': hostelsControl.text, 'ownerLicense': licenseControl.text, 'userPassword': passwordControl.text});
+    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': userNameControl.text, 'userFName': firstNameControl.text, 'userLName': lastNameControl.text, 'userEmail': emailControl.text, 'userPhone': phoneNumControl.text, 'userAddress': addressControl.text, 'totalHostels': hostelsControl.text, 'ownerLicense': licenseControl.text, 'userPassword': passwordControl.text});
     var jsonData = json.decode(response.body);
     if(response.statusCode == 201)
     {
@@ -48,8 +48,8 @@ class _SignupPageState extends State<SignupPage> {
         context: context,
         builder: (ctx) => AlertDialog
         (
-          title: Text("Success"),
-          content: Text("User signed up!"),
+          title: const Text("Success"),
+          content: const Text("User signed up!"),
           actions: <Widget>
           [
             FlatButton

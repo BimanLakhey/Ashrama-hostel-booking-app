@@ -137,8 +137,9 @@ class _DrawerPageState extends State<DrawerPage>
               leading: Icon(Icons.read_more_outlined),
               title: Text("Learn about hosting", style: TextStyle(fontSize: 16))
             ),
-            const ListTile
+            ListTile
             (
+              onTap: () => Navigator.pushNamed(context, MyRoutes.manageHostelRoute),
               horizontalTitleGap: 1,
               dense: true,
               leading: Icon(Icons.handyman_outlined),

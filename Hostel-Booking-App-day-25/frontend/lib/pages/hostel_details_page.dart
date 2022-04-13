@@ -1,20 +1,34 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
+import 'package:http/http.dart' as http;
 
-class HostelDetailsPage extends StatefulWidget {
-  const HostelDetailsPage({ Key? key }) : super(key: key);
+class RegisterHostelPage extends StatefulWidget {
+  const RegisterHostelPage({ Key? key }) : super(key: key);
 
   @override
-  State<HostelDetailsPage> createState() => _HostelDetailsPageState();
+  State<RegisterHostelPage> createState() => _RegisterHostelPageState();
 }
 
-class _HostelDetailsPageState extends State<HostelDetailsPage> 
+class _RegisterHostelPageState extends State<RegisterHostelPage> 
 {
   final List _options = ["Hostel type", "Unisex", "Girls only", "Boys only"];
 
   late List<DropdownMenuItem<String>> _dropDownMenuItems;
   late String? _currentOption;
+
+  String? selectedHostelType;
+  TextEditingController hostelNameControl = TextEditingController();
+  TextEditingController hostelCityControl = TextEditingController();
+  TextEditingController hostelStreetControl = TextEditingController();
+  TextEditingController hostelTypeControl = TextEditingController();
+  TextEditingController hostelPhoneControl = TextEditingController();
+
+
+
   @override
   void initState() {
     _dropDownMenuItems = getDropDownMenuItems();
@@ -36,12 +50,41 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
     }
     return items;
   }
+
+  void registerHostel() async {
+    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerHostel/'), body: {'hostelName': hostelNameControl.text, 'hostelCity': hostelCityControl.text, 'hostelStreet': hostelStreetControl.text, 'hostelType':selectedHostelType, 'hostelPhone': hostelPhoneControl.text});
+    var jsonData = json.decode(response.body);
+    if(response.statusCode == 201)
+    {
+      showDialog
+      (
+        context: context,
+        builder: (ctx) => AlertDialog
+        (
+          title: const Text("Hostel registered"),
+          content: const Text("Manage your hostel?"),
+          actions: <Widget>
+          [
+            FlatButton
+            (
+              onPressed: () 
+              {
+                Navigator.pushNamed(context, MyRoutes.manageHostelRoute);
+              },
+              child: Text("ok"),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar
       (
-        title: Text("Hostel Details")
+        title: const Text("Register your hostel")
       ),
       body: SingleChildScrollView
       (
@@ -51,7 +94,7 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
           (
             children: 
             [
-              SizedBox(height: 100,),
+              SizedBox(height: 50,),
               Container
               (
                 width: 325.0,
@@ -77,9 +120,9 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
                       ),
                       TextFormField
                       (
+                        controller: hostelNameControl,
                         decoration: const InputDecoration
                         (
-                          
                           hintText: "Enter the hostel name",
                           labelText: "Hostel name"
                         ),
@@ -90,12 +133,12 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
                       ),
                       TextFormField
                       (
+                        controller: hostelCityControl,
                         decoration: const InputDecoration
                         (
                           hintText: "Enter the city name",
                           labelText: "Hostel city",
                         ),
-                        obscureText: true,
                       ),
                       const SizedBox
                       (
@@ -103,12 +146,12 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
                       ),
                       TextFormField
                       (
+                        controller: hostelStreetControl,
                         decoration: const InputDecoration
                         (
                           hintText: "Enter the hostel street",
                           labelText: "Hostel street",
                         ),
-                        obscureText: true,
                       ),
                       const SizedBox
                       (
@@ -116,32 +159,25 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
                       ),
                       DropdownButton
                       (
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black54),
+                        underline: Container( height: 1, color: Colors.black38,),
+                        isExpanded: true,
                         value: _currentOption,
                         items: _dropDownMenuItems, 
                         onChanged: changedDropDownItem
                       ),
-                      Padding
+                      const SizedBox
                       (
-                        padding: const EdgeInsets.symmetric(vertical: 20.0),
-                        child: Divider(color: Colors.black12, thickness: 1),
-                      ),
-                      Padding
-                      (
-                        padding: const EdgeInsets.fromLTRB(0,0,175,0),
-                        child: Text
-                        (
-                          "Amenities",
-                          style: TextStyle(fontSize: 18, color: Colors.black),
-                        ),
+                        height: 20.0,
                       ),
                       TextFormField
                       (
+                        controller: hostelPhoneControl,
                         decoration: const InputDecoration
                         (
-                          hintText: "Enter an amenity",
-                          labelText: "Hostel amenity",
+                          hintText: "Enter the phone number",
+                          labelText: "Hostel phonenumber",
                         ),
-                        obscureText: true,
                       ),
                       const SizedBox
                       (
@@ -151,11 +187,11 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
                       (
                         onPressed: () 
                         {
-                          Navigator.pushNamed(context, MyRoutes.hostelOwnerDetailsRoute);
+                          registerHostel();
                         }, 
                         label: const Text
                         (
-                          "Continue",
+                          "Register",
                           style: TextStyle
                           (
                             color: Colors.white
@@ -169,7 +205,7 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
               ),
               Padding
               (
-                padding: const EdgeInsets.fromLTRB(15,50,0,0),
+                padding: const EdgeInsets.fromLTRB(15,100,0,0),
                 child: Row
                 (
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -208,6 +244,8 @@ class _HostelDetailsPageState extends State<HostelDetailsPage>
   {
     setState(() {
       _currentOption = selectedOption;
+      selectedHostelType = _currentOption;
+      print(selectedHostelType);
     });
   }
 }

@@ -12,8 +12,6 @@ class User(models.Model):
     userAddress = models.CharField(max_length=100, null=False)
     userPhone = models.CharField(max_length=100, null=False)
     userPhoto = models.ImageField(upload_to='', null= True, default='defaultProfie.jpg')
-    totalHostels = models.CharField(max_length=100, null=True)
-    ownerLicense = models.CharField(max_length=50, null=True)
 
     def __str__(self):
         return f"{self.id}"
@@ -25,8 +23,7 @@ class Hostel(models.Model):
     hostelType = models.CharField(max_length=50, null=False)
     hostelPhone = models.CharField(max_length=50, null=False, default='00000000')
     hostelTotalRooms = models.CharField(max_length=100, null=False)
-    hostelPhoto = models.ImageField(upload_to='', null= True)
-    hostelOwnerID = models.ForeignKey(User, on_delete=models.CASCADE)
+    hostelPhoto = models.ImageField(upload_to='', null= True, default='defaultHostel.jpg')
 
     def __str__(self):
         return f"{self.id}"
@@ -52,5 +49,12 @@ class SavedHostel(models.Model):
     hostelID = models.CharField(max_length=50)
     userID = models.CharField(max_length=50)
  
+    def __str__(self):
+        return f"{self.id}"
+
+class RegisteredHostel(models.Model):
+    hostelID = models.CharField(max_length=50)
+    userID = models.CharField(max_length=50)
+
     def __str__(self):
         return f"{self.id}"

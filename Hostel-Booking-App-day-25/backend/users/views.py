@@ -3,13 +3,12 @@ import http
 from unicodedata import lookup
 from django.shortcuts import redirect
 from rest_framework import generics
-from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import *
 from rest_framework import status, permissions
-from .models import BookedHostel, Hostel, Room, SavedHostel, User
-from .serializers import BookedHostelSerializer, HostelSerializer, RoomSerializer, SavedHostelSerializer, UpdateHostelSerializer, UpdateUserSerializer, UserSerializer, UserLoginSerializer
+from .models import BookedHostel, Hostel, Room, SavedHostel, User, RegisteredHostel
+from .serializers import BookedHostelSerializer, HostelSerializer, RegisteredHostelSerializer, RoomSerializer, SavedHostelSerializer, UpdateHostelSerializer, UpdateUserSerializer, UserSerializer, UserLoginSerializer
 from django.http import Http404
 
 # Create your views here.
@@ -148,10 +147,7 @@ class BookedHostels(generics.ListCreateAPIView):
 
 class SavedHostels(generics.ListCreateAPIView):
     queryset = SavedHostel.objects.all()
-    # hostel = Hostel.objects.get(id=hostel_id);
     serializer_class = SavedHostelSerializer
-    # permission_classes = (partial(CustomPermissionForUser, ['GET', 'HEAD', 'POST']))
-
 
     def get_object(self, pk):
         try:
@@ -167,5 +163,28 @@ class SavedHostels(generics.ListCreateAPIView):
     filter_fields = (
         'userID',
     )
+
+class RegisteredHostels(generics.ListCreateAPIView):
+    queryset = RegisteredHostel.objects.all()
+    # hostel = Hostel.objects.get(id=hostel_id);
+    serializer_class = RegisteredHostelSerializer
+    # permission_classes = (partial(CustomPermissionForUser, ['GET', 'HEAD', 'POST']))
+
+
+    def get_object(self, pk):
+        try:
+            return RegisteredHostel.objects.get(pk=pk)
+        except RegisteredHostel.DoesNotExist:
+            raise Http404
+        
+    # def delete(self, request, pk, format=None):
+    #     savedHostel = self.get_object(pk)
+    #     savedHostel.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+
+    filter_fields = (
+        'userID',
+    )
+
 
     

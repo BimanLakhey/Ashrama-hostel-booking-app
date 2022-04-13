@@ -1,7 +1,7 @@
 from rest_framework import serializers
 import datetime
 from rest_framework.validators import UniqueValidator
-from .models import BookedHostel, Hostel, Room, SavedHostel, User
+from .models import BookedHostel, Hostel, RegisteredHostel, Room, SavedHostel, User
 from django.core.exceptions import ValidationError
 
 baseURL = "http://100.64.242.219:8000";
@@ -133,7 +133,6 @@ class HostelSerializer(serializers.ModelSerializer):
             'hostelPhone',
             'hostelTotalRooms',
             'hostelPhoto',
-            'hostelOwnerID',
         )
     def update(self, instance, validated_data):
         instance.hostelName = validated_data['hostelName']
@@ -143,7 +142,6 @@ class HostelSerializer(serializers.ModelSerializer):
         instance.hostelPhone = validated_data['hostelPhone']
         instance.hostelTotalRooms = validated_data['hostelTotalRooms']
         instance.hostelPhoto = validated_data['hostelPhoto']
-        instance.hostelOwnerID = validated_data['hostelOwnerID']
         instance.save()
 
 class UpdateHostelSerializer(serializers.ModelSerializer):
@@ -218,6 +216,19 @@ class SavedHostelSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = SavedHostel
+        fields = [
+            'id',
+            'hostelID',
+            'userID',
+        ]
+
+class RegisteredHostelSerializer(serializers.ModelSerializer):
+    
+    userID = serializers.CharField()
+    hostelID = serializers.CharField()
+    
+    class Meta:
+        model = RegisteredHostel
         fields = [
             'id',
             'hostelID',
