@@ -640,10 +640,10 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                   context,
                                   showTitleActions: true,
                                   minTime: DateTime.now(),
-                                  maxTime: DateTime.now().add(Duration(days: 14)), 
+                                  maxTime: DateTime.now().add(const Duration(days: 14)), 
                                   onConfirm: (date) 
                                   {
-                                    bookedDate ="${date.year}-${date.month}-${date.day}" .toString();
+                                    bookedDate ="${date.year}-${date.month}-${date.day}".toString();
                                     setState(() {
                                     });
                                   }, 
@@ -735,11 +735,41 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                             (
                               onPressed: () 
                               { 
-                                if(roomPrice != null)
+                                if(roomPrice != null && bookedDate != null)
                                 {
                                   hID = hostelID;
                                   uID = loggedUserID;
                                   bookHostel();
+                                  showDialog
+                                  (
+                                    context: context,
+                                    builder: (ctx) => AlertDialog
+                                    (
+                                      title: const Text("Booking confirmed"),
+                                      content: Text("Please visit the hostel on $bookedDate!"),
+                                      actions: <Widget>
+                                      [
+                                        FlatButton
+                                        (
+                                          onPressed: () 
+                                          {
+                                            Navigator.of(ctx).pop();
+                                          },
+                                          child: Text("ok"),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                else if(roomPrice == null)
+                                {
+                                  ScaffoldMessenger.of(context).showSnackBar
+                                  (
+                                    const SnackBar
+                                    (
+                                      content: Text('Please select a room!'),
+                                    )
+                                  );
                                 }
                                 else
                                 {
@@ -747,7 +777,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                   (
                                     const SnackBar
                                     (
-                                      content: Text('Please select a room!'),
+                                      content: Text('Please select a date!'),
                                     )
                                   );
                                 }
@@ -763,7 +793,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                               style: ElevatedButton.styleFrom
                               (
                                 primary: backgroundColor,
-                                minimumSize: Size(165, 50),
+                                minimumSize: const Size(165, 50),
                                 side: BorderSide(width: 2, color: borderColor),
                               )
                             ),
