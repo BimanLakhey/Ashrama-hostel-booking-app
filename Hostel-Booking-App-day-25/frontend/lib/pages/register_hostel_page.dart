@@ -26,6 +26,7 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
   TextEditingController hostelStreetControl = TextEditingController();
   TextEditingController hostelTypeControl = TextEditingController();
   TextEditingController hostelPhoneControl = TextEditingController();
+  TextEditingController hostelTotalRooms = TextEditingController();
 
 
 
@@ -52,7 +53,7 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
   }
 
   void registerHostel() async {
-    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerHostel/'), body: {'hostelName': hostelNameControl.text, 'hostelCity': hostelCityControl.text, 'hostelStreet': hostelStreetControl.text, 'hostelType':selectedHostelType, 'hostelPhone': hostelPhoneControl.text});
+    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerHostel/'), body: {'hostelName': hostelNameControl.text, 'hostelCity': hostelCityControl.text, 'hostelStreet': hostelStreetControl.text, 'hostelType':selectedHostelType, 'hostelPhone': hostelPhoneControl.text, 'hostelTotalRooms': hostelTotalRooms.text});
     var jsonData = json.decode(response.body);
     if(response.statusCode == 201)
     {
@@ -159,7 +160,7 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                       ),
                       DropdownButton
                       (
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black54),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black54),
                         underline: Container( height: 1, color: Colors.black38,),
                         isExpanded: true,
                         value: _currentOption,
@@ -177,6 +178,19 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                         (
                           hintText: "Enter the phone number",
                           labelText: "Hostel phonenumber",
+                        ),
+                      ),
+                      const SizedBox
+                      (
+                        height: 20.0,
+                      ),
+                      TextFormField
+                      (
+                        controller: hostelTotalRooms,
+                        decoration: const InputDecoration
+                        (
+                          hintText: "Enter the total number of rooms",
+                          labelText: "Total rooms",
                         ),
                       ),
                       const SizedBox
@@ -245,7 +259,6 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
     setState(() {
       _currentOption = selectedOption;
       selectedHostelType = _currentOption;
-      print(selectedHostelType);
     });
   }
 }

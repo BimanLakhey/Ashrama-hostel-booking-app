@@ -4,7 +4,7 @@ from rest_framework.validators import UniqueValidator
 from .models import BookedHostel, Hostel, RegisteredHostel, Room, SavedHostel, User
 from django.core.exceptions import ValidationError
 
-baseURL = "http://100.64.242.219:8000";
+baseURL = "http://192.168.0.200:8000";
 
 class UserSerializer(serializers.ModelSerializer):
     

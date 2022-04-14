@@ -194,13 +194,13 @@ class _HomePageState extends State<HomePage>
               future: myHostels,
               builder: (context, snapshot) 
               {
-                // print(snapshot.data);
                 if(snapshot.data == null)
                 {
                   return const Text("loading...", style: TextStyle(fontSize: 18),);
                 }
                 else
                 {
+                  print(snapshot.data.length);
                   return Expanded
                   (
                     child: ListView.builder

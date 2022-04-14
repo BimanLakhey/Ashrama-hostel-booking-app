@@ -1,19 +1,41 @@
 // @dart=2.9
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 
-class ManageHostelPage extends StatelessWidget {
+class ManageHostelPage extends StatefulWidget {
   ManageHostelPage({Key key}) : super(key: key);
+
+  @override
+  State<ManageHostelPage> createState() => _ManageHostelPageState();
+}
+
+class _ManageHostelPageState extends State<ManageHostelPage> {
+  @override
+  void initState() 
+  {
+    myHostelDetails = getBookingDetails();
+    super.initState();
+  }
   Color fontColor = Colors.white;
+
   Color containerColor = Colors.white;
+
   Color buttonFontColor = Colors.cyan;
+
   Color backgroundColor = Colors.cyan;
+
   String currentlyHosting = "0";
+
   String arrivingSoon = "0";
+
   String checkingOut = "0";
+
   String allReservations = "0";
+
+  bool hasData = true;
+  Future myHostelDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +132,7 @@ class ManageHostelPage extends StatelessWidget {
                           primary: buttonFontColor
                         ),
                         onPressed: () {},
-                        child: Text("Arriving soon $arrivingSoon"),
+                        child: Text("Arriving soon ($arrivingSoon)"),
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -139,7 +161,7 @@ class ManageHostelPage extends StatelessWidget {
                           primary: buttonFontColor
                         ),
                         onPressed: () {},
-                        child: Text("Checking out $checkingOut"),
+                        child: Text("Checking out ($checkingOut)"),
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -167,7 +189,7 @@ class ManageHostelPage extends StatelessWidget {
                           primary: buttonFontColor
                         ),
                         onPressed: () {},
-                        child: Text("All reservations $allReservations"),
+                        child: Text("All reservations ($allReservations)"),
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -188,7 +210,24 @@ class ManageHostelPage extends StatelessWidget {
                   child: Container
                   (
                     width: 225,
-                    child: Text("You don't have any guests staying with you right now", textAlign: TextAlign.center, style: TextStyle(color: buttonFontColor),)
+                    child: hasData 
+                    ? FutureBuilder
+                    (
+                      future: myHostelDetails,
+                      builder: (context, snapshot) 
+                      {
+                        if(snapshot.data == null)
+                        {
+                          return const Text("loading...", style: TextStyle(fontSize: 18),);
+                        }
+                        else
+                        {
+                          allReservations = snapshot.data.length.toString();
+                          return Text(allReservations);
+                        }
+                      }
+                    )
+                    : Text("You don't have any guests staying with you right now", textAlign: TextAlign.center, style: TextStyle(color: buttonFontColor))
                   )
                 ),
               ),

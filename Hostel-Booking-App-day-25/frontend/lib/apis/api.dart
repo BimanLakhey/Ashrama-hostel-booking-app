@@ -67,6 +67,19 @@ class BookedHostels{
   );
 }
 
+class BookingDetails{
+  final String id, userID, hostelID, roomID, roomType, bookingDate;
+
+  BookingDetails(
+    this.id,
+    this.userID,
+    this.hostelID,
+    this.roomID,
+    this.roomType,
+    this.bookingDate,
+  );
+}
+
 Future getHostels() async
 {
   var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/'));
@@ -92,7 +105,7 @@ Future getHostels() async
 
 Future getNearbyHostels() async
 {
-  var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/?hostelStreet=${loggedUserAddress}'));
+  var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/?hostelStreet=${loggedUserAddress!.toLowerCase()}'));
   var jsonData = json.decode(response.body);
   List<Hostels> hostels = [];
 
@@ -192,14 +205,42 @@ Future getRooms() async
   return rooms;
 }
 
-  // void getRooms() async
-  // {
-  //   var response = await http.get(Uri.parse('${BaseUrl.baseUrl}roomDetails/'));
-  //   var jsonData = json.decode(response.body);
-  //   if(response.statusCode == 200)
-  //   {
-  //     rID = jsonData["id"].toString();
-  //     roomType = jsonData["roomType"];
-  //     roomPrice = jsonData["roomType"];
-  //   }
-  // }
+
+Future getBookingDetails() async
+{
+  var registeredResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'), headers: {'Cookie': '${Cookie.cookieSession}'});
+  var registeredJsonData = json.decode(registeredResponse.body);
+
+  for (var registeredHostel in registeredJsonData)
+  {
+    if(registeredHostel["userID"] == loggedUserID)
+    {
+      var bookingResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}bookedHostels/?hostelID=${registeredHostel["hostelID"]}'), headers: {'Cookie': '${Cookie.cookieSession}'});
+      var bookingJsonData = json.decode(bookingResponse.body);
+      List<BookingDetails> bookingDetails = [];
+
+      for (var h in bookingJsonData)
+      {
+        var hostelResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/${h["hostelID"]}'));
+        var jsonData = json.decode(hostelResponse.body);
+        BookingDetails details = BookingDetails
+        (
+          h["id"].toString(),
+          h["userID"].toString(),
+          h["hostelID"], 
+          h["roomType"], 
+          h["bookingDate"], 
+          h["roomID"], 
+        ); 
+        bookingDetails.add(details);
+      }
+      return bookingDetails;
+    }
+    else
+    {
+      print("no hostels registered yet!");
+    }
+  }
+  
+
+}

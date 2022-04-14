@@ -28,7 +28,6 @@ class Register(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-
 class Login(APIView):
     # get method handler
     serializer_class = UserLoginSerializer
@@ -143,6 +142,7 @@ class BookedHostels(generics.ListCreateAPIView):
 
     filter_fields = (
         'userID',
+        'hostelID',
     )
 
 class SavedHostels(generics.ListCreateAPIView):
@@ -170,17 +170,11 @@ class RegisteredHostels(generics.ListCreateAPIView):
     serializer_class = RegisteredHostelSerializer
     # permission_classes = (partial(CustomPermissionForUser, ['GET', 'HEAD', 'POST']))
 
-
     def get_object(self, pk):
         try:
             return RegisteredHostel.objects.get(pk=pk)
         except RegisteredHostel.DoesNotExist:
             raise Http404
-        
-    # def delete(self, request, pk, format=None):
-    #     savedHostel = self.get_object(pk)
-    #     savedHostel.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
     filter_fields = (
         'userID',
