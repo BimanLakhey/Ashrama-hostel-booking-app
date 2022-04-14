@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/pages/confirmation_page.dart';
 import 'package:hotel_booking_app/pages/enter_number_page.dart';
 import 'package:hotel_booking_app/pages/final_signup_page.dart';
-import 'package:hotel_booking_app/pages/hostel_details_page.dart';
+import 'package:hotel_booking_app/pages/register_hostel_page.dart';
 import 'package:hotel_booking_app/pages/hostel_owner_details_page.dart';
 import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
 import 'package:hotel_booking_app/pages/hostel_room_details.dart';
