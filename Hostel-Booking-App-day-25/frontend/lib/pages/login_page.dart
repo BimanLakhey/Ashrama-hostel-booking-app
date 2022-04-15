@@ -19,6 +19,12 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController userNameControl = TextEditingController();
   TextEditingController passwordControl = TextEditingController();
 
+  
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
 
   void getUserData() async 
   {

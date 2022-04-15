@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import *
 from rest_framework import status, permissions
-from .models import BookedHostel, Hostel, Room, SavedHostel, User, RegisteredHostel
-from .serializers import BookedHostelSerializer, HostelSerializer, RegisteredHostelSerializer, RoomSerializer, SavedHostelSerializer, UpdateHostelSerializer, UpdateUserSerializer, UserSerializer, UserLoginSerializer
+from .models import *
+from .serializers import * 
 from django.http import Http404
 
 # Create your views here.
@@ -89,6 +89,10 @@ class UserDetails(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    filter_fields = (
+        'id',
+    )
+
 class RegisterHostel(generics.ListCreateAPIView):
     queryset = Hostel.objects.all()
     serializer_class = HostelSerializer
@@ -99,6 +103,7 @@ class HostelsDetails(generics.ListAPIView):
 
     filter_fields = (
         'hostelStreet',
+        'hostelCity',
     )
 
 class UpdateHostel(generics.UpdateAPIView):

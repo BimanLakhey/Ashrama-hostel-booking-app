@@ -50,25 +50,39 @@ class _ProfilePageState extends State<ProfilePage>
     //updateUserData();
   }
 
-  // void updateUserData() async
-  // {
-  //    var response = await http.post(Uri.parse(
-  //      '${BaseUrl.baseUrl}/updateUser/${userID.toString()}'), 
-  //      body: {
-  //        'username': username.text, 
-  //        'userFName': userFName.text,
-  //        'userLName': userLName.text,
-  //        'userPassword': userPassword.text,
-  //        'userEmail': userEmail.text,
-  //        'userAddress': userAddress.text,
-  //        'userPhoto':  ProfilePage.imageFile.toString(),
-  //        'userPhone': userPhone.text,
-  //       }
-  //     );
-  //     var jsonData = json.decode(response.body);
-  //     print(jsonData["username"]);
+  @override
+  void dispose() {
+    super.dispose();
+  }
+  
+  void updateUser() async {
+    var userResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateUser/$userID'), body: {'username': username.text, 'userFName': userFName.text, 'userLName': userLName.text, 'userEmail':userEmail.text, 'userAddress': userAddress.text, 'userPhone': userPhone.text});
+    var userJsonData = json.decode(userResponse.body);
     
-  // }
+    if(userResponse.statusCode == 200)
+    {
+      showDialog
+      (
+        context: context,
+        builder: (ctx) => AlertDialog
+        (
+          title: const Text("Success"),
+          content: const Text("User updated!"),
+          actions: <Widget>
+          [
+            FlatButton
+            (
+              onPressed: () 
+              {
+                Navigator.pop(context);
+              },
+              child: Text("ok"),
+            ),
+          ],
+        ),
+      );
+    }
+  }
   
   void getUserData() async {
     var response = await http.post(Uri.parse('${BaseUrl.baseUrl}loginUser/'), body: {'username': usernameHolder, 'userPassword': passwordHolder});
@@ -286,6 +300,10 @@ class _ProfilePageState extends State<ProfilePage>
                         (
                           onPressed: () {
                              saveTextFields();  
+                             if(!isEnabled)
+                             {
+                               updateUser();
+                             }
                             },
                           child: isEnabled
                           ? Text

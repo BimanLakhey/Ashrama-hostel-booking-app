@@ -30,14 +30,29 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
   Color borderColor = Colors.cyan;
   Color fontColor = Colors.white;
   Color backgroundColor = Colors.cyan;
-  Color buttonFontColor = Colors.cyan;
+  Color buttonFontColor = Colors.white;
   Color ratingColor = Colors.white;
   Color dividerColor = Colors.white;
   Color containerColor = Colors.white;
+  Color containerFontColor = Colors.cyan;
+
+  Color borderColorAlt = Colors.cyan;
+  Color fontColorAlt = Colors.black;
+  Color backgroundColorAlt = Colors.white;
+  Color buttonFontColorAlt = Colors.white;
+  Color ratingColorAlt = Colors.white;
+  Color dividerColorAlt = Colors.white;
+  Color containerColorAlt = Colors.cyan;
+  Color buttonColorAlt = Colors.cyan;
+  Color containerFontColorAlt = Colors.black;
+  bool alt = false;
+
+
   String? hID;
   String? uID;
   String? rID;
   String? bookedDate;
+  String? checkingOutDate;
   String? roomType;
   String? roomPrice;
   Future? myRooms;
@@ -49,9 +64,15 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
     getHostelData();
     //updateUserData();
   }
+  
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void getHostelData() async 
   {
-    var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/${hostelID}'));
+    var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/$hostelID'));
     var jsonData = json.decode(response.body);
     
     setState(() {
@@ -74,7 +95,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
     (
       Uri.parse('${BaseUrl.baseUrl}bookedHostels/'), 
       // headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8',},
-      body: {'hostelID': hID, 'userID': uID, 'roomType': roomType, 'bookingDate': bookedDate, 'roomID': rID}
+      body: {'hostelID': hID, 'userID': uID, 'roomType': roomType, 'bookingDate': bookedDate, 'checkingOutDate': checkingOutDate, 'roomID': rID}
     );
     var jsonData = json.decode(response.body);
     if(response.statusCode == 201)
@@ -110,7 +131,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
             centerTitle: true,
             foregroundColor: fontColor
           ),
-          backgroundColor: backgroundColor,
+          backgroundColor: alt? backgroundColorAlt : backgroundColor,
           body: SingleChildScrollView
           (
             child: Column
@@ -152,7 +173,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         child: Text
                         (
                           hostelName.toString(),
-                          style: TextStyle(fontSize:24, fontWeight: FontWeight.bold, color: fontColor)
+                          style: TextStyle(fontSize:24, fontWeight: FontWeight.bold, color: alt? fontColorAlt : fontColor)
                         ),
                       ),
                       RatingBar.builder
@@ -185,8 +206,8 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: 
                     [
-                      Text(hostelCity.toString() + ', ' + hostelStreet.toString(), style: TextStyle(fontSize:15, color: fontColor),),
-                      Text(hostelPhone.toString(), style: TextStyle(fontSize:15, color: fontColor),),
+                      Text(hostelCity.toString() + ', ' + hostelStreet.toString(), style: TextStyle(fontSize:15, color: alt? fontColorAlt : fontColor),),
+                      Text(hostelPhone.toString(), style: TextStyle(fontSize:15, color: alt? fontColorAlt : fontColor),),
                     ]
                   ),
                 ),
@@ -196,7 +217,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                   child: Text
                   (
                     "Total available rooms: ${hostelTotalRooms.toString()}",
-                    style: TextStyle(fontSize:15, color: fontColor),
+                    style: TextStyle(fontSize:15, color: alt? fontColorAlt : fontColor),
                   )
                 ),
                 Padding
@@ -222,15 +243,15 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                               blurRadius: 6,
                             )
                           ],
-                          color: containerColor,
-                          border: Border.all(color: containerColor, width: 2),
+                          color: alt ? buttonColorAlt : buttonFontColor,
+                          border: Border.all(color: alt? buttonColorAlt : buttonFontColor, width: 2),
                           borderRadius: BorderRadius.circular(35)
                         ),
                         child: TextButton.icon
                         (
                           style: TextButton.styleFrom
                           (
-                            primary: buttonFontColor
+                            primary: alt ? buttonFontColorAlt : buttonColorAlt,
                           ),
                           onPressed: () {},
                           icon: const Icon(Icons.details_outlined), 
@@ -251,15 +272,15 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                               blurRadius: 6,
                             )
                           ],
-                          color: containerColor,
-                          border: Border.all(color: containerColor, width: 2),
+                          color: alt ? buttonColorAlt : buttonFontColor,
+                          border: Border.all(color: alt? buttonColorAlt : buttonFontColor, width: 2),
                           borderRadius: BorderRadius.circular(35)
                         ),
                         child: TextButton.icon
                         (
                           style: TextButton.styleFrom
                           (
-                            primary: buttonFontColor
+                            primary: alt ? buttonFontColorAlt : buttonColorAlt,
                           ),
                           onPressed: () {},
                           icon: const Icon(Icons.reviews_outlined), 
@@ -272,7 +293,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                 Padding
                 (
                   padding: const EdgeInsets.fromLTRB(15, 50, 0, 0),
-                  child: Text("Where you will be", style: TextStyle(fontSize: 20, color: fontColor)),
+                  child: Text("Where you will be", style: TextStyle(fontSize: 20, color: alt? fontColorAlt : fontColor)),
                 ),
                 Padding
                 (
@@ -293,7 +314,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         )
                       ],
                       color: containerColor,
-                      border: Border.all(width: 2, color: borderColor),
+                      border: Border.all(width: 2, color: alt ? containerColorAlt : containerColor),
                       borderRadius: const BorderRadius.all
                       (
                         Radius.circular(30)
@@ -307,7 +328,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         hostelCity.toString() + ", " + hostelStreet.toString(), 
                         style: TextStyle
                         (
-                          color: buttonFontColor,
+                          color: alt ? containerFontColorAlt : containerFontColor,
                           fontSize: 25
                         )
                       )
@@ -318,7 +339,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                 Padding
                 (
                   padding: const EdgeInsets.fromLTRB(15, 40, 0, 0),
-                  child: Text("What this place offers", style: TextStyle(fontSize: 20, color: fontColor)),
+                  child: Text("What this place offers", style: TextStyle(fontSize: 20, color: alt? fontColorAlt : fontColor)),
                 ),
                 Padding
                 (
@@ -338,8 +359,8 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         )
                       ],
                       color: containerColor,
-                      border: Border.all(color: borderColor, width: 2),
-                      borderRadius: BorderRadius.all(Radius.circular(30))
+                      border: Border.all(width: 2, color: alt ? containerColorAlt : containerColor),
+                      borderRadius: const BorderRadius.all(Radius.circular(30))
                     ),
                     width: 400,
                     height: 150,
@@ -353,9 +374,9 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                       {
                         return TextButton.icon
                         (
-                          icon: Icon(Icons.tiktok, color: buttonFontColor,), 
+                          icon: Icon(Icons.tiktok, color: alt ? containerFontColorAlt : containerFontColor), 
                           onPressed: () {  }, 
-                          label: Text("Amenity", style: TextStyle(color: buttonFontColor),),
+                          label: Text("Amenity", style: TextStyle(color: alt ? containerFontColorAlt: containerFontColor),),
                         );
                       }),
                     ),
@@ -364,7 +385,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                 Padding
                 (
                   padding: const EdgeInsets.fromLTRB(15, 40, 0, 0),
-                  child: Text("Choose your preferred room", style: TextStyle(fontSize: 20, color: fontColor)),
+                  child: Text("Choose your preferred room", style: TextStyle(fontSize: 20, color: alt? fontColorAlt : fontColor)),
                 ),
                 Padding
                 (
@@ -384,8 +405,8 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         )
                       ],
                       color: containerColor,
-                      border: Border.all(color: borderColor, width: 2),
-                      borderRadius: BorderRadius.all(Radius.circular(30))
+                      border: Border.all(width: 2, color: alt ? containerColorAlt : containerColor),
+                      borderRadius: const BorderRadius.all(Radius.circular(30))
                     ),
                     width: 400,
                     height: 280,
@@ -400,7 +421,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                           {
                             if(snapshot.data == null)
                             {
-                              return Center(child: Text("loading...", style: TextStyle(fontSize: 18),));
+                              return const Center(child: CircularProgressIndicator());
                             }
                             else
                             {
@@ -433,10 +454,10 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                             (          
                                               width: 195,
                                               height: 225,      
-                                              margin: EdgeInsets.all(25),
+                                              margin: const EdgeInsets.all(25),
                                               decoration: BoxDecoration
                                               (
-                                                color: backgroundColor,
+                                                color: containerColorAlt,
                                                 boxShadow: 
                                                 const 
                                                 [
@@ -447,7 +468,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                                     blurRadius: 6,
                                                   )
                                                 ],
-                                                border: Border.all(color: backgroundColor, width: 1),
+                                                border: Border.all(color: alt? borderColorAlt: borderColor, width: 1),
                                                 borderRadius: BorderRadius.circular(15),
                                               ),        
                                               child: Column
@@ -462,7 +483,6 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                                     ( 
                                                       decoration: BoxDecoration
                                                       (
-                                                        
                                                         border: Border.all(color: backgroundColor),
                                                         borderRadius: const BorderRadius.only
                                                         (
@@ -486,7 +506,6 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                                             )
                                                           ],
                                                           color: containerColor,
-                                                          
                                                           borderRadius: const BorderRadius.only
                                                           (
                                                             topLeft: Radius.circular(10),
@@ -501,7 +520,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                                           child: Text
                                                           (
                                                             snapshot.data[i].roomType, 
-                                                            style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                                                            style: TextStyle(color: buttonColorAlt, fontSize: 18, fontWeight: FontWeight.bold)
                                                           ),
                                                         ),
                                                       ),
@@ -543,7 +562,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                                         "Select",
                                                         style: TextStyle
                                                         (
-                                                          color: buttonFontColor
+                                                          color: buttonColorAlt
                                                         ),
                                                       ),
                                                       style: ElevatedButton.styleFrom
@@ -573,7 +592,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                 Padding
                 (
                   padding: const EdgeInsets.fromLTRB(15, 40, 0, 0),
-                  child: Text("Choose your preferred date", style: TextStyle(fontSize: 20, color: fontColor)),
+                  child: Text("Choose your preferred date", style: TextStyle(fontSize: 20, color: alt? fontColorAlt : fontColor)),
                 ),
                 Padding
                 (
@@ -592,7 +611,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         )
                       ],
                       color: containerColor,
-                      border: Border.all(color: borderColor, width: 2),
+                      border: Border.all(color: alt? borderColorAlt : borderColor, width: 2),
                       borderRadius: const BorderRadius.all(Radius.circular(30))
                     ),
                     width: 400,
@@ -612,19 +631,19 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                               Text
                               (
                                 "The date of booking:", 
-                                style: TextStyle(color: buttonFontColor, fontSize: 18)
+                                style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18)
                               ),
                               bookedDate != null 
                               ? Text
                               (
                                 "$bookedDate", 
-                                style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                                style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18, fontWeight: FontWeight.bold)
                               )
                               :
                               Text
                               (
                                 "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}", 
-                                style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                                style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18, fontWeight: FontWeight.bold)
                               )
                             ]
                           ),
@@ -644,6 +663,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                   onConfirm: (date) 
                                   {
                                     bookedDate ="${date.year}-${date.month}-${date.day}".toString();
+                                    checkingOutDate = "${date.year}-${date.month + 1}-${date.day}".toString();
                                     setState(() {
                                     });
                                   }, 
@@ -673,7 +693,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                 Padding
                 (
                   padding: const EdgeInsets.fromLTRB(15, 40, 0, 0),
-                  child: Text("Book now and pay at the hostel", style: TextStyle(fontSize: 20, color: fontColor)),
+                  child: Text("Book now and pay at the hostel", style: TextStyle(fontSize: 20, color: alt? fontColorAlt : fontColor)),
                 ),
                 Padding
                 (
@@ -692,7 +712,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                         )
                       ],
                       color: containerColor,
-                      border: Border.all(color: borderColor, width: 2),
+                      border: Border.all(color: alt? borderColorAlt : borderColor, width: 2),
                       borderRadius: const BorderRadius.all(Radius.circular(30))
                     ),
                     width: 400,
@@ -712,19 +732,19 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                               Text
                               (
                                 "What you will pay per month:", 
-                                style: TextStyle(color: buttonFontColor, fontSize: 18)
+                                style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18)
                               ),
                               roomPrice != null 
                               ? Text
                               (
                                 "Rs. $roomPrice", 
-                                style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                                style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18, fontWeight: FontWeight.bold)
                               )
                               :
                               Text
                               (
                                 "Rs. 0", 
-                                style: TextStyle(color: buttonFontColor, fontSize: 18, fontWeight: FontWeight.bold)
+                                style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18, fontWeight: FontWeight.bold)
                               )
                             ]
                           ),

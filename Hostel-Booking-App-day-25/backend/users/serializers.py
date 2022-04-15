@@ -1,7 +1,7 @@
 from rest_framework import serializers
 import datetime
 from rest_framework.validators import UniqueValidator
-from .models import BookedHostel, Hostel, RegisteredHostel, Room, SavedHostel, User
+from .models import *
 from django.core.exceptions import ValidationError
 
 baseURL = "http://192.168.0.200:8000";
@@ -25,13 +25,23 @@ class UserSerializer(serializers.ModelSerializer):
         required=True)
     userPhone = serializers.CharField(
         required=True)
-    totalHostels = serializers.CharField(
-        required=True)
-    ownerLicense = serializers.CharField(max_length=50)
+
+    def validate_email(self, value):
+        user = self.context['request'].user
+        if User.objects.exclude(pk=user.pk).filter(userEmail=value).exists():
+            raise serializers.ValidationError({"userEmail": "This email is already in use."})
+        return value
+
+    def validate_username(self, value):
+        user = self.context['request'].user
+        if User.objects.exclude(pk=user.pk).filter(username=value).exists():
+            raise serializers.ValidationError({"username": "This username is already in use."})
+        return value
 
     class Meta:
         model = User
         fields = (
+            'id',
             'username',
             'userFName',
             'userLName',
@@ -39,8 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
             'userEmail',
             'userAddress',
             'userPhone',
-            'totalHostels',
-            'ownerLicense',
+            'userPhoto',
         )        
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -87,34 +96,21 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'username', 
             'userFName', 
             'userLName', 
-            'userPassword', 
+            # 'userPassword', 
             'userEmail', 
             'userAddress',
-            'userPhoto', 
+            # 'userPhoto', 
             'userPhone', 
         )
         
-
-    def validate_email(self, value):
-        user = self.context['request'].user
-        if User.objects.exclude(pk=user.pk).filter(userEmail=value).exists():
-            raise serializers.ValidationError({"userEmail": "This email is already in use."})
-        return value
-
-    def validate_username(self, value):
-        user = self.context['request'].user
-        if User.objects.exclude(pk=user.pk).filter(username=value).exists():
-            raise serializers.ValidationError({"username": "This username is already in use."})
-        return value
-
     def update(self, instance, validated_data):
         instance.username = validated_data['username']
         instance.userFName = validated_data['userFName']
         instance.userLName = validated_data['userLName']
-        instance.userPassword = validated_data['userPassword']
+        # instance.userPassword = validated_data['userPassword']
         instance.userEmail = validated_data['userEmail']
         instance.userAddress = validated_data['userAddress']
-        instance.userPhoto = validated_data['userPhoto']
+        # instance.userPhoto = validated_data['userPhoto']
         instance.userPhone = validated_data['userPhone']
         instance.save()
 
@@ -145,7 +141,6 @@ class HostelSerializer(serializers.ModelSerializer):
         instance.save()
 
 class UpdateHostelSerializer(serializers.ModelSerializer):
-    hostelName = serializers.CharField(required=True)
 
     class Meta:
         model = Hostel
@@ -156,8 +151,7 @@ class UpdateHostelSerializer(serializers.ModelSerializer):
             'hostelType',
             'hostelPhone',
             'hostelTotalRooms',
-            'hostelPhoto',
-            'hostelOwnerID',
+            # 'hostelPhoto',
         )
         
     def update(self, instance, validated_data):
@@ -167,8 +161,7 @@ class UpdateHostelSerializer(serializers.ModelSerializer):
         instance.hostelType = validated_data['hostelType']
         instance.hostelPhone = validated_data['hostelPhone']
         instance.hostelTotalRooms = validated_data['hostelTotalRooms']
-        instance.hostelPhoto = validated_data['hostelPhoto']
-        instance.hostelOwnerID = validated_data['hostelOwnerID']
+        # instance.hostelPhoto = validated_data['hostelPhoto']
         instance.save()
 
         return instance
@@ -195,6 +188,7 @@ class BookedHostelSerializer(serializers.ModelSerializer):
     userID = serializers.CharField()
     hostelID = serializers.CharField()
     bookingDate = serializers.DateField()
+    checkingOutDate = serializers.DateField()
     roomType = serializers.CharField()
     roomID = serializers.CharField()
     
@@ -207,6 +201,7 @@ class BookedHostelSerializer(serializers.ModelSerializer):
             'roomType',
             'bookingDate',
             'roomID',
+            'checkingOutDate',
         ]
         
 class SavedHostelSerializer(serializers.ModelSerializer):

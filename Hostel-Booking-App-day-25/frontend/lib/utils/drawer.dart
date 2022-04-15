@@ -36,6 +36,11 @@ class _DrawerPageState extends State<DrawerPage>
     super.initState();
     getUserData();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
   
   void getUserData() async {
     var response = await http.post(Uri.parse( BaseUrl.baseUrl + 'loginUser/'), body: {'username': usernameHolder, 'userPassword': passwordHolder});
@@ -130,8 +135,9 @@ class _DrawerPageState extends State<DrawerPage>
               leading: Icon(Icons.logout_outlined),
               title: Text("Register your hostel", style: TextStyle(fontSize: 16))
             ),
-            const ListTile
+            ListTile
             (
+              onTap: () => Navigator.pushNamed(context, MyRoutes.learnHostingRoute),
               horizontalTitleGap: 1,
               dense: true,
               leading: Icon(Icons.read_more_outlined),
@@ -159,8 +165,9 @@ class _DrawerPageState extends State<DrawerPage>
                 style: TextStyle(fontSize: 18, color: Colors.black54),
               ),
             ),
-            const ListTile
+            ListTile
             (
+              onTap: () => Navigator.pushNamed(context, MyRoutes.howAshramaWorksRoute),
               horizontalTitleGap: 1,
               dense: true,
               leading: Icon(CupertinoIcons.info),
@@ -179,34 +186,6 @@ class _DrawerPageState extends State<DrawerPage>
               dense: true,
               leading: Icon(CupertinoIcons.pen),
               title: Text("Give us feedback", style: TextStyle(fontSize: 16))
-            ),
-            const Padding
-            (
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child:  Divider(color: Colors.black54, thickness: 1)
-            ),
-            const Padding
-            (
-              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
-              child: Text
-              (
-                "Legal",
-                style: TextStyle(fontSize: 18, color: Colors.black54),
-              ),
-            ),
-            const ListTile
-            (
-              horizontalTitleGap: 1,
-              dense: true,
-              leading: Icon(CupertinoIcons.text_badge_checkmark),
-              title: Text("Terms of service", style: TextStyle(fontSize: 16))
-            ),
-            const ListTile
-            (
-              horizontalTitleGap: 1,
-              dense: true,
-              leading: Icon(Icons.settings),
-              title: Text("Privacy settings", style: TextStyle(fontSize: 16))
             ),
             const Padding
             (

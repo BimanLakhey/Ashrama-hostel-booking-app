@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:hotel_booking_app/pages/manage_hostel_page.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:http/http.dart' as http;
 
@@ -68,7 +69,7 @@ class BookedHostels{
 }
 
 class BookingDetails{
-  final String id, userID, hostelID, roomID, roomType, bookingDate;
+  final String id, userID, hostelID, roomID, roomType, bookingDate, checkingOutDate, userFName, userLName, userAddress, userPhone, userPhoto, userEmail;
 
   BookingDetails(
     this.id,
@@ -77,6 +78,13 @@ class BookingDetails{
     this.roomID,
     this.roomType,
     this.bookingDate,
+    this.checkingOutDate,
+    this.userFName,
+    this.userLName,
+    this.userAddress,
+    this.userPhone,
+    this.userPhoto,
+    this.userEmail,
   );
 }
 
@@ -105,7 +113,7 @@ Future getHostels() async
 
 Future getNearbyHostels() async
 {
-  var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/?hostelStreet=${loggedUserAddress!.toLowerCase()}'));
+  var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/?hostelCity=${loggedUserAddress!.toLowerCase()}'));
   var jsonData = json.decode(response.body);
   List<Hostels> hostels = [];
 
@@ -215,25 +223,37 @@ Future getBookingDetails() async
   {
     if(registeredHostel["userID"] == loggedUserID)
     {
+      ManageHostelPage.hostelID = registeredHostel["hostelID"];
       var bookingResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}bookedHostels/?hostelID=${registeredHostel["hostelID"]}'), headers: {'Cookie': '${Cookie.cookieSession}'});
       var bookingJsonData = json.decode(bookingResponse.body);
+
+      var userResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}userDetails/?id=${registeredHostel["userID"]}'), headers: {'Cookie': '${Cookie.cookieSession}'});
+      var userJsonData = json.decode(userResponse.body);
       List<BookingDetails> bookingDetails = [];
 
       for (var h in bookingJsonData)
       {
-        var hostelResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/${h["hostelID"]}'));
-        var jsonData = json.decode(hostelResponse.body);
-        BookingDetails details = BookingDetails
-        (
-          h["id"].toString(),
-          h["userID"].toString(),
-          h["hostelID"], 
-          h["roomType"], 
-          h["bookingDate"], 
-          h["roomID"], 
-        ); 
-        bookingDetails.add(details);
-      }
+        for(var u in userJsonData)
+        {
+          BookingDetails details = BookingDetails
+          (
+            h["id"].toString(),
+            h["userID"].toString(),
+            h["hostelID"], 
+            h["roomID"],
+            h["roomType"], 
+            h["bookingDate"], 
+            h["checkingOutDate"], 
+            h["userFName"] = u["userFName"], 
+            h["userLName"] = u["userLName"], 
+            h["userAddress"] = u["userAddress"], 
+            h["userPhone"] = u["userPhone"],  
+            h["userPhoto"] = u["userPhoto"], 
+            h["userEmail"] = u["userEmail"],  
+          ); 
+          bookingDetails.add(details);
+        }
+      } 
       return bookingDetails;
     }
     else

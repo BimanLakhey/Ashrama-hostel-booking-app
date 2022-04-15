@@ -30,8 +30,11 @@ class _HomePageState extends State<HomePage>
     myHostels = getHostels();
     super.initState();
   }
-  // HostelModel hostelModel = HostelModel();
-
+ 
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   void saveHostel() async 
   {
@@ -200,12 +203,11 @@ class _HomePageState extends State<HomePage>
                 }
                 else
                 {
-                  print(snapshot.data.length);
                   return Expanded
                   (
                     child: ListView.builder
                     (
-                      physics: BouncingScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, i)

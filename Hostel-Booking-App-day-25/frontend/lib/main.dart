@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/pages/confirmation_page.dart';
 import 'package:hotel_booking_app/pages/enter_number_page.dart';
 import 'package:hotel_booking_app/pages/final_signup_page.dart';
+import 'package:hotel_booking_app/pages/how_ashrama_works_page.dart';
+import 'package:hotel_booking_app/pages/learn_hosting_page.dart';
 import 'package:hotel_booking_app/pages/register_hostel_page.dart';
 import 'package:hotel_booking_app/pages/hostel_owner_details_page.dart';
 import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
@@ -46,8 +48,9 @@ class MyApp extends StatelessWidget {
           (
             minimumSize: const Size(175, 40),
             side: const BorderSide(width: 2, color: Colors.cyan), 
-            shape: RoundedRectangleBorder( //to set border radius to button
-                borderRadius: BorderRadius.circular(30)
+            shape: RoundedRectangleBorder
+            (
+              borderRadius: BorderRadius.circular(30)
             ),
           ),
         ),
@@ -90,6 +93,8 @@ class MyApp extends StatelessWidget {
         MyRoutes.hostelRoomDetailsRoute: (context) => HostelRoomDetailsPage(),
         MyRoutes.hostelProfileRoute: (context) => HostelProfilePage(),
         MyRoutes.manageHostelRoute: (context) => ManageHostelPage(),
+        MyRoutes.learnHostingRoute: (context) => LearnHostingPage(),
+        MyRoutes.howAshramaWorksRoute: (context) => HowAshramaWorksPage(),
       }
     );
   }

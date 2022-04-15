@@ -14,4 +14,6 @@ class MyRoutes
   static String hostelRoomDetailsRoute = "/hostelRoomDetails";
   static String hostelProfileRoute = "/hostelProfile";
   static String manageHostelRoute = "/manageHostel";
+  static String learnHostingRoute = "/learnHosting";
+  static String howAshramaWorksRoute = "/howAshramaWorks";
 }

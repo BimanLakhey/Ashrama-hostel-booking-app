@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:http/http.dart' as http;
@@ -27,6 +28,7 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
   TextEditingController hostelTypeControl = TextEditingController();
   TextEditingController hostelPhoneControl = TextEditingController();
   TextEditingController hostelTotalRooms = TextEditingController();
+  var registerJsonData;
 
 
 
@@ -36,6 +38,12 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
     _currentOption = _dropDownMenuItems[0].value!;
     super.initState();
   }
+  
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   List<DropdownMenuItem<String>> getDropDownMenuItems() {
     List<DropdownMenuItem<String>> items = [];
     for (String option in _options) 
@@ -52,11 +60,20 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
     return items;
   }
 
-  void registerHostel() async {
-    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerHostel/'), body: {'hostelName': hostelNameControl.text, 'hostelCity': hostelCityControl.text, 'hostelStreet': hostelStreetControl.text, 'hostelType':selectedHostelType, 'hostelPhone': hostelPhoneControl.text, 'hostelTotalRooms': hostelTotalRooms.text});
+  void registeredHostels() async
+  {
+    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'), body: {'hostelID': registerJsonData["id"].toString(), 'userID': loggedUserID});
     var jsonData = json.decode(response.body);
-    if(response.statusCode == 201)
+    print("registered");
+  }
+
+  void registerHostel() async {
+    var registerResponse = await http.post(Uri.parse('${BaseUrl.baseUrl}registerHostel/'), body: {'hostelName': hostelNameControl.text.toLowerCase(), 'hostelCity': hostelCityControl.text.toLowerCase(), 'hostelStreet': hostelStreetControl.text.toLowerCase(), 'hostelType':selectedHostelType.toString().toLowerCase(), 'hostelPhone': hostelPhoneControl.text.toLowerCase(), 'hostelTotalRooms': hostelTotalRooms.text.toLowerCase()});
+    registerJsonData = json.decode(registerResponse.body);
+    
+    if(registerResponse.statusCode == 201)
     {
+      registeredHostels();
       showDialog
       (
         context: context,
@@ -71,6 +88,29 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
               onPressed: () 
               {
                 Navigator.pushNamed(context, MyRoutes.manageHostelRoute);
+              },
+              child: Text("ok"),
+            ),
+          ],
+        ),
+      );
+    }
+    else
+    {
+      showDialog
+      (
+        context: context,
+        builder: (ctx) => AlertDialog
+        (
+          title: const Text("Error"),
+          content: const Text("Hostel has already been registered!"),
+          actions: <Widget>
+          [
+            FlatButton
+            (
+              onPressed: () 
+              {
+                Navigator.pop(context);
               },
               child: Text("ok"),
             ),

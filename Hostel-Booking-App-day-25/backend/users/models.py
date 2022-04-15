@@ -39,6 +39,7 @@ class BookedHostel(models.Model):
     hostelID = models.CharField(max_length=50)
     userID = models.CharField(max_length=50)
     bookingDate = models.DateField()
+    checkingOutDate = models.DateField()
     roomID = models.CharField(max_length=50)
     roomType = models.CharField(max_length=50)
 

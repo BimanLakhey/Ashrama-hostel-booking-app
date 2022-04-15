@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -15,6 +14,12 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   bool emailValid = true;
   bool passwordsValid = true;
 
@@ -40,11 +45,12 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController confirmPasswordControl = TextEditingController();
 
   void signUpUser() async {
-    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': userNameControl.text, 'userFName': firstNameControl.text, 'userLName': lastNameControl.text, 'userEmail': emailControl.text, 'userPhone': phoneNumControl.text, 'userAddress': addressControl.text, 'totalHostels': hostelsControl.text, 'ownerLicense': licenseControl.text, 'userPassword': passwordControl.text});
+    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': userNameControl.text.toLowerCase(), 'userFName': firstNameControl.text.toLowerCase(), 'userLName': lastNameControl.text.toLowerCase(), 'userEmail': emailControl.text.toLowerCase(), 'userPhone': phoneNumControl.text.toLowerCase(), 'userAddress': addressControl.text.toLowerCase(), 'totalHostels': hostelsControl.text.toLowerCase(), 'ownerLicense': licenseControl.text.toLowerCase(), 'userPassword': passwordControl.text});
     var jsonData = json.decode(response.body);
     if(response.statusCode == 201)
     {
-      showDialog(
+      showDialog
+      (
         context: context,
         builder: (ctx) => AlertDialog
         (
@@ -200,18 +206,6 @@ class _SignupPageState extends State<SignupPage> {
       addressNotEmpty = false;
     }
   }
-
-  // void areTextFieldsEmpty()
-  // {
-  //   if(userNameControl.text.isEmpty || passwordControl.text.isEmpty || firstNameControl.text.isEmpty || lastNameControl.text.isEmpty || emailControl.text.isEmpty || userNameControl.text.isEmpty || passwordControl.text.isEmpty || confirmPasswordControl.text.isEmpty || hostelsControl.text.isEmpty || licenseControl.text.isEmpty || addressControl.text.isEmpty)
-  //   {
-  //     textFieldsEmpty = true;
-  //   }
-  //   else
-  //   {
-  //     textFieldsEmpty = false;
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
