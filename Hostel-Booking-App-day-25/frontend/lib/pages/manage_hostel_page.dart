@@ -98,13 +98,21 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
     }
     catch(e)
     {
-      ScaffoldMessenger.of(context).showSnackBar
-      (
-        const SnackBar
+      if(hasRegisteredHostel == false)
+      {
+
+      }
+      else
+      {
+        ScaffoldMessenger.of(context).showSnackBar
         (
-          content: Text('Not connected to the internet!'),
-        )
-      );
+          const SnackBar
+          (
+            content: Text('Not connected to the internet!'),
+          )
+        );
+      }
+      
     }
     
   }
@@ -158,7 +166,34 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
   {
     return Scaffold
     (
-      body: dataLoaded == false
+      body: hasRegisteredHostel == false
+      ? Center
+      (
+        child: SizedBox
+        (
+          height: 150,
+          child: Column
+          (
+            children: 
+            [
+              const Text("You haven't registered a hostel yet!", style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 25,),
+              ElevatedButton
+              (
+                style: ElevatedButton.styleFrom
+                (
+                  primary: alt? buttonColorAlt : buttonColor
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, MyRoutes.registerHostel);
+                },
+                child: Text("Register hostel", style: TextStyle(color: Colors.white),)
+              )
+            ],
+          ),
+        ),
+      ) 
+      : dataLoaded == false
       ? Center(child: CircularProgressIndicator( backgroundColor: alt? backgroundColorAlt : backgroundColor))
       : Center
       (
@@ -171,7 +206,7 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
               icon: const Icon(CupertinoIcons.arrow_left),
               onPressed: () => Navigator.pushNamed(context, MyRoutes.homeRoute),
             ),
-            title: const Text("Your hostels"),
+            title: const Text("Your hostel"),
           ), 
           backgroundColor: alt ? backgroundColorAlt : backgroundColor,
           body: SingleChildScrollView

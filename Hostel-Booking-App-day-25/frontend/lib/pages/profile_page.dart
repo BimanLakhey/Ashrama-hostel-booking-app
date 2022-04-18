@@ -283,7 +283,7 @@ class _ProfilePageState extends State<ProfilePage>
                           controller: userEmail,
                           decoration: InputDecoration
                           (
-                            enabled: isEnabled,
+                            enabled: false,
                             hintText: "Enter your email",
                             labelText: "Email",
                           ),
@@ -322,13 +322,14 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                         ElevatedButton
                         (
-                          onPressed: () {
-                             saveTextFields();  
-                             if(!isEnabled)
-                             {
-                               updateUser();
-                             }
-                            },
+                          onPressed: () 
+                          {
+                            saveTextFields();  
+                            if(!isEnabled)
+                            {
+                              updateUser();
+                            }
+                          },
                           child: isEnabled
                           ? Text
                           (

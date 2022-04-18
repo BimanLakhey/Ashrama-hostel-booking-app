@@ -40,21 +40,11 @@ class _SavedPageState extends State<SavedPage>
       Uri.parse('${BaseUrl.baseUrl}savedHostels/$id'), 
     );
     var jsonData = json.decode(response.body);
-    if(response.statusCode == 204)
-    {
-      print("deleted!");
-    }
-    else
-    {
-      print("failed!");
-    }
   }
 
 
   @override
   Widget build(BuildContext context) {
-    // List<Hostels> hostelDetails = getHostels();
-
     return WillPopScope
     (
       onWillPop: () async => false,
@@ -86,7 +76,47 @@ class _SavedPageState extends State<SavedPage>
                 {
                   return Expanded
                   (
-                    child: ListView.builder
+                    child: noSaved == true 
+                    ? Container
+                    (
+                      height: 800,
+                      alignment: Alignment.center,
+                      child: SingleChildScrollView
+                      (
+                        child: Column
+                        (
+                          children:
+                          [
+                            const Text
+                            (
+                              "Find your favourite hostels now",
+                              style: TextStyle
+                              (
+                                fontSize: 20
+                              ),
+                            ),
+                            const SizedBox
+                            (
+                              height: 20,
+                            ),
+                            ElevatedButton
+                            (
+                              onPressed: () => showSearch(context: context, delegate: Search()),
+                              child: const Text
+                              (
+                                "Start searching", 
+                                style: TextStyle
+                                (
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              )
+                            )
+                          ],
+                        ),
+                      ),   
+                    )
+                    : ListView.builder
                     (
                       scrollDirection: Axis.vertical,
                       physics: BouncingScrollPhysics(),
@@ -95,49 +125,7 @@ class _SavedPageState extends State<SavedPage>
                       {
                         return SingleChildScrollView
                         (       
-                          child: !snapshot.hasData
-                          ? 
-                          Container
-                          (
-                            height: 800,
-                            alignment: Alignment.center,
-                            child: SingleChildScrollView
-                            (
-                              child: Column
-                              (
-                                children:
-                                [
-                                  const Text
-                                  (
-                                    "Find your favourite hostels now",
-                                    style: TextStyle
-                                    (
-                                      fontSize: 20                  
-                                    ),
-                                  ),
-                                  const SizedBox
-                                  (
-                                    height: 20,
-                                  ),
-                                  ElevatedButton
-                                  (
-                                    onPressed: () => showSearch(context: context, delegate: Search()),
-                                    child: const Text
-                                    (
-                                      "Browse hostels", 
-                                      style: TextStyle
-                                      (
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold
-                                      ),
-                                    )
-                                  )
-                                ],
-                              ),
-                            ),   
-                          )
-                          :
-                          Column
+                          child: Column
                           (
                             children: 
                             [

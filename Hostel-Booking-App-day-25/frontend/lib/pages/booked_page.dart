@@ -41,14 +41,6 @@ class _BookedPageState extends State<BookedPage>
       Uri.parse('${BaseUrl.baseUrl}bookedHostels/$id'), 
     );
     var jsonData = json.decode(response.body);
-    // if(response.statusCode == 204)
-    // {
-    //   print("deleted!");
-    // }
-    // else
-    // {
-    //   print("failed!");
-    // }
   }
 
 
@@ -85,7 +77,52 @@ class _BookedPageState extends State<BookedPage>
                 {
                   return Expanded
                   (
-                    child: ListView.builder
+                    child: noBookings == true
+                    ? Container
+                    (
+                      height: 800,
+                      alignment: Alignment.center,
+                      child: SingleChildScrollView
+                      (
+                        child: Column
+                        (
+                          children:
+                          [
+                            const SizedBox
+                            (
+                              width: 275,
+                              child: Text
+                              (
+                                "Browse through our thousands of hostels",
+                                textAlign: TextAlign.center,
+                                style: TextStyle
+                                (
+                                  fontSize: 20
+                                ),
+                              ),
+                            ),
+                            const SizedBox
+                            (
+                              height: 20,
+                            ),
+                            ElevatedButton
+                            (
+                              onPressed: () => showSearch(context: context, delegate: Search()),
+                              child: const Text
+                              (
+                                "Browse hostels", 
+                                style: TextStyle
+                                (
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              )
+                            )
+                          ],
+                        ),
+                      ),   
+                    )
+                    : ListView.builder
                     (
                       scrollDirection: Axis.vertical,
                       physics: BouncingScrollPhysics(),
@@ -94,49 +131,7 @@ class _BookedPageState extends State<BookedPage>
                       {
                         return SingleChildScrollView
                         (       
-                          child: snapshot.data.length == 0
-                          ? 
-                          Container
-                          (
-                            height: 800,
-                            alignment: Alignment.center,
-                            child: SingleChildScrollView
-                            (
-                              child: Column
-                              (
-                                children:
-                                [
-                                  const Text
-                                  (
-                                    "Find your favourite hostels now",
-                                    style: TextStyle
-                                    (
-                                      fontSize: 20                  
-                                    ),
-                                  ),
-                                  const SizedBox
-                                  (
-                                    height: 20,
-                                  ),
-                                  ElevatedButton
-                                  (
-                                    onPressed: () => showSearch(context: context, delegate: Search()),
-                                    child: const Text
-                                    (
-                                      "Browse hostels", 
-                                      style: TextStyle
-                                      (
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold
-                                      ),
-                                    )
-                                  )
-                                ],
-                              ),
-                            ),   
-                          )
-                          :
-                          Column
+                          child: Column
                           (
                             children: 
                             [

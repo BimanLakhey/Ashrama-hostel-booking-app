@@ -138,7 +138,7 @@ class _DrawerPageState extends State<DrawerPage>
             ),
             ListTile
             (
-              onTap: () => Navigator.pushNamed(context, MyRoutes.hostelDetailsRoute),
+              onTap: () => Navigator.pushNamed(context, MyRoutes.registerHostel),
               horizontalTitleGap: 1,
               dense: true,
               leading: Icon(Icons.logout_outlined),
@@ -190,8 +190,9 @@ class _DrawerPageState extends State<DrawerPage>
               leading: Icon(Icons.question_answer_outlined),
               title: Text("Customer care", style: TextStyle(fontSize: 16))
             ),
-            const ListTile
+            ListTile
             (
+              onTap: () => Navigator.pushNamed(context, MyRoutes.feedbackRoute),
               horizontalTitleGap: 1,
               dense: true,
               leading: Icon(CupertinoIcons.pen),

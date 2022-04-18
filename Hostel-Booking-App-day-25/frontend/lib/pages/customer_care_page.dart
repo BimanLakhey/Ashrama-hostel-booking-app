@@ -21,7 +21,6 @@ class CustomerCarePage extends StatefulWidget {
 class _CustomerCarePageState extends State<CustomerCarePage> {
   List<String> attachments = [];
 
-  bool isHTML = false;
   bool subjectNotEmpty = true;
   bool messageNotEmpty = true;
 
@@ -34,8 +33,6 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
     _recipientController.dispose();
     super.dispose();
   }
-
-
 
   UserModel userModel = UserModel();
 
@@ -110,30 +107,7 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
           content: Text('Not connected to the internet!'),
         )
       );
-    }
-   
-  }
-
-  void sendUserMessage() async
-  {
-    try
-    {
-      var response = await http.get(Uri.parse('${BaseUrl.baseUrl}userProfile/$loggedUserID'));
-      var jsonData = json.decode(response.body);
-      print("message sent");
-
-    }
-    catch(e)
-    {
-      ScaffoldMessenger.of(context).showSnackBar
-      (
-        const SnackBar
-        (
-          content: Text('Not connected to the internet!'),
-        )
-      );
-    }
-
+    } 
   }
 
   void isSubjectNotEmpty()

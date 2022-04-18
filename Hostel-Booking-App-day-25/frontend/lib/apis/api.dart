@@ -10,6 +10,9 @@ String? loggedUserFName;
 String? loggedUserLName;
 bool loginValid = false;
 bool userSignedUp = false;
+bool hasRegisteredHostel = false;
+bool noBookings = false;
+bool noSaved = false;
 
 class Hostels{
   final String id, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelTotalRooms, hostelPhoto;
@@ -178,8 +181,17 @@ Future getSavedHostels() async
       ); 
       savedHostels.add(details);
     }
+    if(savedHostels.isEmpty)
+    {
+      noSaved = true;
+    }
+    else
+    {
+      noSaved = false;
+    }
     return savedHostels;
   }
+  
   catch(e)
   {
     print("no internet");
@@ -217,6 +229,14 @@ Future getBookedHostels() async
         h["hostelPhoto"] = hostelJsonData["hostelPhoto"], 
       ); 
       bookedHostels.add(details);
+    }
+    if(bookedHostels.isEmpty)
+    {
+      noBookings = true;
+    }
+    else
+    {
+      noBookings = false;
     }
     return bookedHostels;
   }
@@ -257,8 +277,6 @@ Future getBookingDetails() async
 {
   try
   {
-
-
     var registeredResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'), headers: {'Cookie': '${Cookie.cookieSession}'});
     var registeredJsonData = json.decode(registeredResponse.body);
 
@@ -266,6 +284,7 @@ Future getBookingDetails() async
     {
       if(registeredHostel["userID"] == loggedUserID)
       {
+        hasRegisteredHostel = true;
         ManageHostelPage.hostelID = registeredHostel["hostelID"];
         var bookingResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}bookedHostels/?hostelID=${registeredHostel["hostelID"]}'), headers: {'Cookie': '${Cookie.cookieSession}'});
         var bookingJsonData = json.decode(bookingResponse.body);
@@ -301,7 +320,7 @@ Future getBookingDetails() async
       }
       else
       {
-        print("no hostels registered yet!");
+        hasRegisteredHostel = false;
       }
     }
   }

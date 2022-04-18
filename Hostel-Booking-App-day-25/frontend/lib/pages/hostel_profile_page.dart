@@ -789,7 +789,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                             child: ElevatedButton
                             (
                               onPressed: bookingConfirmed 
-                              ? null 
+                              ? () {}
                               : () 
                               { 
                                 if(roomPrice != null && bookedDate != null)
@@ -836,14 +836,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                   color: fontColor
                                 ),
                               ),
-                              style: bookingConfirmed 
-                              ? ElevatedButton.styleFrom
-                              (
-                                primary: backgroundColor,
-                                minimumSize: const Size(165, 50),
-                                side: BorderSide(width: 2, color: Colors.black12),
-                              )
-                              : ElevatedButton.styleFrom
+                              style: ElevatedButton.styleFrom
                               (
                                 primary: backgroundColor,
                                 minimumSize: const Size(165, 50),

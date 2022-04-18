@@ -64,7 +64,6 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
   {
     try
     {
-
       var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'), body: {'hostelID': registerJsonData["id"].toString(), 'userID': loggedUserID});
       var jsonData = json.decode(response.body);
       print("registered");
@@ -154,7 +153,34 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
       (
         title: const Text("Register your hostel")
       ),
-      body: SingleChildScrollView
+      body: hasRegisteredHostel 
+      ? Center
+      (
+        child: SizedBox
+        (
+          height: 150,
+          child: Column
+          (
+            children: 
+            [
+              const Text("You cannot register more than one hostel", style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 25,),
+              ElevatedButton
+              (
+                style: ElevatedButton.styleFrom
+                (
+                  primary: Colors.cyan
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, MyRoutes.manageHostelRoute);
+                },
+                child: Text("Manage hostel", style: TextStyle(color: Colors.white),)
+              )
+            ],
+          ),
+        ),
+      ) 
+      : SingleChildScrollView
       (
         child: Center
         (
