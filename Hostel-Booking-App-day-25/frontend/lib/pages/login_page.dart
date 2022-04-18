@@ -38,7 +38,9 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushNamed(context, MyRoutes.homeRoute);
         loggedUserID = jsonData["user_id"].toString();
         loggedUserAddress = jsonData["userAddress"].toString();
-        //print(loggedUserID);
+        loggedUserFName = jsonData["userFName"].toString();
+        loggedUserEmail = jsonData["userEmail"].toString();
+        loggedUserLName = jsonData["userLName"].toString();
       }
       else
       {

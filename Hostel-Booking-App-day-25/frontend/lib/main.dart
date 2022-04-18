@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
         (
           style: ElevatedButton.styleFrom
           (
+            onSurface: Colors.grey,
             minimumSize: const Size(175, 40),
             side: const BorderSide(width: 2, color: Colors.cyan), 
             shape: RoundedRectangleBorder

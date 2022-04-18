@@ -1,15 +1,31 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
+import 'package:http/http.dart' as http;
 
 class ConfirmationPage extends StatefulWidget {
   ConfirmationPage({ Key? key }) : super(key: key);
-
+  static String? otp;
+  static String? username;
+  static String? userFName;
+  static String? userLName;
+  static String? userEmail;
+  static String? userPhone;
+  static String? userPassword;
+  static String? userAddress;
   @override
   _ConfirmationPageState createState() => _ConfirmationPageState();
 }
 
-class _ConfirmationPageState extends State<ConfirmationPage> {
+class _ConfirmationPageState extends State<ConfirmationPage> 
+{
+  @override
+  void dispose() {
+    super.dispose();
+  }
   
   final List _options = ["Send via SMS", "Send via Email"];
 
@@ -17,12 +33,22 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
   late String? _currentOption;
   bool isValid = true;
 
+  String? otp = ConfirmationPage.otp;
+  String? username = ConfirmationPage.username;
+  String? userFName = ConfirmationPage.userFName;
+  String? userLName = ConfirmationPage.userLName;
+  String? userEmail = ConfirmationPage.userEmail;
+  String? userPhone = ConfirmationPage.userPhone;
+  String? userPassword = ConfirmationPage.userPassword;
+  String? userAddress = ConfirmationPage.userAddress;
+
   @override
   void initState() {
     _dropDownMenuItems = getDropDownMenuItems();
     _currentOption = _dropDownMenuItems[0].value!;
     super.initState();
   }
+  
   List<DropdownMenuItem<String>> getDropDownMenuItems() {
     List<DropdownMenuItem<String>> items = [];
     for (String option in _options) 
@@ -38,6 +64,48 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
     }
     return items;
   }
+
+  void signUpUser() async {
+    try
+    {
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': username!.toLowerCase(), 'userFName': userFName!.toLowerCase(), 'userLName': userLName!.toLowerCase(), 'userEmail': userEmail!.toLowerCase(), 'userPhone': userPhone!.toLowerCase(), 'userAddress': userAddress!.toLowerCase(), 'userPassword': userPassword!.toLowerCase()});
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 201)
+      {
+        showDialog
+        (
+          context: context,
+          builder: (ctx) => AlertDialog
+          (
+            title: const Text("Success"),
+            content: const Text("User signed up!"),
+            actions: <Widget>
+            [
+              FlatButton
+              (
+                onPressed: () 
+                {
+                  Navigator.pushNamed(context, MyRoutes.loginRoute);
+                },
+                child: Text("ok"),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        SnackBar
+        (
+          content: Text('$e'),
+        )
+      );
+    }
+  }
+  
   @override
   Widget build(BuildContext context) 
   {
@@ -79,10 +147,23 @@ class _ConfirmationPageState extends State<ConfirmationPage> {
                 showFieldAsBox: true,
                 focusedBorderColor: Colors.cyan,
                 textStyle: TextStyle(fontSize: 13),
-                onSubmit: (String loginRoute)
+                onSubmit: (enteredOTP)
                 {
-                  loginRoute = MyRoutes.signinRoute;
-                  Navigator.pushNamed(context, loginRoute);
+                  if (enteredOTP == otp)
+                  {
+                    signUpUser();
+                  }
+                  else
+                  {
+                    ScaffoldMessenger.of(context).showSnackBar
+                    (
+                      const SnackBar
+                      (
+                        content: Text('Invalid OTP!'),
+                      )
+                    );
+                  }
+                  
                 },
               ),
               Padding

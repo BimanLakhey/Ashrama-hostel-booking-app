@@ -7,6 +7,8 @@ import 'package:hotel_booking_app/Model/hostel_model.dart';
 import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:http/http.dart' as http;
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 class HostelProfilePage extends StatefulWidget {
   HostelProfilePage({Key? key}) : super(key: key);
@@ -23,7 +25,6 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
   String? hostelPhoto;
   String? hostelCity;
   String? hostelStreet;
-  String? totalPrice;
   String? hostelPhone; 
   String? hostelTotalRooms; 
   bool dataLoaded = false;
@@ -46,7 +47,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
   Color buttonColorAlt = Colors.cyan;
   Color containerFontColorAlt = Colors.black;
   bool alt = true;
-
+  bool bookingConfirmed = false;
 
   String? hID;
   String? uID;
@@ -68,6 +69,41 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  sendMail() async {
+    String email = "Ashrama.hostels@gmail.com";
+    String password = 'Hesoyam74';
+
+    final smtpServer = gmail(email, password);
+
+    final message = Message()
+      ..from = Address(email, "Ashrama.hostels@gmail.com")
+      ..recipients.add(loggedUserEmail)
+      ..subject = "Booking confirmed"
+      ..text = "Booked by: $loggedUserFName $loggedUserLName\nBooking date: $bookedDate\nChecking out date: $checkingOutDate\nHostel name: $hostelName\nRoom details: $roomType\nTotal price to be paid: Rs.$roomPrice\n\n Please visit the hostel on the booked date!";
+
+    try 
+    {
+      final sendReport = await send(message, smtpServer);
+      setState(() {
+        bookingConfirmed = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Booking confirmed.\nPlease view your email for booking details!'),
+        )
+      );
+
+    } 
+    on MailerException catch (e) {
+      print('Message not sent.');
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
+    }
   }
 
   void getHostelData() async 
@@ -549,7 +585,6 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                                     (
                                                       onPressed: () 
                                                       { 
-
                                                         rID = snapshot.data[i].id;
                                                         roomPrice = snapshot.data[i].roomPrice;
                                                         roomType = snapshot.data[i].roomType;
@@ -753,33 +788,22 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                             padding: const EdgeInsets.fromLTRB(0, 45, 0, 0),
                             child: ElevatedButton
                             (
-                              onPressed: () 
+                              onPressed: bookingConfirmed 
+                              ? null 
+                              : () 
                               { 
                                 if(roomPrice != null && bookedDate != null)
                                 {
+
                                   hID = hostelID;
                                   uID = loggedUserID;
                                   bookHostel();
-                                  showDialog
-                                  (
-                                    context: context,
-                                    builder: (ctx) => AlertDialog
-                                    (
-                                      title: const Text("Booking confirmed"),
-                                      content: Text("Please visit the hostel on $bookedDate!"),
-                                      actions: <Widget>
-                                      [
-                                        FlatButton
-                                        (
-                                          onPressed: () 
-                                          {
-                                            Navigator.of(ctx).pop();
-                                          },
-                                          child: Text("ok"),
-                                        ),
-                                      ],
-                                    ),
-                                  );
+                                  sendMail();
+                                  setState(() 
+                                  {
+                                    bookingConfirmed = true;  
+                                  });
+                                  
                                 }
                                 else if(roomPrice == null)
                                 {
@@ -802,7 +826,9 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                   );
                                 }
                               },
-                              child: Text
+                              child: bookingConfirmed 
+                              ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2, ))
+                              : Text
                               (
                                 "Book hostel",
                                 style: TextStyle
@@ -810,7 +836,14 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                   color: fontColor
                                 ),
                               ),
-                              style: ElevatedButton.styleFrom
+                              style: bookingConfirmed 
+                              ? ElevatedButton.styleFrom
+                              (
+                                primary: backgroundColor,
+                                minimumSize: const Size(165, 50),
+                                side: BorderSide(width: 2, color: Colors.black12),
+                              )
+                              : ElevatedButton.styleFrom
                               (
                                 primary: backgroundColor,
                                 minimumSize: const Size(165, 50),

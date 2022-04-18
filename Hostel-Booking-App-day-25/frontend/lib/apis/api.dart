@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 
 String? loggedUserID;
 String? loggedUserAddress;
+String? loggedUserEmail;
+String? loggedUserFName;
+String? loggedUserLName;
 bool loginValid = false;
 bool userSignedUp = false;
 

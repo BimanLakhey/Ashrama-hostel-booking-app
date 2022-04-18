@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/Model/user_model.dart';
@@ -7,6 +8,7 @@ import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:image_picker/image_picker.dart';
 import '../utils/routes.dart';
 
 class CustomerCarePage extends StatefulWidget {
@@ -17,6 +19,11 @@ class CustomerCarePage extends StatefulWidget {
 }
 
 class _CustomerCarePageState extends State<CustomerCarePage> {
+  List<String> attachments = [];
+
+  bool isHTML = false;
+  bool subjectNotEmpty = true;
+  bool messageNotEmpty = true;
 
   @override
   void dispose() {
@@ -27,6 +34,8 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
     _recipientController.dispose();
     super.dispose();
   }
+
+
 
   UserModel userModel = UserModel();
 
@@ -40,12 +49,12 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
   Color backgroundColor = Colors.white;
   bool alt = false;
 
-  TextEditingController userNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController subjectController = TextEditingController();
-  TextEditingController messageController = TextEditingController();
+  final userNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final subjectController = TextEditingController();
+  final messageController = TextEditingController();
   final _recipientController = TextEditingController(
-    text: 'biman.lakhey74@gmail.com',
+    text: 'Ashrama.hostels@gmail.com',
   );
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -61,7 +70,7 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
 
     try {
       await FlutterEmailSender.send(email);
-      platformResponse = 'success';
+      platformResponse = 'Message sent.\nWe will respond to you shortly!';
     } catch (error) {
       platformResponse = error.toString();
     }
@@ -127,6 +136,30 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
 
   }
 
+  void isSubjectNotEmpty()
+  {
+    if(subjectController.text.isNotEmpty)
+    {
+      subjectNotEmpty = true;
+    }
+    else
+    {
+      subjectNotEmpty = false;
+    }
+  }
+
+    void isMessageNotEmpty()
+  {
+    if(messageController.text.isNotEmpty)
+    {
+      messageNotEmpty = true;
+    }
+    else
+    {
+      messageNotEmpty = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold
@@ -149,6 +182,26 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
           child: Column
           (
             children: [
+              Container
+              (
+                child: Padding
+                (
+                  padding: const EdgeInsets.fromLTRB(20.0,50.0,20.0,50.0),
+                  child: Image.asset("assets/images/logos/customerService.PNG"),
+                ),
+                height: 250,
+                decoration: BoxDecoration
+                (
+                  color: Colors.cyan,
+                  borderRadius: BorderRadius.vertical
+                  (
+                    bottom: Radius.elliptical
+                    (
+                      MediaQuery.of(context).size.width, 60.0)
+                    ),
+                ),
+              ),
+              SizedBox(height: 20),
               Padding
               (
                 padding: const EdgeInsets.all(15),
@@ -218,10 +271,11 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
                         TextFormField
                         (
                           controller: subjectController,
-                          decoration: const InputDecoration
+                          decoration: InputDecoration
                           (
                             hintText: "Enter your subject",
                             labelText: "Subject",
+                            errorText: subjectNotEmpty ? null : 'Subject cannot be empty!'
                           ),
                         ),
                         const SizedBox
@@ -234,8 +288,9 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
                           maxLines: 5,
                           keyboardType: TextInputType.multiline,
                           controller: messageController,
-                          decoration: const InputDecoration
+                          decoration: InputDecoration
                           (
+                            errorText: messageNotEmpty ? null : 'Message cannot be empty!',
                             hintText: "Enter your message",
                             labelText: "Message",
                           ),
@@ -248,7 +303,15 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
                         (
                           onPressed: () 
                           { 
-                            send();
+                            setState(() {
+                              isSubjectNotEmpty();
+                              isMessageNotEmpty();
+                            });
+
+                            if(subjectNotEmpty && messageNotEmpty)
+                            {
+                              send();
+                            }
                           }, 
                           child: const Text
                           (
@@ -274,5 +337,19 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
         ),
       )
     );
+  }
+  Future _openImagePicker() async {
+    final pick = await ImagePicker().getImage(source: ImageSource.gallery);
+    if (pick != null) {
+      setState(() {
+        attachments.add(pick.path);
+      });
+    }
+  }
+
+  void _removeAttachment(int index) {
+    setState(() {
+      attachments.removeAt(index);
+    });
   }
 }

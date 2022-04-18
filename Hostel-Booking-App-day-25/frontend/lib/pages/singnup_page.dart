@@ -1,11 +1,11 @@
-import 'dart:convert';
-
+import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hotel_booking_app/utils/base_url.dart';
+import 'package:hotel_booking_app/pages/confirmation_page.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:http/http.dart' as http;
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 class SignupPage extends StatefulWidget {
 
@@ -32,6 +32,7 @@ class _SignupPageState extends State<SignupPage> {
   bool hostelNotEmpty = true;
   bool licenseNotEmpty = true;
   bool addressNotEmpty = true;
+  bool userValid = false;
 
   TextEditingController firstNameControl = TextEditingController();
   TextEditingController lastNameControl = TextEditingController();
@@ -44,48 +45,63 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController passwordControl = TextEditingController();
   TextEditingController confirmPasswordControl = TextEditingController();
 
-  void signUpUser() async {
-    try
-    {
-      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': userNameControl.text.toLowerCase(), 'userFName': firstNameControl.text.toLowerCase(), 'userLName': lastNameControl.text.toLowerCase(), 'userEmail': emailControl.text.toLowerCase(), 'userPhone': phoneNumControl.text.toLowerCase(), 'userAddress': addressControl.text.toLowerCase(), 'totalHostels': hostelsControl.text.toLowerCase(), 'ownerLicense': licenseControl.text.toLowerCase(), 'userPassword': passwordControl.text});
-      var jsonData = json.decode(response.body);
-      if(response.statusCode == 201)
-      {
-        showDialog
-        (
-          context: context,
-          builder: (ctx) => AlertDialog
-          (
-            title: const Text("Success"),
-            content: const Text("User signed up!"),
-            actions: <Widget>
-            [
-              FlatButton
-              (
-                onPressed: () 
-                {
-                  Navigator.pushNamed(context, MyRoutes.loginRoute);
-                },
-                child: Text("ok"),
-              ),
-            ],
-          ),
-        );
-      }
+  var otp;
+  String? finalOTP;
+
+  void otpGenerator () 
+  {
+    var rnd = math.Random();
+    otp = rnd.nextDouble() * 1000000;
+    while (otp < 100000) {
+      otp *= 10;
     }
-    catch(e)
+  }
+
+  sendOTP() async 
+  {
+    otpGenerator();
+    String email = "Ashrama.hostels@gmail.com";
+    String password = 'Hesoyam74';
+
+    final smtpServer = gmail(email, password);
+
+    final message = Message()
+      ..from = Address(email, "Ashrama.hostels@gmail.com")
+      ..recipients.add(emailControl.text)
+      ..subject = "Verify email address"
+      ..text = "Your OTP is: ${otp.toString().substring(0, otp.toString().indexOf('.'))}";
+
+    try 
     {
+      finalOTP = otp.toString().substring(0, otp.toString().indexOf('.')).toString();
+      final sendReport = await send(message, smtpServer);
+      setState(() {
+        userValid = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar
       (
         const SnackBar
         (
-          content: Text('Not connected to the internet!'),
+          content: Text('Sent and OTP to your email.\nPlease verify your email address!'),
         )
       );
+      ConfirmationPage.otp = finalOTP;
+      ConfirmationPage.username = userNameControl.text;
+      ConfirmationPage.userFName = firstNameControl.text;
+      ConfirmationPage.userLName = lastNameControl.text;
+      ConfirmationPage.userEmail = emailControl.text;
+      ConfirmationPage.userPhone = phoneNumControl.text;
+      ConfirmationPage.userAddress = addressControl.text;
+      ConfirmationPage.userPassword = passwordControl.text;
+      Navigator.pushNamed(context, MyRoutes.confirmationRoute);
+    } 
+    on MailerException catch (e) {
+      print('Message not sent.');
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
     }
   }
-
-
 
   void checkEmail()
   {
@@ -184,30 +200,6 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-  void isHostelNotEmpty()
-  {
-    if(hostelsControl.text.isNotEmpty)
-    {
-      hostelNotEmpty = true;
-    }
-    else
-    {
-      hostelNotEmpty = false;
-    }
-  }
-
-  void isLicenseNotEmpty()
-  {
-    if(licenseControl.text.isNotEmpty)
-    {
-      licenseNotEmpty = true;
-    }
-    else
-    {
-      licenseNotEmpty = false;
-    }
-  }
-
   void isAddressNotEmpty()
   {
     if(addressControl.text.isNotEmpty)
@@ -249,7 +241,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 50),
             Container
             (
               width: 325.0,
@@ -385,34 +377,6 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     TextFormField
                     (
-                      controller: hostelsControl,
-                      decoration: InputDecoration
-                      (
-                        hintText: "total hostels owned",
-                        labelText: "Total hostels",
-                        errorText: hostelNotEmpty ? null : 'No. of hostels cannot be empty!'
-                      ),
-                    ),
-                    const SizedBox
-                    (
-                      height: 20.0,
-                    ),
-                    TextFormField
-                    (
-                      controller: licenseControl,
-                      decoration: InputDecoration
-                      (
-                        hintText: "License of hostel owner",
-                        labelText: "Owner license",
-                        errorText: emailNotEmpty ? null : 'License cannot be empty!'
-                      ),
-                    ),
-                    const SizedBox
-                    (
-                      height: 20.0,
-                    ),
-                    TextFormField
-                    (
                       controller: addressControl,
                       decoration: InputDecoration
                       (
@@ -428,7 +392,8 @@ class _SignupPageState extends State<SignupPage> {
                     
                     ElevatedButton.icon
                     (
-                      onPressed: () 
+
+                      onPressed: userValid ? () {} : () 
                       {
                         setState(() {
                           checkEmail();
@@ -438,33 +403,41 @@ class _SignupPageState extends State<SignupPage> {
                           isUsernameNotEmpty();
                           isPasswordNotEmpty();
                           isConfirmNotEmpty();
-                          isHostelNotEmpty();
-                          isLicenseNotEmpty();
                           isAddressNotEmpty();
                           checkPasswords();
                         });
                         
-                        if(firstNameNotEmpty && lastNameNotEmpty && emailNotEmpty && usernameNotEmpty && passwordNotEmpty && confirmNotEmpty && hostelNotEmpty && licenseNotEmpty &&  addressNotEmpty)
+                        if(firstNameNotEmpty && lastNameNotEmpty && emailNotEmpty && usernameNotEmpty && passwordNotEmpty && confirmNotEmpty &&  addressNotEmpty)
                         {
                           if (emailValid)
                           {
                             if (passwordsValid)
                             {
-                              signUpUser();
+                              setState(() {
+                                userValid = true;
+                              });
+                              sendOTP();
                             }
                           }
                         }
-                        
                       },    
-                      label: const Text
+                      label: userValid 
+                      ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2, ))
+                      : const Text
                       (
-                        "Sign in",
+                        "Continue",
                         style: TextStyle
                         (
                           color: Colors.white
                         ),
                       ),
-                      icon: Icon(CupertinoIcons.arrow_right, color: Colors.white),
+                      icon: userValid ? const Icon(Icons.abc, color: Colors.cyan, size: 1,) : const Icon(CupertinoIcons.arrow_right, color: Colors.white),
+                      style: ElevatedButton.styleFrom
+                      (
+                        primary: Colors.cyan,
+                        minimumSize: const Size(165, 50),
+                        side: BorderSide(width: 2, color: Colors.cyan),
+                      )
                     ),
                   ],
                 ),
