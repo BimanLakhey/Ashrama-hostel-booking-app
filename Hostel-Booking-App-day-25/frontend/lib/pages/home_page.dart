@@ -38,20 +38,33 @@ class _HomePageState extends State<HomePage>
 
   void saveHostel() async 
   {
-    var response = await http.post
-    (
-      Uri.parse('${BaseUrl.baseUrl}savedHostels/'), 
-      // headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8',},
-      body: {'hostelID': hostelID, 'userID': userID}
-    );
-    var jsonData = json.decode(response.body);
-    if(response.statusCode == 201)
+    try
     {
-      print("saved!");
+      var response = await http.post
+      (
+        Uri.parse('${BaseUrl.baseUrl}savedHostels/'), 
+        // headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8',},
+        body: {'hostelID': hostelID, 'userID': userID}
+      );
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 201)
+      {
+        print("saved!");
+      }
+      else
+      {
+        print("failed!");
+      }
     }
-    else
+    catch(e)
     {
-      print("failed!");
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
     }
   }
 
@@ -105,8 +118,6 @@ class _HomePageState extends State<HomePage>
                 (
                   children: 
                   [
-                    
-                   
                     Padding
                     (
                       padding: const EdgeInsets.fromLTRB(0,0,0,25),
@@ -199,7 +210,7 @@ class _HomePageState extends State<HomePage>
               {
                 if(snapshot.data == null)
                 {
-                  return const Text("loading...", style: TextStyle(fontSize: 18),);
+                  return const CircularProgressIndicator();
                 }
                 else
                 {

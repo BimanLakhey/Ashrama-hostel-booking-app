@@ -42,16 +42,25 @@ class _DrawerPageState extends State<DrawerPage>
     super.dispose();
   }
   
-  void getUserData() async {
-    var response = await http.post(Uri.parse( BaseUrl.baseUrl + 'loginUser/'), body: {'username': usernameHolder, 'userPassword': passwordHolder});
-    var jsonData = json.decode(response.body);
-    
-    setState(() {
-      userModel = UserModel.fromJson({"data": jsonData});
-      profileLoaded = true;
-    });
-    profileImgUrl = jsonData["userPhoto"];
-    username = jsonData["username"];
+  void getUserData() async 
+  {
+    try
+    {
+      var response = await http.post(Uri.parse( BaseUrl.baseUrl + 'loginUser/'), body: {'username': usernameHolder, 'userPassword': passwordHolder});
+      var jsonData = json.decode(response.body);
+      
+      setState(() {
+        userModel = UserModel.fromJson({"data": jsonData});
+        profileLoaded = true;
+      });
+      profileImgUrl = jsonData["userPhoto"];
+      username = jsonData["username"];
+    }
+    catch(e)
+    {
+      print("no internet");
+    }
+   
   }
 
   @override
@@ -173,8 +182,9 @@ class _DrawerPageState extends State<DrawerPage>
               leading: Icon(CupertinoIcons.info),
               title: Text("How Ashrama works", style: TextStyle(fontSize: 16))
             ),
-            const ListTile
+            ListTile
             (
+              onTap: () => Navigator.pushNamed(context, MyRoutes.customerCareRoute),
               horizontalTitleGap: 1,
               dense: true,
               leading: Icon(Icons.question_answer_outlined),

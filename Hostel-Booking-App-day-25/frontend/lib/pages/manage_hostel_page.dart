@@ -77,50 +77,78 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
 
   void getHostelData() async 
   {
-    var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/$hostelID'));
-    var jsonData = json.decode(response.body);
-    
-    setState(() {
-      hostelModel = HostelModel.fromJson({"data": jsonData});
-      dataLoaded = true;
+    try
+    {
+      var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/$hostelID'));
+      var jsonData = json.decode(response.body);
       
-    });
-    hostelID = jsonData["id"].toString();
-    hostelName.text = jsonData["hostelName"];
-    hostelPhoto = jsonData["hostelPhoto"];
-    hostelCity.text = jsonData["hostelCity"];
-    hostelStreet.text = jsonData["hostelStreet"];
-    hostelPhone.text = jsonData["hostelPhone"];
-    hostelTotalRooms.text = jsonData["hostelTotalRooms"];
-    hostelType.text = jsonData["hostelType"];
+      setState(() {
+        hostelModel = HostelModel.fromJson({"data": jsonData});
+        dataLoaded = true;
+        
+      });
+      hostelID = jsonData["id"].toString();
+      hostelName.text = jsonData["hostelName"];
+      hostelPhoto = jsonData["hostelPhoto"];
+      hostelCity.text = jsonData["hostelCity"];
+      hostelStreet.text = jsonData["hostelStreet"];
+      hostelPhone.text = jsonData["hostelPhone"];
+      hostelTotalRooms.text = jsonData["hostelTotalRooms"];
+      hostelType.text = jsonData["hostelType"];
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
+    }
+    
   }
 
-  void updateHostel() async {
-    var registerResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateHostel/$hostelID'), body: {'hostelName': hostelName.text, 'hostelCity': hostelCity.text, 'hostelStreet': hostelStreet.text, 'hostelType':hostelType.text, 'hostelPhone': hostelPhone.text, 'hostelTotalRooms': hostelTotalRooms.text});
-    var registerJsonData = json.decode(registerResponse.body);
-    
-    if(registerResponse.statusCode == 201)
+  void updateHostel() async 
+  {
+    try
     {
-      // registeredHostels();
-      showDialog
-      (
-        context: context,
-        builder: (ctx) => AlertDialog
+      var registerResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateHostel/$hostelID'), body: {'hostelName': hostelName.text, 'hostelCity': hostelCity.text, 'hostelStreet': hostelStreet.text, 'hostelType':hostelType.text, 'hostelPhone': hostelPhone.text, 'hostelTotalRooms': hostelTotalRooms.text});
+      var registerJsonData = json.decode(registerResponse.body);
+      
+      if(registerResponse.statusCode == 201)
+      {
+        // registeredHostels();
+        showDialog
         (
-          title: const Text("Success"),
-          content: const Text("Hostel updated!"),
-          actions: <Widget>
-          [
-            FlatButton
-            (
-              onPressed: () 
-              {
-                Navigator.pop(context);
-              },
-              child: Text("ok"),
-            ),
-          ],
-        ),
+          context: context,
+          builder: (ctx) => AlertDialog
+          (
+            title: const Text("Success"),
+            content: const Text("Hostel updated!"),
+            actions: <Widget>
+            [
+              FlatButton
+              (
+                onPressed: () 
+                {
+                  Navigator.pop(context);
+                },
+                child: Text("ok"),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
       );
     }
   }

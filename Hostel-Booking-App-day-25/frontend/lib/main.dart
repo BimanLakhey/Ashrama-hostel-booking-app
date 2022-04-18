@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/pages/confirmation_page.dart';
+import 'package:hotel_booking_app/pages/customer_care_page.dart';
 import 'package:hotel_booking_app/pages/enter_number_page.dart';
 import 'package:hotel_booking_app/pages/final_signup_page.dart';
 import 'package:hotel_booking_app/pages/how_ashrama_works_page.dart';
@@ -95,6 +96,7 @@ class MyApp extends StatelessWidget {
         MyRoutes.manageHostelRoute: (context) => ManageHostelPage(),
         MyRoutes.learnHostingRoute: (context) => LearnHostingPage(),
         MyRoutes.howAshramaWorksRoute: (context) => HowAshramaWorksPage(),
+        MyRoutes.customerCareRoute: (context) => CustomerCarePage(),
       }
     );
   }

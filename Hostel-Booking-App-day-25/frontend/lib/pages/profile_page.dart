@@ -55,52 +55,76 @@ class _ProfilePageState extends State<ProfilePage>
     super.dispose();
   }
   
-  void updateUser() async {
-    var userResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateUser/$userID'), body: {'username': username.text, 'userFName': userFName.text, 'userLName': userLName.text, 'userEmail':userEmail.text, 'userAddress': userAddress.text, 'userPhone': userPhone.text});
-    var userJsonData = json.decode(userResponse.body);
-    
-    if(userResponse.statusCode == 200)
+  void updateUser() async 
+  {
+    try
     {
-      showDialog
-      (
-        context: context,
-        builder: (ctx) => AlertDialog
+      var userResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateUser/$userID'), body: {'username': username.text, 'userFName': userFName.text, 'userLName': userLName.text, 'userEmail':userEmail.text, 'userAddress': userAddress.text, 'userPhone': userPhone.text});
+      var userJsonData = json.decode(userResponse.body);
+      
+      if(userResponse.statusCode == 200)
+      {
+        showDialog
         (
-          title: const Text("Success"),
-          content: const Text("User updated!"),
-          actions: <Widget>
-          [
-            FlatButton
-            (
-              onPressed: () 
-              {
-                Navigator.pop(context);
-              },
-              child: Text("ok"),
-            ),
-          ],
-        ),
-      );
+          context: context,
+          builder: (ctx) => AlertDialog
+          (
+            title: const Text("Success"),
+            content: const Text("User updated!"),
+            actions: <Widget>
+            [
+              FlatButton
+              (
+                onPressed: () 
+                {
+                  Navigator.pop(context);
+                },
+                child: Text("ok"),
+              ),
+            ],
+          ),
+        );
+      }
     }
+    catch(e)
+    {
+      print("no internet");
+    }
+    
   }
   
-  void getUserData() async {
-    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}loginUser/'), body: {'username': usernameHolder, 'userPassword': passwordHolder});
-    var jsonData = json.decode(response.body);
-    
-    setState(() {
-      userModel = UserModel.fromJson({"data": jsonData});
-      profilePhoto = true;
+  void getUserData() async 
+  {
+    try
+    {
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}loginUser/'), body: {'username': usernameHolder, 'userPassword': passwordHolder});
+      var jsonData = json.decode(response.body);
       
-    });
-    username.text = jsonData["username"];
-    userFName.text = jsonData["userFName"];
-    userLName.text = jsonData["userLName"];
-    userEmail.text = jsonData["userEmail"];
-    userAddress.text = jsonData["userAddress"];
-    userPhone.text = jsonData["userPhone"];
-    profileImgUrl = jsonData["userPhoto"];
-    userID = jsonData["user_id"];
+      setState(() {
+        userModel = UserModel.fromJson({"data": jsonData});
+        profilePhoto = true;
+        
+      });
+      username.text = jsonData["username"];
+      userFName.text = jsonData["userFName"];
+      userLName.text = jsonData["userLName"];
+      userEmail.text = jsonData["userEmail"];
+      userAddress.text = jsonData["userAddress"];
+      userPhone.text = jsonData["userPhone"];
+      profileImgUrl = jsonData["userPhoto"];
+      userID = jsonData["user_id"];
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
+    }
+    
   }
   
   @override
@@ -159,7 +183,7 @@ class _ProfilePageState extends State<ProfilePage>
                           profileImgUrl.toString(),
                           fit: BoxFit.contain,
                         )
-                        : SizedBox(child: CircularProgressIndicator())
+                        : CircularProgressIndicator(color: Colors.white,)
                       ),
                     ),
                     IconButton

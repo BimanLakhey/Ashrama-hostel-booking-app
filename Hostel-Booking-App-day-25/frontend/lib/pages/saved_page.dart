@@ -80,7 +80,7 @@ class _SavedPageState extends State<SavedPage>
               {
                 if(snapshot.data == null)
                 {
-                  return Center(child: Text("loading...", style: TextStyle(fontSize: 18),));
+                  return const SizedBox(height: 325, child: Center(child: CircularProgressIndicator()));
                 }
                 else
                 {

@@ -62,60 +62,87 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
 
   void registeredHostels() async
   {
-    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'), body: {'hostelID': registerJsonData["id"].toString(), 'userID': loggedUserID});
-    var jsonData = json.decode(response.body);
-    print("registered");
+    try
+    {
+
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'), body: {'hostelID': registerJsonData["id"].toString(), 'userID': loggedUserID});
+      var jsonData = json.decode(response.body);
+      print("registered");
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
+    }
   }
 
   void registerHostel() async {
-    var registerResponse = await http.post(Uri.parse('${BaseUrl.baseUrl}registerHostel/'), body: {'hostelName': hostelNameControl.text.toLowerCase(), 'hostelCity': hostelCityControl.text.toLowerCase(), 'hostelStreet': hostelStreetControl.text.toLowerCase(), 'hostelType':selectedHostelType.toString().toLowerCase(), 'hostelPhone': hostelPhoneControl.text.toLowerCase(), 'hostelTotalRooms': hostelTotalRooms.text.toLowerCase()});
-    registerJsonData = json.decode(registerResponse.body);
-    
-    if(registerResponse.statusCode == 201)
+    try
     {
-      registeredHostels();
-      showDialog
-      (
-        context: context,
-        builder: (ctx) => AlertDialog
+      var registerResponse = await http.post(Uri.parse('${BaseUrl.baseUrl}registerHostel/'), body: {'hostelName': hostelNameControl.text.toLowerCase(), 'hostelCity': hostelCityControl.text.toLowerCase(), 'hostelStreet': hostelStreetControl.text.toLowerCase(), 'hostelType':selectedHostelType.toString().toLowerCase(), 'hostelPhone': hostelPhoneControl.text.toLowerCase(), 'hostelTotalRooms': hostelTotalRooms.text.toLowerCase()});
+      registerJsonData = json.decode(registerResponse.body);
+      
+      if(registerResponse.statusCode == 201)
+      {
+        registeredHostels();
+        showDialog
         (
-          title: const Text("Hostel registered"),
-          content: const Text("Manage your hostel?"),
-          actions: <Widget>
-          [
-            FlatButton
-            (
-              onPressed: () 
-              {
-                Navigator.pushNamed(context, MyRoutes.manageHostelRoute);
-              },
-              child: Text("ok"),
-            ),
-          ],
-        ),
-      );
+          context: context,
+          builder: (ctx) => AlertDialog
+          (
+            title: const Text("Hostel registered"),
+            content: const Text("Manage your hostel?"),
+            actions: <Widget>
+            [
+              FlatButton
+              (
+                onPressed: () 
+                {
+                  Navigator.pushNamed(context, MyRoutes.manageHostelRoute);
+                },
+                child: Text("ok"),
+              ),
+            ],
+          ),
+        );
+      }
+      else
+      {
+        showDialog
+        (
+          context: context,
+          builder: (ctx) => AlertDialog
+          (
+            title: const Text("Error"),
+            content: const Text("Hostel has already been registered!"),
+            actions: <Widget>
+            [
+              FlatButton
+              (
+                onPressed: () 
+                {
+                  Navigator.pop(context);
+                },
+                child: Text("ok"),
+              ),
+            ],
+          ),
+        );
+      }
     }
-    else
+    catch(e)
     {
-      showDialog
+      ScaffoldMessenger.of(context).showSnackBar
       (
-        context: context,
-        builder: (ctx) => AlertDialog
+        const SnackBar
         (
-          title: const Text("Error"),
-          content: const Text("Hostel has already been registered!"),
-          actions: <Widget>
-          [
-            FlatButton
-            (
-              onPressed: () 
-              {
-                Navigator.pop(context);
-              },
-              child: Text("ok"),
-            ),
-          ],
-        ),
+          content: Text('Not connected to the internet!'),
+        )
       );
     }
   }
@@ -273,7 +300,7 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                     (
                       onPressed: () 
                       {
-                        Navigator.pushNamed(context, MyRoutes.hostelOwnerDetailsRoute);
+                        Navigator.pushNamed(context, MyRoutes.manageHostelRoute);
                       }, 
                       child: const Text
                       (

@@ -45,7 +45,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
   Color containerColorAlt = Colors.cyan;
   Color buttonColorAlt = Colors.cyan;
   Color containerFontColorAlt = Colors.black;
-  bool alt = false;
+  bool alt = true;
 
 
   String? hID;

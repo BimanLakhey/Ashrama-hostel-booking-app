@@ -45,29 +45,42 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController confirmPasswordControl = TextEditingController();
 
   void signUpUser() async {
-    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': userNameControl.text.toLowerCase(), 'userFName': firstNameControl.text.toLowerCase(), 'userLName': lastNameControl.text.toLowerCase(), 'userEmail': emailControl.text.toLowerCase(), 'userPhone': phoneNumControl.text.toLowerCase(), 'userAddress': addressControl.text.toLowerCase(), 'totalHostels': hostelsControl.text.toLowerCase(), 'ownerLicense': licenseControl.text.toLowerCase(), 'userPassword': passwordControl.text});
-    var jsonData = json.decode(response.body);
-    if(response.statusCode == 201)
+    try
     {
-      showDialog
-      (
-        context: context,
-        builder: (ctx) => AlertDialog
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': userNameControl.text.toLowerCase(), 'userFName': firstNameControl.text.toLowerCase(), 'userLName': lastNameControl.text.toLowerCase(), 'userEmail': emailControl.text.toLowerCase(), 'userPhone': phoneNumControl.text.toLowerCase(), 'userAddress': addressControl.text.toLowerCase(), 'totalHostels': hostelsControl.text.toLowerCase(), 'ownerLicense': licenseControl.text.toLowerCase(), 'userPassword': passwordControl.text});
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 201)
+      {
+        showDialog
         (
-          title: const Text("Success"),
-          content: const Text("User signed up!"),
-          actions: <Widget>
-          [
-            FlatButton
-            (
-              onPressed: () 
-              {
-                Navigator.pushNamed(context, MyRoutes.loginRoute);
-              },
-              child: Text("ok"),
-            ),
-          ],
-        ),
+          context: context,
+          builder: (ctx) => AlertDialog
+          (
+            title: const Text("Success"),
+            content: const Text("User signed up!"),
+            actions: <Widget>
+            [
+              FlatButton
+              (
+                onPressed: () 
+                {
+                  Navigator.pushNamed(context, MyRoutes.loginRoute);
+                },
+                child: Text("ok"),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
       );
     }
   }

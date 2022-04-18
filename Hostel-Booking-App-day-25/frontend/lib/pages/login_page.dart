@@ -28,48 +28,62 @@ class _LoginPageState extends State<LoginPage> {
 
   void getUserData() async 
   {
-    var response = await http.post(Uri.parse('${BaseUrl.baseUrl}loginUser/'), body: {'username': userNameControl.text, 'userPassword': passwordControl.text});
-    var jsonData = json.decode(response.body);
-    if(response.statusCode == 200)
+    try
     {
-      Cookie.cookieSession = response.headers['set-cookie'];
-      Navigator.pushNamed(context, MyRoutes.homeRoute);
-      loggedUserID = jsonData["user_id"].toString();
-      loggedUserAddress = jsonData["userAddress"].toString();
-      //print(loggedUserID);
-    }
-    else
-    {
-      showDialog
-      (
-        context: context,
-        builder: (ctx) => AlertDialog
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}loginUser/'), body: {'username': userNameControl.text, 'userPassword': passwordControl.text});
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 200)
+      {
+        Cookie.cookieSession = response.headers['set-cookie'];
+        Navigator.pushNamed(context, MyRoutes.homeRoute);
+        loggedUserID = jsonData["user_id"].toString();
+        loggedUserAddress = jsonData["userAddress"].toString();
+        //print(loggedUserID);
+      }
+      else
+      {
+        showDialog
         (
-          title: Text("Error"),
-          content: Text("Invalid credentials!"),
-          actions: <Widget>
-          [
-            FlatButton
-            (
-              onPressed: () 
-              {
-                Navigator.of(ctx).pop();
-              },
-              child: Text("ok"),
-            ),
-          ],
-        ),
+          context: context,
+          builder: (ctx) => AlertDialog
+          (
+            title: Text("Error"),
+            content: Text("Invalid credentials!"),
+            actions: <Widget>
+            [
+              FlatButton
+              (
+                onPressed: () 
+                {
+                  Navigator.of(ctx).pop();
+                },
+                child: Text("ok"),
+              ),
+            ],
+          ),
+        );
+      }
+      
+      setState(() {
+        userModel = UserModel.fromJson({"data": jsonData});
+        DrawerPage.usernameHolder = jsonData["username"];
+        DrawerPage.passwordHolder = jsonData["userPassword"];
+        ProfilePage.usernameHolder = jsonData["username"];
+        ProfilePage.passwordHolder = jsonData["userPassword"];
+        
+      });
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
       );
     }
     
-    setState(() {
-      userModel = UserModel.fromJson({"data": jsonData});
-      DrawerPage.usernameHolder = jsonData["username"];
-      DrawerPage.passwordHolder = jsonData["userPassword"];
-      ProfilePage.usernameHolder = jsonData["username"];
-      ProfilePage.passwordHolder = jsonData["userPassword"];
-      
-    });
   }
 
   @override
@@ -179,82 +193,6 @@ class _LoginPageState extends State<LoginPage> {
                         side: const BorderSide(width: 2, color: Colors.cyan),
                       )
                     ),
-                    // SizedBox(height: 20),
-                    // Row
-                    // (
-                    //   children: <Widget>
-                    //   [
-                    //     Expanded
-                    //     (
-                    //       child: Container
-                    //       (
-                    //         margin: const EdgeInsets.only(left: 5.0, right: 15.0),
-                    //         child: const Divider
-                    //         (
-                    //           color: Colors.black,
-                    //           height: 50,
-                    //         )
-                    //       ),
-                    //     ),
-                    //     Text("OR"),
-                    //     Expanded
-                    //     (
-                    //       child: Container
-                    //       (
-                    //         margin: const EdgeInsets.only(left: 15.0, right: 5.0),
-                    //         child: const Divider
-                    //         (
-                    //           color: Colors.black,
-                    //           height: 50,
-                    //         )
-                    //       ),
-                    //     ),
-                    //   ]
-                    // ),
-                    // Row
-                    // (
-                    //   children: 
-                    //   [
-                    //     ElevatedButton.icon
-                    //     (
-                    //       onPressed: () async
-                    //       {
-                    //         FacebookAuth.instance.login(
-                    //           permissions: ["public_profile", "email"]
-                    //         ).then((value)
-                    //         {
-                    //           FacebookAuth.instance.getUserData().then((userData)
-                    //           {
-                    //             setState(() {
-                    //               _userObj = userData;
-                    //             });
-                    //           });
-                    //         });
-                    //       },
-                    //       style: ElevatedButton.styleFrom
-                    //       (
-                    //         primary: HexColor("#3b5998"),
-                    //         minimumSize: const Size(100, 40),
-                    //         side: BorderSide(width: 2, color: HexColor("#3b5998")),
-                    //       ), 
-                    //       icon: Icon(Icons.facebook, color: Colors.white), 
-                    //       label: Text("Facebook", style: TextStyle(color: Colors.white)),
-                    //     ),
-                    //     SizedBox(width: 30),
-                    //     ElevatedButton.icon
-                    //     (
-                    //       onPressed: () => {},
-                    //       style: ElevatedButton.styleFrom
-                    //       (
-                    //         primary: HexColor("#34A853"),
-                    //         minimumSize: const Size(100, 40),
-                    //         side: BorderSide(width: 2, color: HexColor("#34A853")),
-                    //       ), 
-                    //       icon: Icon(Icons.g_mobiledata_outlined, color: Colors.white), 
-                    //       label: Text("Google", style: TextStyle(color: Colors.white)),
-                    //     ),
-                    //   ],
-                    // ),
                     Padding
                     (
                       padding: const EdgeInsets.fromLTRB(15,35,0,0),
