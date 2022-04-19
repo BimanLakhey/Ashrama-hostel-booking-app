@@ -13,6 +13,7 @@ bool userSignedUp = false;
 bool hasRegisteredHostel = false;
 bool noBookings = false;
 bool noSaved = false;
+bool noCurrentlyBooked = false;
 
 class Hostels{
   final String id, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelTotalRooms, hostelPhoto;
@@ -316,6 +317,14 @@ Future getBookingDetails() async
             bookingDetails.add(details);
           }
         } 
+        if(bookingDetails.isEmpty)
+        {
+          noCurrentlyBooked = true;
+        }
+        else
+        {
+          noCurrentlyBooked = false;
+        }
         return bookingDetails;
       }
       else

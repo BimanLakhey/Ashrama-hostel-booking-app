@@ -6,9 +6,11 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hotel_booking_app/Model/hostel_model.dart';
 import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
+import 'package:hotel_booking_app/utils/notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class HostelProfilePage extends StatefulWidget {
   HostelProfilePage({Key? key}) : super(key: key);
@@ -32,7 +34,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
   Color fontColor = Colors.white;
   Color backgroundColor = Colors.cyan;
   Color buttonFontColor = Colors.white;
-  Color ratingColor = Colors.white;
+  Color ratingColor = const Color.fromARGB(255, 225, 220, 220);
   Color dividerColor = Colors.white;
   Color containerColor = Colors.white;
   Color containerFontColor = Colors.cyan;
@@ -52,8 +54,8 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
   String? hID;
   String? uID;
   String? rID;
-  String? bookedDate;
-  String? checkingOutDate;
+  String? bookedDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? checkingOutDate = "${DateTime.now().year}-${DateTime.now().month + 1}-${DateTime.now().day}";
   String? roomType;
   String? roomPrice;
   Future? myRooms;
@@ -89,13 +91,14 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
       setState(() {
         bookingConfirmed = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar
-      (
-        const SnackBar
-        (
-          content: Text('Booking confirmed.\nPlease view your email for booking details!'),
-        )
-      );
+      bookingConfirmedNotification();
+      // ScaffoldMessenger.of(context).showSnackBar
+      // (
+      //   const SnackBar
+      //   (
+      //     content: Text('Booking confirmed.\nPlease view your email for booking details!'),
+      //   )
+      // );
 
     } 
     on MailerException catch (e) {
@@ -668,16 +671,9 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                 "The date of booking:", 
                                 style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18)
                               ),
-                              bookedDate != null 
-                              ? Text
-                              (
-                                "$bookedDate", 
-                                style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18, fontWeight: FontWeight.bold)
-                              )
-                              :
                               Text
                               (
-                                "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}", 
+                                "$bookedDate", 
                                 style: TextStyle(color: alt ? containerFontColorAlt : containerFontColor, fontSize: 18, fontWeight: FontWeight.bold)
                               )
                             ]
@@ -815,7 +811,7 @@ class _HostelProfilePageState extends State<HostelProfilePage> {
                                     )
                                   );
                                 }
-                                else
+                                else if(bookedDate == null)
                                 {
                                   ScaffoldMessenger.of(context).showSnackBar
                                   (

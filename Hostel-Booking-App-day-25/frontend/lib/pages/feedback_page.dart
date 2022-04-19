@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hotel_booking_app/apis/api.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 
 class FeedbackPage extends StatefulWidget {
   FeedbackPage({Key? key}) : super(key: key);
@@ -12,38 +13,44 @@ class FeedbackPage extends StatefulWidget {
 }
 
 class _FeedbackPageState extends State<FeedbackPage> 
-{
-  
+{ 
   double finalRating = 0.0;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool feedbackSent = false;
+  String mainEmail = "Ashrama.hostels@gmail.com";
 
-  Future<void> send() async {
-    final Email email = Email(
-      body:"Username: $loggedUserFName $loggedUserLName\nEmail: $loggedUserEmail\nRatings given: ${finalRating.toString()}\nMessage: ${feedbackController.text}",
-      subject: "User feedback",
-      recipients: ["Ashrama.hostels@gmail.com"],
-    );
+  sendFeedback() async 
+  {
+    String email = "Ashrama.feedbacks@gmail.com";
+    String password = 'AshramaFeedback';
 
-    String platformResponse;
+    final smtpServer = gmail(email, password);
+
+    final message = Message()
+      ..from = Address(email, mainEmail)
+      ..recipients.add(mainEmail)
+      ..subject = "User feedback"
+      ..text = "Submitted by: $loggedUserFName $loggedUserLName\nEmail: $loggedUserEmail\nRatings given: ${finalRating.toString()}\nMessage: ${feedbackController.text}";
 
     try 
     {
+      final sendReport = await send(message, smtpServer);
       setState(() {
         feedbackSent = false;
       });
-      await FlutterEmailSender.send(email);
-      platformResponse = 'Thank you for the feedback!';
-
-    } catch (error) {
-      platformResponse = error.toString();
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Thank you for the feedback!'),
+        )
+      );
+    } 
+    on MailerException catch (e) {
+      print('Message not sent.');
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
     }
-
-    if (!mounted) return;
-
-    _scaffoldKey.currentState!.showSnackBar(SnackBar(
-      content: Text(platformResponse),
-    ));
   }
 
   void checkFeedback()
@@ -105,7 +112,7 @@ class _FeedbackPageState extends State<FeedbackPage>
                 padding: const EdgeInsets.fromLTRB(20, 25, 0, 15),
                 child: RatingBar.builder
                 (
-                  unratedColor: Color.fromARGB(255, 225, 220, 220),
+                  unratedColor: const Color.fromARGB(255, 225, 220, 220),
                   initialRating: 0,
                   minRating: 0,
                   allowHalfRating: true,
@@ -150,10 +157,13 @@ class _FeedbackPageState extends State<FeedbackPage>
                 ),
                 width: 400,
                 height: 200,
-                child: Padding(
+                child: Padding
+                (
                   padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: TextField
                   (
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
                     controller: feedbackController,
                     decoration: const InputDecoration
                     (
@@ -167,18 +177,19 @@ class _FeedbackPageState extends State<FeedbackPage>
             const SizedBox(height: 40),
             ElevatedButton
             (
-              onPressed: feedbackSent ? () {} 
+              onPressed: feedbackSent 
+              ? () {} 
               : () 
               {
                 checkFeedback();
-                send();
+                sendFeedback();
                 setState(() {
                   feedbackSent = true;
                 });
               },
               child: feedbackSent 
               ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2, ))
-              : const Text
+              :  const Text
               (
                 "Submit",
                 style: TextStyle

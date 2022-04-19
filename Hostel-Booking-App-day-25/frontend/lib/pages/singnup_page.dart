@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/pages/confirmation_page.dart';
+import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:http/http.dart' as http;
 
 class SignupPage extends StatefulWidget {
 
@@ -22,6 +25,9 @@ class _SignupPageState extends State<SignupPage> {
 
   bool emailValid = true;
   bool passwordsValid = true;
+
+  bool usernameTaken = false;
+  bool emailTaken = false;
 
   bool firstNameNotEmpty = true;
   bool lastNameNotEmpty = true;
@@ -54,6 +60,74 @@ class _SignupPageState extends State<SignupPage> {
     otp = rnd.nextDouble() * 1000000;
     while (otp < 100000) {
       otp *= 10;
+    }
+  }
+
+  Future getUsernames() async 
+  {
+    try
+    {
+      var response = await http.get(Uri.parse('${BaseUrl.baseUrl}userDetails/'));
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 200)
+      {
+        for(var user in jsonData)
+        {
+          if(user["username"] == userNameControl.text)
+          {
+            usernameTaken = true;
+            userValid = false;
+          }
+          else
+          {
+            emailTaken = false;
+          }
+        }
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
+    }
+  }
+
+  Future getUserEmails() async 
+  {
+    try
+    {
+      var response = await http.get(Uri.parse('${BaseUrl.baseUrl}userDetails/'));
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 200)
+      {
+        for(var user in jsonData)
+        {
+          if(user["userEmail"] == emailControl.text)
+          {
+            emailTaken = true;
+            userValid = false;
+          }
+          else
+          {
+            emailTaken = false;
+          }
+        }
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
     }
   }
 
@@ -112,6 +186,30 @@ class _SignupPageState extends State<SignupPage> {
     else
     {
       emailValid = false;
+    }
+  }
+
+  void emailExists()
+  {
+    if(emailTaken == true)
+    {
+      emailTaken = true;
+    }
+    else
+    {
+      emailTaken = false;
+    }
+  }
+
+  void userExists()
+  {
+    if(usernameTaken == true)
+    {
+      usernameTaken = true;
+    }
+    else
+    {
+      usernameTaken = false;
     }
   }
 
@@ -213,7 +311,8 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Scaffold
     (
       body: SingleChildScrollView
@@ -241,7 +340,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             Container
             (
               width: 325.0,
@@ -309,7 +408,7 @@ class _SignupPageState extends State<SignupPage> {
                       (
                         hintText: "Enter your email",
                         labelText: "Email",
-                        errorText: emailNotEmpty ? emailValid ? null : 'Invalid email!' : 'Email cannot be empty!'
+                        errorText: emailNotEmpty ? emailValid ? emailTaken == false ? null : 'Email already taken!' : 'Invalid email!' : 'Email cannot be empty!'
                       ),
                     ),
                     const SizedBox
@@ -338,7 +437,7 @@ class _SignupPageState extends State<SignupPage> {
                       (
                         hintText: "Enter your username",
                         labelText: "Username",
-                        errorText: usernameNotEmpty ? null : 'Username cannot be empty!'
+                        errorText: usernameNotEmpty ? usernameTaken == false ? null : 'Username already taken!' : 'Username cannot be empty!'
                       ),
                     ),
                     const SizedBox
@@ -393,8 +492,12 @@ class _SignupPageState extends State<SignupPage> {
                     ElevatedButton.icon
                     (
                       onPressed: userValid ? () {} : () 
+                      async 
                       {
-                        setState(() {
+                        await getUserEmails();
+                        await getUsernames();
+                        setState(() 
+                        {
                           checkEmail();
                           isFirstNameNotEmpty();
                           isLastNameNotEmpty();
@@ -408,14 +511,21 @@ class _SignupPageState extends State<SignupPage> {
                         
                         if(firstNameNotEmpty && lastNameNotEmpty && emailNotEmpty && usernameNotEmpty && passwordNotEmpty && confirmNotEmpty &&  addressNotEmpty)
                         {
-                          if (emailValid)
+                          if(usernameTaken == false)
                           {
-                            if (passwordsValid)
+                            if (emailValid)
                             {
-                              setState(() {
-                                userValid = true;
-                              });
-                              sendOTP();
+                              if(emailTaken == false)
+                              {
+                                if (passwordsValid)
+                                {
+                                  setState(() 
+                                  {
+                                    userValid = true;
+                                  });
+                                  sendOTP();
+                                }
+                              }
                             }
                           }
                         }
@@ -435,7 +545,7 @@ class _SignupPageState extends State<SignupPage> {
                       (
                         primary: Colors.cyan,
                         minimumSize: const Size(165, 50),
-                        side: BorderSide(width: 2, color: Colors.cyan),
+                        side: const BorderSide(width: 2, color: Colors.cyan),
                       )
                     ),
                   ],

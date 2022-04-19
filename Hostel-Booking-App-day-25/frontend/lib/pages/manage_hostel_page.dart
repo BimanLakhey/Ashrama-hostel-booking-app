@@ -1,5 +1,6 @@
 // @dart=2.9
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -96,23 +97,15 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
       hostelTotalRooms.text = jsonData["hostelTotalRooms"];
       hostelType.text = jsonData["hostelType"];
     }
-    catch(e)
+    on SocketException
     {
-      if(hasRegisteredHostel == false)
-      {
-
-      }
-      else
-      {
-        ScaffoldMessenger.of(context).showSnackBar
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
         (
-          const SnackBar
-          (
-            content: Text('Not connected to the internet!'),
-          )
-        );
-      }
-      
+          content: Text('Not connected to the internet!'),
+        )
+      ); 
     }
     
   }
@@ -160,6 +153,64 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
       );
     }
   }
+
+  void confirmDelete()
+  {
+    showDialog
+    (
+      context: context,
+      builder: (ctx) => AlertDialog
+      (
+        title: const Text("Delete confirmation"),
+        content: const Text("Do you wish to delete the hostel?"),
+        actions: <Widget>
+        [
+          TextButton
+          (
+            onPressed: () 
+            {
+              Navigator.pop(context);
+            },
+            child: Text("cancel"),
+          ),
+          TextButton
+          (
+            onPressed: () 
+            {
+              removeHostel(hostelID);
+            },
+            child: Text("ok"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void removeHostel(String id) async 
+  {
+    removeRegisteredHostel(id);
+    var response = await http.delete
+    (
+      Uri.parse('${BaseUrl.baseUrl}hostelDetails/$id'), 
+    );
+    if(response.statusCode == 204)
+    {
+      hasRegisteredHostel = false;
+    }
+    var jsonData = json.decode(response.body);
+  }
+
+  void removeRegisteredHostel(String id) async 
+  {
+    var response = await http.delete
+    (
+      Uri.parse('${BaseUrl.baseUrl}registeredHostels/$id'), 
+    );
+    if(response.statusCode == 204)
+    {
+      hasRegisteredHostel = false;
+    }
+  }
   
   @override
   Widget build(BuildContext context) 
@@ -187,7 +238,7 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                 onPressed: () {
                   Navigator.pushNamed(context, MyRoutes.registerHostel);
                 },
-                child: Text("Register hostel", style: TextStyle(color: Colors.white),)
+                child: const Text("Register hostel", style: TextStyle(color: Colors.white),)
               )
             ],
           ),
@@ -604,7 +655,7 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                     ),
                     child: Center
                     (
-                      child: Container
+                      child: SizedBox
                       (
                         width: 225,
                         child: hasData 
@@ -624,138 +675,122 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                               arrivingSoon = 0;
                               checkingOut = 0;
                               // checkedOut = 0;
-                              return ListView.builder
+                              return Expanded
                               (
-                                physics: const BouncingScrollPhysics(),
-                                scrollDirection: Axis.vertical,
-                                itemCount: snapshot.data.length,
-                                itemBuilder: (context, i)
-                                {
-                      
-                                  index = i;
-                                  String bookingDate = snapshot.data[index].bookingDate;
-                                  String checkingOutDate = snapshot.data[index].checkingOutDate;
-                                  if(int.parse(bookingDate.substring(0, bookingDate.indexOf('-'))) <= DateTime.now().year && int.parse(bookingDate.substring(5, bookingDate.lastIndexOf('-'))) <= DateTime.now().month && int.parse(bookingDate.substring(8)) <= DateTime.now().day)
+                                child: noCurrentlyBooked == true 
+                                ? const Text("You don't have any guests staying with you right now", textAlign: TextAlign.center)   
+                                : ListView.builder
+                                (
+                                  physics: const BouncingScrollPhysics(),
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: snapshot.data.length,
+                                  itemBuilder: (context, i)
                                   {
-                                    currentlyHosting++;
-                                  }
-                                  else if (int.parse(bookingDate.substring(0, bookingDate.indexOf('-'))) >= DateTime.now().year && int.parse(bookingDate.substring(5, bookingDate.lastIndexOf('-'))) >= DateTime.now().month && int.parse(bookingDate.substring(8)) >= DateTime.now().day)
-                                  {
-                                    arrivingSoon++;
-                                  }
-                                  else if (int.parse(checkingOutDate.substring(0, checkingOutDate.indexOf('-'))) == DateTime.now().year && int.parse(checkingOutDate.substring(5, checkingOutDate.lastIndexOf('-'))) == DateTime.now().month && int.parse(checkingOutDate.substring(8)) - 1 == DateTime.now().day)
-                                  {
-                                    checkingOut++;
-                                  }
-                                  else if (int.parse(checkingOutDate.substring(0, checkingOutDate.indexOf('-'))) <= DateTime.now().year && int.parse(checkingOutDate.substring(5, checkingOutDate.lastIndexOf('-'))) <= DateTime.now().month && int.parse(checkingOutDate.substring(8)) < DateTime.now().day)
-                                  {
-                                    // currentlyHosting--;
-                                    checkedOut++;
-                                  }
-                                  WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
-                                  // print(int.parse(checkingOutDate.substring(8)));
-                      
-                                  // print("${int.parse(checkingOutDate.substring(0, checkingOutDate.indexOf('-')))}-${int.parse(checkingOutDate.substring(5, checkingOutDate.lastIndexOf('-')))}-${int.parse(checkingOutDate.substring(8))}");
-                                  return SingleChildScrollView
-                                  (
-                                    child: Container
-                                    (                    
-                                      width: 325,
-                                      margin: const EdgeInsets.fromLTRB(0, 15, 0, 45),
-                                      decoration: BoxDecoration
-                                      (
-                                        boxShadow: 
-                                        const [
-                                          BoxShadow
-                                          (
-                                            color: Colors.black54,
-                                            offset: Offset(1, 5),
-                                            blurRadius: 6,
-                                          )
-                                        ],
-                                        border: Border.all(color: Colors.cyan),
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: Colors.cyan
-                                      ),
                                                     
-                                      child: Column
-                                      (
-                                        children: 
-                                        [
-                                          Container
-                                          (
-                                            clipBehavior: Clip.antiAlias,                                       
-                                            width: 350,
-                                            height: 125,
-                                            decoration: BoxDecoration
+                                    index = i;
+                                    String bookingDate = snapshot.data[index].bookingDate;
+                                    String checkingOutDate = snapshot.data[index].checkingOutDate;
+                                    if(int.parse(bookingDate.substring(0, bookingDate.indexOf('-'))) <= DateTime.now().year && int.parse(bookingDate.substring(5, bookingDate.lastIndexOf('-'))) <= DateTime.now().month && int.parse(bookingDate.substring(8)) <= DateTime.now().day)
+                                    {
+                                      currentlyHosting++;
+                                    }
+                                    else if (int.parse(bookingDate.substring(0, bookingDate.indexOf('-'))) >= DateTime.now().year && int.parse(bookingDate.substring(5, bookingDate.lastIndexOf('-'))) >= DateTime.now().month && int.parse(bookingDate.substring(8)) >= DateTime.now().day)
+                                    {
+                                      arrivingSoon++;
+                                    }
+                                    else if (int.parse(checkingOutDate.substring(0, checkingOutDate.indexOf('-'))) == DateTime.now().year && int.parse(checkingOutDate.substring(5, checkingOutDate.lastIndexOf('-'))) == DateTime.now().month && int.parse(checkingOutDate.substring(8)) - 1 == DateTime.now().day)
+                                    {
+                                      checkingOut++;
+                                    }
+                                    else if (int.parse(checkingOutDate.substring(0, checkingOutDate.indexOf('-'))) <= DateTime.now().year && int.parse(checkingOutDate.substring(5, checkingOutDate.lastIndexOf('-'))) <= DateTime.now().month && int.parse(checkingOutDate.substring(8)) < DateTime.now().day)
+                                    {
+                                      // currentlyHosting--;
+                                      checkedOut++;
+                                    }
+                                    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+                                    // print(int.parse(checkingOutDate.substring(8)));
+                                                    
+                                    // print("${int.parse(checkingOutDate.substring(0, checkingOutDate.indexOf('-')))}-${int.parse(checkingOutDate.substring(5, checkingOutDate.lastIndexOf('-')))}-${int.parse(checkingOutDate.substring(8))}");
+                                    return SingleChildScrollView
+                                    (
+                                      child: Container
+                                      (                    
+                                        width: 325,
+                                        margin: const EdgeInsets.fromLTRB(0, 15, 0, 45),
+                                        decoration: BoxDecoration
+                                        (
+                                          boxShadow: 
+                                          const [
+                                            BoxShadow
                                             (
-                                              border: Border.all(color: Colors.cyan),
-                                              borderRadius: const BorderRadius.only
+                                              color: Colors.black54,
+                                              offset: Offset(1, 5),
+                                              blurRadius: 6,
+                                            )
+                                          ],
+                                          border: Border.all(color: Colors.cyan),
+                                          borderRadius: BorderRadius.circular(15),
+                                          color: Colors.cyan
+                                        ),
+                                                      
+                                        child: Column
+                                        (
+                                          children: 
+                                          [
+                                            Padding
+                                            (
+                                              padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
+                                              child: Row
                                               (
-                                                topLeft: Radius.circular(15),
-                                                topRight: Radius.circular(15),
-                                                bottomLeft: Radius.circular(45),
-                                                bottomRight: Radius.circular(45),
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: 
+                                                [
+                                                  Text
+                                                  (
+                                                    "${snapshot.data[i].userFName} ${snapshot.data[i].userLName}", 
+                                                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
+                                                  ),
+                                                ],
                                               ),
-                                              color: Colors.white
                                             ),
-                                            child: Image.network(snapshot.data[i].userPhoto,fit: BoxFit.fill),
-                                          ),
-                                          Padding
-                                          (
-                                            padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
-                                            child: Row
+                                            Align
                                             (
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: 
-                                              [
-                                                Text
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding
+                                              (
+                                                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                                child: Text(snapshot.data[i].roomType, style: const TextStyle(color: Colors.white, fontSize: 15)),
+                                              ),
+                                            ),
+                                            Align
+                                            (
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding
+                                              (
+                                                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                                child: Text("Room ID: ${snapshot.data[i].roomID}", style: const TextStyle(color: Colors.white, fontSize: 15)),
+                                              ),
+                                            ),
+                                            Align
+                                            (
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                child: Text
                                                 (
-                                                  "${snapshot.data[i].userFName} ${snapshot.data[i].userLName}", 
-                                                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
+                                                  "${snapshot.data[i].bookingDate} - ${snapshot.data[i].checkingOutDate}", 
+                                                  style: const TextStyle(color: Colors.white, fontSize: 15)
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-                                          Padding
-                                          (
-                                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                            child: Row
-                                            (
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: 
-                                              [
-                                                Row(
-                                                  children: [
-                                                    
-                                                    Text(snapshot.data[i].roomType, style: TextStyle(color: Colors.white, fontSize: 15)),
-                                                    Text(", ", style: TextStyle(color: Colors.white, fontSize: 15)),
-                                                    Text(snapshot.data[i].roomID, style: TextStyle(color: Colors.white, fontSize: 15)),
-                                                  ],
-                                                ),
-                                                  
-                                              ],
-                                            ),
-                                          ),
-                                          Align
-                                          (
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                                              child: Text
-                                              (
-                                                snapshot.data[i].hostelID, 
-                                                style: const TextStyle(color: Colors.white, fontSize: 15)
                                               ),
-                                            ),
-                                          ),     
-                                          const SizedBox(height: 25,)
-                                        ]
+                                            ),     
+                                            const SizedBox(height: 25,)
+                                          ]
+                                        ),
                                       ),
-                                    ),
-                      
-                                  );
-                                }
+                                                    
+                                    );
+                                  }
+                                ),
                               );
                             }
                           }
@@ -764,7 +799,32 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                       )
                     ),
                   ),
-                )
+                ),
+                ElevatedButton
+                (
+                  onPressed: () 
+                  { 
+                    setState(() 
+                    {
+                      confirmDelete();
+                    });
+                  }, 
+                  child: const Text
+                  (
+                    "Delete hostel",
+                    style: TextStyle
+                    (
+                      color: Colors.white
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom
+                  (
+                    primary: Colors.red,
+                    minimumSize: const Size(150, 40),
+                    side: const BorderSide(width: 2, color: Colors.red),
+                  )
+                ),
+                const SizedBox(height: 25)
               ],
             ),
           ),

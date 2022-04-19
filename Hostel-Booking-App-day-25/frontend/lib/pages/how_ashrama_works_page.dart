@@ -203,7 +203,11 @@ class HowAshramaWorksPage extends StatelessWidget {
                 ),  
               ),
             ),      
-            const SizedBox(height: 80,),
+            const Padding
+            (
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+              child:  Divider(color: Colors.black26, thickness: 1)
+            ),
             Container
             (           
               height: 250,

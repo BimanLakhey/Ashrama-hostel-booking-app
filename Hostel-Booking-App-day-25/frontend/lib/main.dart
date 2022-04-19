@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/pages/confirmation_page.dart';
 import 'package:hotel_booking_app/pages/customer_care_page.dart';
@@ -23,6 +24,21 @@ import 'package:hotel_booking_app/utils/routes.dart';
 
 void main()
 {
+  AwesomeNotifications().initialize
+  (
+    null,
+    [
+      NotificationChannel
+      (
+        channelKey: 'basic_channel', 
+        channelName: 'Basic nootifications', 
+        defaultColor: Colors.cyan,
+        importance: NotificationImportance.High,
+        channelShowBadge: true, 
+        channelDescription: 'test notifications',
+      )
+    ],
+  );
   runApp(const MyApp());
 }
 

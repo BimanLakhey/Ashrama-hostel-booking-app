@@ -19,8 +19,7 @@ class _BottomNavigationState extends State<BottomNavigation>
   final List<Widget> _screens = [
     HomePage(),
     SavedPage(),
-    BookedPage(),
-    MessagePage()
+    BookedPage()
   ];
 
   void onTappedBar(int index)
@@ -94,11 +93,6 @@ class _BottomNavigationState extends State<BottomNavigation>
               (
                 icon: Icon(CupertinoIcons.bookmark),
                 label: "Bookings",
-              ),
-              BottomNavigationBarItem
-              (
-                icon: Icon(CupertinoIcons.mail),
-                label: "Messages",
               ),
             ],
             selectedItemColor: Colors.white,

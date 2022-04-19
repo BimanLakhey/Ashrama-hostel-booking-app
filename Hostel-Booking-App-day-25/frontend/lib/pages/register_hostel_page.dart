@@ -6,6 +6,7 @@ import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 class RegisterHostelPage extends StatefulWidget {
   const RegisterHostelPage({ Key? key }) : super(key: key);
@@ -264,14 +265,16 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                       (
                         height: 20.0,
                       ),
-                      TextFormField
+                      IntlPhoneField
                       (
                         controller: hostelPhoneControl,
+                        showCountryFlag: false,
                         decoration: const InputDecoration
                         (
-                          hintText: "Enter the phone number",
-                          labelText: "Hostel phonenumber",
+                            labelText: "Phone number",
+                            hintText: "Enter your phone number"   
                         ),
+                        initialCountryCode: 'NP',
                       ),
                       const SizedBox
                       (

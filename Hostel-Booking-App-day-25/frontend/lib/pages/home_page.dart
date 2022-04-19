@@ -1,5 +1,6 @@
 //@dart = 2.9
 import 'dart:convert';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/Model/hostel_model.dart';
@@ -29,6 +30,45 @@ class _HomePageState extends State<HomePage>
   {
     myHostels = getHostels();
     super.initState();
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+        if(!isAllowed)
+        {
+          showDialog
+          (
+            context: context, 
+            builder: (context) => AlertDialog
+            (
+              title: const Text("Allow notifcations"),
+              content: const Text("Ashrama would like to send you notifications"),
+              actions: [
+                TextButton
+                (
+                  onPressed: () => Navigator.pop(context), 
+                  child: const Text
+                  (
+                    "Don\'t allow",
+                    style: TextStyle(color: Colors.grey, fontSize: 15),
+                  )
+                ),
+                TextButton
+                (
+                  onPressed: () => AwesomeNotifications().requestPermissionToSendNotifications().then((_) => Navigator.pop(context)), 
+                  child: const Text
+                  (
+                    "Allow",
+                    style: TextStyle(color: Colors.cyan, fontSize: 15, fontWeight: FontWeight.bold),
+                  )
+                )
+              ],
+            )
+          );
+        }
+        else
+        {
+
+        }
+      }
+    );
   }
  
   @override

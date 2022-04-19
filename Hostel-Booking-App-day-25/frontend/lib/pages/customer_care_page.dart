@@ -1,14 +1,15 @@
 import 'dart:convert';
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/Model/user_model.dart';
 import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_email_sender/flutter_email_sender.dart';
+// import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 import '../utils/routes.dart';
 
 class CustomerCarePage extends StatefulWidget {
@@ -19,10 +20,13 @@ class CustomerCarePage extends StatefulWidget {
 }
 
 class _CustomerCarePageState extends State<CustomerCarePage> {
-  List<String> attachments = [];
+  // List<String> attachments = [];
 
   bool subjectNotEmpty = true;
   bool messageNotEmpty = true;
+
+  bool messageSent = false;
+  String mainEmail = "Ashrama.hostels@gmail.com";
 
   @override
   void dispose() {
@@ -30,7 +34,7 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
     emailController.dispose();
     subjectController.dispose();
     messageController.dispose();
-    _recipientController.dispose();
+    // _recipientController.dispose();
     super.dispose();
   }
 
@@ -50,33 +54,39 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
   final emailController = TextEditingController();
   final subjectController = TextEditingController();
   final messageController = TextEditingController();
-  final _recipientController = TextEditingController(
-    text: 'Ashrama.hostels@gmail.com',
-  );
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  sendMessage() async 
+  {
+    String email = "Ashrama.cares@gmail.com";
+    String password = 'AshramaCare';
 
-  Future<void> send() async {
-    final Email email = Email(
-      body:"Username: ${userNameController.text}\nEmail: ${emailController.text}\nMessage: ${messageController.text}",
-      subject: subjectController.text,
-      recipients: [_recipientController.text],
-    );
+    final smtpServer = gmail(email, password);
 
-    String platformResponse;
-
-    try {
-      await FlutterEmailSender.send(email);
-      platformResponse = 'Message sent.\nWe will respond to you shortly!';
-    } catch (error) {
-      platformResponse = error.toString();
+    final message = Message()
+      ..from = Address(email, mainEmail)
+      ..recipients.add(mainEmail)
+      ..subject = "Customer Care"
+      ..text = "Submitted by: $loggedUserFName $loggedUserLName\nUsername: ${userNameController.text}\nEmail: ${emailController.text}\nSubject: ${subjectController.text}\nMessage: ${messageController.text}";
+    try 
+    {
+      final sendReport = await send(message, smtpServer);
+      setState(() {
+        messageSent = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Message sent. Kindly wait for us to get back to you via your email!'),
+        )
+      );
+    } 
+    on MailerException catch (e) {
+      print('Message not sent.');
+      for (var p in e.problems) {
+        print('Problem: ${p.code}: ${p.msg}');
+      }
     }
-
-    if (!mounted) return;
-
-    _scaffoldKey.currentState!.showSnackBar(SnackBar(
-      content: Text(platformResponse),
-    ));
   }
 
   @override
@@ -91,10 +101,6 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
       var response = await http.get(Uri.parse('${BaseUrl.baseUrl}userProfile/$loggedUserID'));
       var jsonData = json.decode(response.body);
       
-      setState(() {
-        userModel = UserModel.fromJson({"data": jsonData});
-        
-      });
       userNameController.text = jsonData["username"];
       emailController.text = jsonData["userEmail"];
     }
@@ -138,7 +144,7 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
   Widget build(BuildContext context) {
     return Scaffold
     (
-      key: _scaffoldKey,
+      // key: _scaffoldKey,
       appBar: AppBar
       (
         leading: IconButton
@@ -275,7 +281,9 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
                         ),
                         ElevatedButton
                         (
-                          onPressed: () 
+                          onPressed: messageSent 
+                          ? () {} 
+                          : () 
                           { 
                             setState(() {
                               isSubjectNotEmpty();
@@ -284,10 +292,15 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
 
                             if(subjectNotEmpty && messageNotEmpty)
                             {
-                              send();
+                              sendMessage();
+                              setState(() {
+                                messageSent = true;
+                              });
                             }
                           }, 
-                          child: const Text
+                          child: messageSent 
+                          ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2, ))
+                          : const Text
                           (
                             "Send message",
                             style: TextStyle
@@ -312,18 +325,20 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
       )
     );
   }
-  Future _openImagePicker() async {
-    final pick = await ImagePicker().getImage(source: ImageSource.gallery);
-    if (pick != null) {
-      setState(() {
-        attachments.add(pick.path);
-      });
-    }
-  }
-
-  void _removeAttachment(int index) {
-    setState(() {
-      attachments.removeAt(index);
-    });
-  }
 }
+
+//   Future _openImagePicker() async {
+//     final pick = await ImagePicker().getImage(source: ImageSource.gallery);
+//     if (pick != null) {
+//       setState(() {
+//         attachments.add(pick.path);
+//       });
+//     }
+//   }
+
+//   void _removeAttachment(int index) {
+//     setState(() {
+//       attachments.removeAt(index);
+//     });
+//   }
+// }
