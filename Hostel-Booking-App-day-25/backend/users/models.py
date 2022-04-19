@@ -59,3 +59,11 @@ class RegisteredHostel(models.Model):
 
     def __str__(self):
         return f"{self.id}"
+
+class UserReview(models.Model):
+    userID = models.CharField(max_length=50)
+    hostelID = models.CharField(max_length=50)
+    rating = models.CharField(max_length=50)
+    review = models.CharField(max_length=200)
+    reviewDate = models.DateField()
+    

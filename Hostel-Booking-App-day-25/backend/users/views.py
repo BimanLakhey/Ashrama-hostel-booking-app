@@ -185,5 +185,13 @@ class RegisteredHostels(generics.ListCreateAPIView):
         'userID',
     )
 
+class UserReviews(generics.ListCreateAPIView):
+    queryset = UserReview.objects.all()
+    serializer_class = UserReviewSerializer
+
+    filter_fields = (
+        'hostelID',
+    )
+
 
     

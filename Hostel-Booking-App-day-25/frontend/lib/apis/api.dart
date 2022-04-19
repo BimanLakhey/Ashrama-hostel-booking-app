@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
 import 'package:hotel_booking_app/pages/manage_hostel_page.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,7 @@ bool hasRegisteredHostel = false;
 bool noBookings = false;
 bool noSaved = false;
 bool noCurrentlyBooked = false;
+bool noReviews = false;
 
 class Hostels{
   final String id, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelTotalRooms, hostelPhoto;
@@ -95,6 +97,23 @@ class BookingDetails{
   );
 }
 
+class Reviews 
+{
+  final String id, userID, userFName, userLName, hostelID, rating, review, reviewDate;
+
+  Reviews
+  (
+    this.id, 
+    this.userID, 
+    this.userFName,
+    this.userLName,
+    this.hostelID, 
+    this.rating, 
+    this.review, 
+    this.reviewDate
+  );
+}
+
 Future getHostels() async
 {
   try
@@ -122,8 +141,7 @@ Future getHostels() async
   catch(e)
   {
     print("no internet");
-  }
-  
+  }  
 }
 
 Future getNearbyHostels() async
@@ -338,3 +356,50 @@ Future getBookingDetails() async
     print("no internet");
   }
 }
+
+Future getHostelReviews() async
+{
+  try
+  {
+    var reviewResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}userReviews/?hostelID=${HostelProfilePage.hostelID}'), headers: {'Cookie': '${Cookie.cookieSession}'});
+    var reviewJsonData = json.decode(reviewResponse.body);
+
+    List<Reviews> reviews = [];
+
+    for (var r in reviewJsonData)
+    {
+      var userResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}userDetails/?id=${r["userID"]}'), headers: {'Cookie': '${Cookie.cookieSession}'});
+      var userJsonData = json.decode(userResponse.body);
+      for(var u in userJsonData)
+      {
+        Reviews userReviews = Reviews
+        (
+          r["id"].toString(),
+          r["userID"],
+          r["userFName"] = u["userFName"], 
+          r["userLName"] = u["userLName"],  
+          r["hostelID"],    
+          r["rating"],    
+          r["review"],    
+          r["reviewDate"],   
+
+        ); 
+        reviews.add(userReviews);
+      }
+    }
+    if(reviews.isEmpty)
+    {
+      noReviews = true;
+    }
+    else
+    {
+      noReviews = false;
+    }
+    return reviews;
+  }
+  catch(e)
+  {
+    print("no internet");
+  }
+}
+

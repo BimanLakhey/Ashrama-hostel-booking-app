@@ -27,6 +27,7 @@ urlpatterns = [
     path('registeredHostels/<int:pk>', RegisteredHostels.as_view(), name="Registered hostels"),
     path('bookedHostels/<int:pk>', BookedHostels.as_view(), name="Booked hostels"),
     path('hostelDetails/<int:pk>', RegisterHostel.as_view(), name="Booked hostels"),
+    path('userReviews/', UserReviews.as_view(), name="User reviews"),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

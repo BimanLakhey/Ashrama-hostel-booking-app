@@ -229,4 +229,24 @@ class RegisteredHostelSerializer(serializers.ModelSerializer):
             'hostelID',
             'userID',
         ]
+
+class UserReviewSerializer(serializers.ModelSerializer):
+    
+    userID = serializers.CharField()
+    hostelID = serializers.CharField()
+    rating = serializers.CharField()
+    review = serializers.CharField()
+    reviewDate = serializers.DateField()
+    
+    class Meta:
+        model = UserReview
+        fields = [
+            'userID',
+            'hostelID',
+            'rating',
+            'review',
+            'reviewDate',
+        ]
+
+
         
