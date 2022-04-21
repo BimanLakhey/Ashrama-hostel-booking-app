@@ -5,6 +5,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hotel_booking_app/Model/hostel_model.dart';
 import 'package:hotel_booking_app/apis/api.dart';
+import 'package:hotel_booking_app/pages/notification_page.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/notifications.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +14,7 @@ import 'package:mailer/smtp_server.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
 class HostelProfilePage extends StatefulWidget {
-  HostelProfilePage({Key? key}) : super(key: key);
+  const HostelProfilePage({Key? key}) : super(key: key);
   static String? hostelID;
 
   @override
@@ -53,6 +54,8 @@ class _HostelProfilePageState extends State<HostelProfilePage>
   Color containerFontColorAlt = Colors.black;
   bool alt = true;
   bool bookingConfirmed = false;
+  double averageRatings = 0.0;
+  double totalRatings = 0.0;
 
   TextEditingController reviewController = TextEditingController();
 
@@ -69,10 +72,16 @@ class _HostelProfilePageState extends State<HostelProfilePage>
   @override
   void initState()
   {
+    getHostelData();
+    hostelUserReviews = getHostelReviews();
+    averageReviews();
+    setState(() 
+    {
+      
+    });   
     myRooms = getRooms();
     super.initState();
-    getHostelData();
-    //updateUserData();
+
   }
   
   @override
@@ -80,7 +89,21 @@ class _HostelProfilePageState extends State<HostelProfilePage>
     super.dispose();
   }
 
-  sendMail() async {
+  void averageReviews()
+  {
+
+    for(int j = 0; j < reviews.length - 1; j++)
+    {
+      // print("${totalRatings.toString()}");
+      // print("$totalRatings + ${double.parse(reviews[j].rating)}");
+      totalRatings = totalRatings + double.parse(reviews[j].rating);
+      // print(totalRatings);
+    }
+    averageRatings = totalRatings / reviews.length;
+  }
+
+  sendMail() async 
+  {
     String email = "Ashrama.hostels@gmail.com";
     String password = 'Hesoyam74';
 
@@ -98,14 +121,18 @@ class _HostelProfilePageState extends State<HostelProfilePage>
       setState(() {
         bookingConfirmed = false;
       });
-      // bookingConfirmedNotification();
-      ScaffoldMessenger.of(context).showSnackBar
-      (
-        const SnackBar
-        (
-          content: Text('Booking confirmed.\nPlease view your email for booking details!'),
-        )
-      );
+      bookingConfirmedNotification();
+      hostelNameNotify = hostelName;
+      roomTypeNotify = roomType;
+      bookingDateNotify = bookedDate;
+      addNotification();
+      // ScaffoldMessenger.of(context).showSnackBar
+      // (
+      //   const SnackBar
+      //   (
+      //     content: Text('Booking confirmed.\nPlease view your email for booking details!'),
+      //   )
+      // );
     } 
     on MailerException catch (e) {
       print('Message not sent.');
@@ -261,11 +288,12 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                       RatingBar.builder
                       (
                         unratedColor: ratingColor,
-                        initialRating: 0,
+                        initialRating: averageRatings.toString() == "NaN" ? 0 : averageRatings,
                         minRating: 0,
                         allowHalfRating: true,
                         direction: Axis.horizontal,
                         itemCount: 5,
+                        ignoreGestures: true,
                         itemSize: 25,
                         itemBuilder: (context, _) => const Icon
                         (
@@ -274,7 +302,6 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                         ), 
                         onRatingUpdate: (rating) 
                         {
-                          print(rating);
                         },
                       )
                     ]
@@ -374,8 +401,8 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                             setState(() 
                             {
                               profileType = "reviews";
-                              hostelUserReviews = getHostelReviews();
                             });
+                            hostelUserReviews = getHostelReviews();
                           },
                           icon: const Icon(Icons.reviews_outlined), 
                           label: const Text("Reviews"),
@@ -680,7 +707,7 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                                                             style: ElevatedButton.styleFrom
                                                             (
                                                               primary: containerColor,
-                                                              side: BorderSide(width: 2, color: borderColor),
+                                                              side: BorderSide(width: 2, color: backgroundColorAlt)
                                                             )
                                                           ),
                                                         ),
@@ -967,86 +994,93 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                             {
                               return Expanded
                               (
-                                child: ListView.builder
+                                child: RefreshIndicator
                                 (
-                                  physics: const BouncingScrollPhysics(),
-                                  scrollDirection: Axis.vertical,
-                                  itemCount: snapshot.data.length,
-                                  itemBuilder: (context, i)
+                                  onRefresh: () 
                                   {
-                                    return SingleChildScrollView
-                                    (
-                                      child: Column
-                                      (
-                                        children: 
-                                        [
-                                          Row
-                                          (
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: 
-                                            [
-                                              Align
-                                              (
-                                                alignment: Alignment.centerLeft,
-                                                child: Padding
-                                                (
-                                                  padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-                                                  child: RatingBar.builder
-                                                  (
-                                                    unratedColor: ratingColor,
-                                                    initialRating: double.parse(snapshot.data[i].rating),
-                                                    minRating: 0,
-                                                    allowHalfRating: true,
-                                                    direction: Axis.horizontal,
-                                                    itemCount: 5,
-                                                    itemSize: 25,
-                                                    ignoreGestures: true,
-                                                    itemBuilder: (context, _) => const Icon
-                                                    (
-                                                      Icons.star,
-                                                      color: Colors.amber,
-                                                    ), 
-                                                    onRatingUpdate: (rating) 
-                                                    {
-                                                      
-                                                    },
-                                                  ),
-                                                )
-                                              ),
-                                              Padding
-                                              (
-                                                padding: const EdgeInsets.fromLTRB(0, 40, 20, 0),
-                                                child: Text("${snapshot.data[i].reviewDate}", style: const TextStyle(fontSize: 16,color: Colors.black54),),
-                                              )
-                                            ],
-                                          ),
-                                          Align
-                                          (
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding
-                                            (
-                                              padding: const EdgeInsets.fromLTRB(20, 25, 20, 0),
-                                              child: Text("${snapshot.data[i].review}", style: const TextStyle(height: 1.5, fontSize: 18, color: Colors.black87)),
-                                            ),
-                                          ),
-                                          Align
-                                          (
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding
-                                            (
-                                              padding: const EdgeInsets.fromLTRB(20, 25, 0, 0),
-                                              child: Text("By: ${snapshot.data[i].userFName} ${snapshot.data[i].userLName}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 19),),
-                                            )
-                                          ),
-                                          const Padding
-                                          (
-                                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                            child:  Divider(color: Colors.black26, thickness: 1)
-                                          ),
-                                        ],
-                                      )
-                                    );
+                                    return hostelUserReviews = getHostelReviews();
                                   },
+                                  child: ListView.builder
+                                  (
+                                    physics: const BouncingScrollPhysics(),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: snapshot.data.length,
+                                    itemBuilder: (context, i)
+                                    {
+                                      return SingleChildScrollView
+                                      (
+                                        child: Column
+                                        (
+                                          children: 
+                                          [
+                                            Row
+                                            (
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: 
+                                              [
+                                                Align
+                                                (
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Padding
+                                                  (
+                                                    padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
+                                                    child: RatingBar.builder
+                                                    (
+                                                      unratedColor: ratingColor,
+                                                      initialRating: double.parse(snapshot.data[i].rating),
+                                                      minRating: 0,
+                                                      allowHalfRating: true,
+                                                      direction: Axis.horizontal,
+                                                      itemCount: 5,
+                                                      itemSize: 25,
+                                                      ignoreGestures: true,
+                                                      itemBuilder: (context, _) => const Icon
+                                                      (
+                                                        Icons.star,
+                                                        color: Colors.amber,
+                                                      ), 
+                                                      onRatingUpdate: (rating) 
+                                                      {
+                                                        
+                                                      },
+                                                    ),
+                                                  )
+                                                ),
+                                                Padding
+                                                (
+                                                  padding: const EdgeInsets.fromLTRB(0, 40, 20, 0),
+                                                  child: Text("${snapshot.data[i].reviewDate}", style: const TextStyle(fontSize: 16,color: Colors.black54),),
+                                                )
+                                              ],
+                                            ),
+                                            Align
+                                            (
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding
+                                              (
+                                                padding: const EdgeInsets.fromLTRB(20, 25, 20, 0),
+                                                child: Text("${snapshot.data[i].review}", style: const TextStyle(height: 1.5, fontSize: 18, color: Colors.black87)),
+                                              ),
+                                            ),
+                                            Align
+                                            (
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding
+                                              (
+                                                padding: const EdgeInsets.fromLTRB(20, 25, 0, 0),
+                                                child: Text("By: ${snapshot.data[i].userFName} ${snapshot.data[i].userLName}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 19),),
+                                              )
+                                            ),
+                                            const Padding
+                                            (
+                                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                              child:  Divider(color: Colors.black26, thickness: 1)
+                                            ),
+                                          ],
+                                        )
+                                      );
+                                    },
+                                  ),
                                 ),
                               );
                             }
@@ -1099,15 +1133,22 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                                                   {
                                                     reviewController.text = "No review";
                                                     postReview();
+                                                    
+                                                    averageReviews();
                                                     setState(() 
                                                     {
-
+                                                      hostelUserReviews = getHostelReviews();
                                                     });                                                   
                                                     Navigator.pop(context);
                                                   }
                                                   : () 
                                                   { 
                                                     postReview();
+                                                    
+                                                    averageReviews();
+                                                    setState(() {
+                                                      hostelUserReviews = getHostelReviews();
+                                                    });                                                    
                                                     Navigator.pop(context);
                                                   },
                                                   child: Text
@@ -1131,7 +1172,7 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                                           Align
                                           (
                                             alignment: Alignment.centerLeft,
-                                            child: Text("${loggedUserFName} ${loggedUserLName}", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)
+                                            child: Text("$loggedUserFName $loggedUserLName", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),)
                                           ),
                                           Align
                                           (

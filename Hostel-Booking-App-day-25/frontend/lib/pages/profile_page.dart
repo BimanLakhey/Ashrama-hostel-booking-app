@@ -64,25 +64,12 @@ class _ProfilePageState extends State<ProfilePage>
       
       if(userResponse.statusCode == 200)
       {
-        showDialog
+        ScaffoldMessenger.of(context).showSnackBar
         (
-          context: context,
-          builder: (ctx) => AlertDialog
+          const SnackBar
           (
-            title: const Text("Success"),
-            content: const Text("User updated!"),
-            actions: <Widget>
-            [
-              FlatButton
-              (
-                onPressed: () 
-                {
-                  Navigator.pop(context);
-                },
-                child: Text("ok"),
-              ),
-            ],
-          ),
+            content: Text('Profile updated!'),
+          )
         );
       }
     }

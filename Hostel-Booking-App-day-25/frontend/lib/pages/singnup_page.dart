@@ -80,7 +80,7 @@ class _SignupPageState extends State<SignupPage> {
           }
           else
           {
-            emailTaken = false;
+            usernameTaken = false;
           }
         }
       }

@@ -25,10 +25,13 @@ class _HomePageState extends State<HomePage>
   String hostelID;
   String userID;
   Future myHostels;
+  double averageRatings = 0.0;
   @override
   void initState() 
   {
     myHostels = getHostels();
+    getHostelReviews();
+
     super.initState();
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
         if(!isAllowed)
@@ -133,7 +136,7 @@ class _HomePageState extends State<HomePage>
             IconButton
             (
               icon: const Icon(Icons.notifications_none_outlined),
-              onPressed: () {  },
+              onPressed: () => Navigator.pushNamed(context, MyRoutes.notificationsRoute),
             ),
             
           ],
@@ -364,27 +367,17 @@ class _HomePageState extends State<HomePage>
                                               snapshot.data[i].hostelName, 
                                               style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
                                             ),
+                                            
                                           ],
                                         ),
                                       ),
-                                      Padding
+                                      Align
                                       (
-                                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                        child: Row
+                                        alignment: Alignment.centerLeft,
+                                        child: Padding
                                         (
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: 
-                                          [
-                                            Row(
-                                              children: [
-                                                
-                                                Text(snapshot.data[i].hostelCity, style: TextStyle(color: Colors.white, fontSize: 15)),
-                                                Text(", ", style: TextStyle(color: Colors.white, fontSize: 15)),
-                                                Text(snapshot.data[i].hostelStreet, style: TextStyle(color: Colors.white, fontSize: 15)),
-                                              ],
-                                            ),
-                                               
-                                          ],
+                                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                          child: Text("${snapshot.data[i].hostelCity}, ${snapshot.data[i].hostelStreet}", style: TextStyle(color: Colors.white, fontSize: 15)),
                                         ),
                                       ),
                                       Align

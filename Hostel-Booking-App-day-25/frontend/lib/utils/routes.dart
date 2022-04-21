@@ -18,4 +18,5 @@ class MyRoutes
   static String howAshramaWorksRoute = "/howAshramaWorks";
   static String customerCareRoute = "/customerCare";
   static String feedbackRoute = "/feedback";
+  static String notificationsRoute = "/notifications";
 }

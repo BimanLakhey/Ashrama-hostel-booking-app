@@ -16,6 +16,8 @@ bool noBookings = false;
 bool noSaved = false;
 bool noCurrentlyBooked = false;
 bool noReviews = false;
+List<Hostels> hostels = [];
+List<Reviews> reviews = [];
 
 class Hostels{
   final String id, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelTotalRooms, hostelPhoto;
@@ -120,8 +122,8 @@ Future getHostels() async
   {
     var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/'));
     var jsonData = json.decode(response.body);
-    List<Hostels> hostels = [];
 
+    hostels = [];
     for (var h in jsonData)
     {
       Hostels details = Hostels(
@@ -363,8 +365,7 @@ Future getHostelReviews() async
   {
     var reviewResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}userReviews/?hostelID=${HostelProfilePage.hostelID}'), headers: {'Cookie': '${Cookie.cookieSession}'});
     var reviewJsonData = json.decode(reviewResponse.body);
-
-    List<Reviews> reviews = [];
+    reviews = [];
 
     for (var r in reviewJsonData)
     {

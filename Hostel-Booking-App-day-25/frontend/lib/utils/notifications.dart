@@ -10,7 +10,7 @@ Future<void> bookingConfirmedNotification() async
       id: createUniqueId(), 
       channelKey: 'basic_channel',
       title: '${Emojis.paper_bookmark} Booking successful!!!',
-      body: 'Booking successful',
+      body: 'Please view your email for more booking details',
     )
   );
 }

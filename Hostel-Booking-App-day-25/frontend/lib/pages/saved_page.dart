@@ -116,158 +116,162 @@ class _SavedPageState extends State<SavedPage>
                         ),
                       ),   
                     )
-                    : ListView.builder
+                    : RefreshIndicator
                     (
-                      scrollDirection: Axis.vertical,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, i)
-                      {
-                        return SingleChildScrollView
-                        (       
-                          child: Column
-                          (
-                            children: 
-                            [
-                              InkWell
-                              (
-                                onTap: () 
-                                {
-                                  HostelProfilePage.hostelID = snapshot.data[i].hostelID;
-                                  Navigator.pushNamed(context, MyRoutes.hostelProfileRoute);
-                                },
-                                child: Container
-                                (                    
-                                  width: 325,
-                                  margin: EdgeInsets.fromLTRB(15, 15, 15, 45),
-                                  decoration: BoxDecoration
-                                  (
-                                    boxShadow: 
-                                    const [
-                                      BoxShadow
-                                      (
-                                        color: Colors.black54,
-                                        offset: Offset(1, 5),
-                                        blurRadius: 6,
-                                      )
-                                    ],
-                                    border: Border.all(color: Colors.cyan),
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: Colors.cyan
-                                  ),        
-                                  child: Column
-                                  (
-                                    children: 
-                                    [
-                                      Container
-                                      (
-                                        clipBehavior: Clip.antiAlias,                                       
-                                        width: 350,
-                                        height: 125,
-                                        decoration: BoxDecoration
+                      onRefresh: () => mySavedHostels = getSavedHostels(),
+                      child: ListView.builder
+                      (
+                        scrollDirection: Axis.vertical,
+                        physics: BouncingScrollPhysics(),
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, i)
+                        {
+                          return SingleChildScrollView
+                          (       
+                            child: Column
+                            (
+                              children: 
+                              [
+                                InkWell
+                                (
+                                  onTap: () 
+                                  {
+                                    HostelProfilePage.hostelID = snapshot.data[i].hostelID;
+                                    Navigator.pushNamed(context, MyRoutes.hostelProfileRoute);
+                                  },
+                                  child: Container
+                                  (                    
+                                    width: 325,
+                                    margin: EdgeInsets.fromLTRB(15, 15, 15, 45),
+                                    decoration: BoxDecoration
+                                    (
+                                      boxShadow: 
+                                      const [
+                                        BoxShadow
                                         (
-                                          border: Border.all(color: Colors.cyan),
-                                          borderRadius: const BorderRadius.only
-                                          (
-                                            topLeft: Radius.circular(15),
-                                            topRight: Radius.circular(15),
-                                            bottomLeft: Radius.circular(45),
-                                            bottomRight: Radius.circular(45),
-                                          ),
-                                          color: Colors.white
-                                        ),
-                                        child: Stack
-                                        (
-                                          fit: StackFit.expand,
-                                          children: <Widget>
-                                          [
-                                            Image.network(BaseUrl.savedBaseUrl + snapshot.data[i].hostelPhoto,fit: BoxFit.fill),
-                                            Padding
-                                            (
-                                              padding: const EdgeInsets.all(5.0),
-                                              child: Align
-                                              (
-                                                alignment: Alignment.topRight,
-                                                child: IconButton
-                                                (
-                                                  icon: const Icon
-                                                  (
-                                                    Icons.favorite_outline, 
-                                                    color: Colors.cyanAccent,
-                                                  ), 
-                                                  onPressed: () 
-                                                  {
-                                                    
-                                                    setState(() 
-                                                    {
-                                                      hostelID = snapshot.data[i].id;
-                                                      removeHostel(hostelID);
-                                                      mySavedHostels = getSavedHostels();
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                            )
-                                          ],
+                                          color: Colors.black54,
+                                          offset: Offset(1, 5),
+                                          blurRadius: 6,
                                         )
-                                      ),
-                                      Padding
-                                      (
-                                        padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
-                                        child: Row
+                                      ],
+                                      border: Border.all(color: Colors.cyan),
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: Colors.cyan
+                                    ),        
+                                    child: Column
+                                    (
+                                      children: 
+                                      [
+                                        Container
                                         (
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: 
-                                          [
-                                            Text
-                                            (
-                                              snapshot.data[i].hostelName, 
-                                              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                        child: Row
-                                        (
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: 
-                                          [
-                                            Row(
-                                              children: 
-                                              [  
-                                                Text(snapshot.data[i].hostelCity, style: TextStyle(color: Colors.white, fontSize: 15)),
-                                                Text(", ", style: TextStyle(color: Colors.white, fontSize: 15)),
-                                                Text(snapshot.data[i].hostelStreet, style: TextStyle(color: Colors.white, fontSize: 15)),
-                                              ],
-                                            ),
-                                               
-                                          ],
-                                        ),
-                                      ),
-                                      Align
-                                      (
-                                        alignment: Alignment.centerLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                                          child: Text
+                                          clipBehavior: Clip.antiAlias,                                       
+                                          width: 350,
+                                          height: 125,
+                                          decoration: BoxDecoration
                                           (
-                                            snapshot.data[i].hostelPhone, 
-                                            style: TextStyle(color: Colors.white, fontSize: 15)
+                                            border: Border.all(color: Colors.cyan),
+                                            borderRadius: const BorderRadius.only
+                                            (
+                                              topLeft: Radius.circular(15),
+                                              topRight: Radius.circular(15),
+                                              bottomLeft: Radius.circular(45),
+                                              bottomRight: Radius.circular(45),
+                                            ),
+                                            color: Colors.white
+                                          ),
+                                          child: Stack
+                                          (
+                                            fit: StackFit.expand,
+                                            children: <Widget>
+                                            [
+                                              Image.network(BaseUrl.savedBaseUrl + snapshot.data[i].hostelPhoto,fit: BoxFit.fill),
+                                              Padding
+                                              (
+                                                padding: const EdgeInsets.all(5.0),
+                                                child: Align
+                                                (
+                                                  alignment: Alignment.topRight,
+                                                  child: IconButton
+                                                  (
+                                                    icon: const Icon
+                                                    (
+                                                      Icons.favorite_outline, 
+                                                      color: Colors.cyanAccent,
+                                                    ), 
+                                                    onPressed: () 
+                                                    {
+                                                      
+                                                      setState(() 
+                                                      {
+                                                        hostelID = snapshot.data[i].id;
+                                                        removeHostel(hostelID);
+                                                        mySavedHostels = getSavedHostels();
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        ),
+                                        Padding
+                                        (
+                                          padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
+                                          child: Row
+                                          (
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: 
+                                            [
+                                              Text
+                                              (
+                                                snapshot.data[i].hostelName, 
+                                                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ),     
-                                      SizedBox(height: 25,)
-                                    ]
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                          child: Row
+                                          (
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: 
+                                            [
+                                              Row(
+                                                children: 
+                                                [  
+                                                  Text(snapshot.data[i].hostelCity, style: TextStyle(color: Colors.white, fontSize: 15)),
+                                                  Text(", ", style: TextStyle(color: Colors.white, fontSize: 15)),
+                                                  Text(snapshot.data[i].hostelStreet, style: TextStyle(color: Colors.white, fontSize: 15)),
+                                                ],
+                                              ),
+                                                 
+                                            ],
+                                          ),
+                                        ),
+                                        Align
+                                        (
+                                          alignment: Alignment.centerLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                                            child: Text
+                                            (
+                                              snapshot.data[i].hostelPhone, 
+                                              style: TextStyle(color: Colors.white, fontSize: 15)
+                                            ),
+                                          ),
+                                        ),     
+                                        SizedBox(height: 25,)
+                                      ]
+                                    ),
                                   ),
-                                ),
-                              ),              
-                            ],
-                          )
-
-                        );
-                      },
+                                ),              
+                              ],
+                            )
+                    
+                          );
+                        },
+                      ),
                     ),
                   );
                 }

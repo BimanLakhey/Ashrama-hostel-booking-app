@@ -7,6 +7,7 @@ import 'package:hotel_booking_app/pages/feedback_page.dart';
 import 'package:hotel_booking_app/pages/final_signup_page.dart';
 import 'package:hotel_booking_app/pages/how_ashrama_works_page.dart';
 import 'package:hotel_booking_app/pages/learn_hosting_page.dart';
+import 'package:hotel_booking_app/pages/notification_page.dart';
 import 'package:hotel_booking_app/pages/register_hostel_page.dart';
 import 'package:hotel_booking_app/pages/hostel_owner_details_page.dart';
 import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
@@ -116,6 +117,7 @@ class MyApp extends StatelessWidget {
         MyRoutes.howAshramaWorksRoute: (context) => HowAshramaWorksPage(),
         MyRoutes.customerCareRoute: (context) => CustomerCarePage(),
         MyRoutes.feedbackRoute: (context) => FeedbackPage(),
+        MyRoutes.notificationsRoute: (context) => NotificationPage(),
       }
     );
   }

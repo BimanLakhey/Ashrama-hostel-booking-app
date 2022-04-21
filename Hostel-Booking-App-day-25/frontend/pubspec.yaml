@@ -48,6 +48,7 @@ dependencies:
   flutter_email_sender: ^5.1.0
   mailer: ^5.1.0
   awesome_notifications: ^0.6.21
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   json_serializable: ^6.1.5
