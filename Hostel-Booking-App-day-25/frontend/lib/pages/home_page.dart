@@ -4,6 +4,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/Model/hostel_model.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
@@ -367,31 +368,62 @@ class _HomePageState extends State<HomePage>
                                               snapshot.data[i].hostelName, 
                                               style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
                                             ),
-                                            
+                                            Padding
+                                            (
+                                              padding: const EdgeInsets.fromLTRB(0, 0, 9, 0),
+                                              child: RatingBar.builder
+                                              (
+                                                unratedColor: const Color.fromARGB(255, 225, 220, 220),
+                                                initialRating: averageRatings.toString() == "NaN" ? 0.0 : averageRatings,
+                                                minRating: 0,
+                                                allowHalfRating: true,
+                                                direction: Axis.horizontal,
+                                                itemCount: 5,
+                                                ignoreGestures: true,
+                                                itemSize: 25,
+                                                itemBuilder: (context, _) => const Icon
+                                                (
+                                                  Icons.star,
+                                                  color: Colors.amber,
+                                                ), 
+                                                onRatingUpdate: (rating) 
+                                                {
+
+                                                },
+                                              ),
+                                            )
                                           ],
                                         ),
                                       ),
-                                      Align
+                                      Row
                                       (
-                                        alignment: Alignment.centerLeft,
-                                        child: Padding
-                                        (
-                                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                          child: Text("${snapshot.data[i].hostelCity}, ${snapshot.data[i].hostelStreet}", style: TextStyle(color: Colors.white, fontSize: 15)),
-                                        ),
-                                      ),
-                                      Align
-                                      (
-                                        alignment: Alignment.centerLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                                          child: Text
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: 
+                                        [
+                                          Align
                                           (
-                                            snapshot.data[i].hostelPhone, 
-                                            style: TextStyle(color: Colors.white, fontSize: 15)
+                                            alignment: Alignment.centerLeft,
+                                            child: Padding
+                                            (
+                                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                              child: Text("${snapshot.data[i].hostelCity}, ${snapshot.data[i].hostelStreet}", style: const TextStyle(color: Colors.white, fontSize: 15)),
+                                            ),
                                           ),
-                                        ),
-                                      ),     
+                                          Align
+                                          (
+                                            alignment: Alignment.centerRight,
+                                            child: Padding
+                                            (
+                                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                                              child: Text
+                                              (
+                                                snapshot.data[i].hostelPhone, 
+                                                style: const TextStyle(color: Colors.white, fontSize: 15)
+                                              ),
+                                            ),
+                                          ),     
+                                        ],
+                                      ),
                                       const SizedBox(height: 25,)
                                     ]
                                   ),
