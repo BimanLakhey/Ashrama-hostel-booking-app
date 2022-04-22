@@ -193,5 +193,14 @@ class UserReviews(generics.ListCreateAPIView):
         'hostelID',
     )
 
+class UserNotifications(generics.ListCreateAPIView):
+    queryset = UserNotification.objects.all()
+    serializer_class = UserNotificationSerializer
+
+    filter_fields = (
+        'userID',
+    )
+
+
 
     

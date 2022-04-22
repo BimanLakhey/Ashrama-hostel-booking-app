@@ -189,30 +189,6 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-  void emailExists()
-  {
-    if(emailTaken == true)
-    {
-      emailTaken = true;
-    }
-    else
-    {
-      emailTaken = false;
-    }
-  }
-
-  void userExists()
-  {
-    if(usernameTaken == true)
-    {
-      usernameTaken = true;
-    }
-    else
-    {
-      usernameTaken = false;
-    }
-  }
-
   void checkPasswords()
   {
     if(passwordControl.text == confirmPasswordControl.text)

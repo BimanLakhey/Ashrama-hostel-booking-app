@@ -66,4 +66,10 @@ class UserReview(models.Model):
     rating = models.CharField(max_length=50)
     review = models.CharField(max_length=200)
     reviewDate = models.DateField()
+
+class UserNotification(models.Model):
+    userID = models.CharField(max_length=50)
+    hostelID = models.CharField(max_length=50)
+    notificationMessage = models.CharField(max_length=200)
+    notificationDate = models.DateTimeField()
     

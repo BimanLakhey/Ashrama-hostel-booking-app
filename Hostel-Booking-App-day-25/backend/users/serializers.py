@@ -248,5 +248,21 @@ class UserReviewSerializer(serializers.ModelSerializer):
             'reviewDate',
         ]
 
+class UserNotificationSerializer(serializers.ModelSerializer):
+    
+    userID = serializers.CharField()
+    hostelID = serializers.CharField()
+    notificationMessage = serializers.CharField()
+    notificationDate = serializers.DateTimeField(format="%d-%m-%Y %H:%M")
+
+    class Meta:
+        model = UserNotification
+        fields = [
+            'userID',
+            'hostelID',
+            'notificationMessage',
+            'notificationDate',
+        ]
+
 
         

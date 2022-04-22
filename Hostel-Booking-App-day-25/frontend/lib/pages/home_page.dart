@@ -27,11 +27,12 @@ class _HomePageState extends State<HomePage>
   String userID;
   Future myHostels;
   double averageRatings = 0.0;
+  double totalRatings = 0.0;
+  double number;
   @override
   void initState() 
   {
     myHostels = getHostels();
-    getHostelReviews();
 
     super.initState();
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
@@ -67,12 +68,42 @@ class _HomePageState extends State<HomePage>
             )
           );
         }
-        else
-        {
-
-        }
       }
     );
+  }
+
+  Future getAverageRating(String hostelIDD) async 
+  {
+    try
+    {
+      var response = await http.get(Uri.parse('${BaseUrl.baseUrl}userReviews/?HostelID=$hostelIDD'));
+      var jsonData = json.decode(response.body);
+
+      if(response.statusCode == 200)
+      {
+        totalRatings = 0.0;
+        averageRatings = 0.0;
+        for(var review in jsonData)
+        {
+          totalRatings = totalRatings + double.parse(review["rating"]);
+          averageRatings = totalRatings / jsonData.length;
+          number = averageRatings;
+        }
+        setState(() {
+          
+        });
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
+    }
   }
  
   @override
@@ -196,7 +227,7 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
                     ),
-                    SizedBox(width: 75),
+                    SizedBox(width: 30),
                     Padding
                     (
                       padding: const EdgeInsets.fromLTRB(0,0,0,25),
@@ -228,6 +259,43 @@ class _HomePageState extends State<HomePage>
                           onPressed: () {myHostels = getNearbyHostels(); setState(() {});},
                           icon: const Icon(CupertinoIcons.placemark), 
                           label: const Text("Nearby"),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 30),
+                    Padding
+                    (
+                      padding: const EdgeInsets.fromLTRB(0,0,0,25),
+                      child: Container
+                      (
+                        width: 125,
+                        height: 45,
+                        decoration: BoxDecoration
+                        (
+                          boxShadow: const 
+                          [
+                            BoxShadow
+                            (
+                              color: Colors.black54,
+                              offset: Offset(1, 5),
+                              blurRadius: 6,
+                            )
+                          ],
+                          color: Colors.cyan,
+                          border: Border.all(color: Colors.cyan, width: 2),
+                          borderRadius: BorderRadius.circular(35)
+                        ),
+                        child: TextButton.icon
+                        (
+                          style: TextButton.styleFrom
+                          (
+                            primary: Colors.white
+                          ),
+                          onPressed: () {
+                            // myHostels = getTopRatedHostels(); setState(() {});
+                          },
+                          icon: const Icon(CupertinoIcons.placemark), 
+                          label: const Text("Top rated"),
                         ),
                       ),
                     ),
@@ -267,6 +335,7 @@ class _HomePageState extends State<HomePage>
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, i)
                       {
+                        // getAverageRating(snapshot.data[i].id);
                         return SingleChildScrollView
                         (
                           child: Column
@@ -287,7 +356,8 @@ class _HomePageState extends State<HomePage>
                                   decoration: BoxDecoration
                                   (
                                     boxShadow: 
-                                    const [
+                                    const 
+                                    [
                                       BoxShadow
                                       (
                                         color: Colors.black54,
@@ -388,7 +458,6 @@ class _HomePageState extends State<HomePage>
                                                 ), 
                                                 onRatingUpdate: (rating) 
                                                 {
-
                                                 },
                                               ),
                                             )

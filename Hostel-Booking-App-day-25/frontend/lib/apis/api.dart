@@ -16,8 +16,10 @@ bool noBookings = false;
 bool noSaved = false;
 bool noCurrentlyBooked = false;
 bool noReviews = false;
+bool noNotifications = false;
 List<Hostels> hostels = [];
 List<Reviews> reviews = [];
+List<Notifications> notifications = [];
 
 class Hostels{
   final String id, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelTotalRooms, hostelPhoto;
@@ -113,6 +115,21 @@ class Reviews
     this.rating, 
     this.review, 
     this.reviewDate
+  );
+}
+
+class Notifications
+{
+  final String userID, hostelID, hostelName, roomType, notificationMessage, notificationDate;
+
+  Notifications
+  (
+    this.userID,
+    this.hostelID,
+    this.hostelName,
+    this.roomType,
+    this.notificationMessage,
+    this.notificationDate
   );
 }
 
@@ -398,6 +415,49 @@ Future getHostelReviews() async
     }
     return reviews;
   }
+  catch(e)
+  {
+    print("no internet");
+  }
+}
+
+Future getUserNotifications() async
+{
+  try
+  {
+    var notificationResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}userNotifications/?userID=$loggedUserID'), headers: {'Cookie': '${Cookie.cookieSession}'});
+    var notificationJsonData = json.decode(notificationResponse.body);
+
+    notifications = [];
+
+    for (var n in notificationJsonData)
+    {
+      var hostelResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelProfile/${n["hostelID"]}'));
+      var hostelJsonData = json.decode(hostelResponse.body);
+
+      Notifications userNotifications = Notifications
+      (
+        n["userID"],
+        n["hostelID"],
+        n["hostelName"] = hostelJsonData["hostelName"],
+        n["roomType"] = hostelJsonData["roomType"],
+        n["notificationMessage"], 
+        n["notificationDate"],  
+
+      ); 
+      notifications.add(userNotifications);
+    }
+    if(notifications.isEmpty)
+    {
+      noNotifications = true;
+    }
+    else
+    {
+      noNotifications = false;
+    }
+    return notifications;
+  }
+    
   catch(e)
   {
     print("no internet");

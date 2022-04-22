@@ -11,6 +11,7 @@ import 'package:hotel_booking_app/utils/notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:intl/intl.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
 class HostelProfilePage extends StatefulWidget {
@@ -122,17 +123,6 @@ class _HostelProfilePageState extends State<HostelProfilePage>
         bookingConfirmed = false;
       });
       bookingConfirmedNotification();
-      hostelNameNotify = hostelName;
-      roomTypeNotify = roomType;
-      bookingDateNotify = bookedDate;
-      addNotification();
-      // ScaffoldMessenger.of(context).showSnackBar
-      // (
-      //   const SnackBar
-      //   (
-      //     content: Text('Booking confirmed.\nPlease view your email for booking details!'),
-      //   )
-      // );
     } 
     on MailerException catch (e) {
       print('Message not sent.');
@@ -214,6 +204,21 @@ class _HostelProfilePageState extends State<HostelProfilePage>
           content: Text('Not connected to the internet!'),
         )
       );
+    }
+  }
+
+  DateTime now = DateTime.now();
+  void saveNotification() async 
+  {
+    print("${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute}");
+    try
+    {
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}userNotifications/'), body: {'userID': loggedUserID, 'hostelID': hostelID, 'notificationMessage': "Booked", 'notificationDate': "${DateTime.now()}"});
+      var jsonData = json.decode(response.body);
+    }   
+    catch(e)
+    {
+      print(e);
     }
   }
 
@@ -904,6 +909,7 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                                         uID = loggedUserID;
                                         bookHostel();
                                         sendMail();
+                                        saveNotification();
                                         setState(() 
                                         {
                                           bookingConfirmed = true;  

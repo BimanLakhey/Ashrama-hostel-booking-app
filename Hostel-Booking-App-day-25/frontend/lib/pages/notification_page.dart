@@ -1,37 +1,40 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hotel_booking_app/apis/api.dart';
+import 'package:intl/intl.dart';
 
-class Notifications
-{
-  String? title, hostelNameNotify, roomTypeNotify, bookingDateNotify;
-  Notifications
-  (
-    this.title,
-    this.hostelNameNotify,
-    this.roomTypeNotify,
-    this.bookingDateNotify,
-  );
-}
+class TimeAgo{
+  static String timeAgoSinceDate(String dateString, {bool numericDates = true}) {
+    DateTime notificationDate = DateFormat("dd-MM-yyyy hh:mm").parse(dateString);
+    final date2 = DateTime.now();
+    final difference = date2.difference(notificationDate);
 
-String? hostelNameNotify;
-String? roomTypeNotify;
-String? bookingDateNotify;
+    print(difference.inDays);
+    if (difference.inDays > 8) {
+      return dateString;
+    } else if ((difference.inDays / 7).floor() >= 1) {
+      return (numericDates) ? '1 week ago' : 'Last week';
+    } else if (difference.inDays >= 2) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays >= 1) {
+      return (numericDates) ? '1 day ago' : 'Yesterday';
+    } else if (difference.inHours >= 2) {
+      return '${difference.inHours} hours ago';
+    } else if (difference.inHours >= 1) {
+      return (numericDates) ? '1 hour ago' : 'An hour ago';
+    } else if (difference.inMinutes >= 2) {
+      return '${difference.inMinutes} minutes ago';
+    } else if (difference.inMinutes >= 1) {
+      return (numericDates) ? '1 minute ago' : 'A minute ago';
+    } else if (difference.inSeconds >= 3) {
+      return '${difference.inSeconds} seconds ago';
+    } else {
+      return 'Just now';
+    }
+  }
 
-List<Notifications> notificationList = [];
+} 
 
-void addNotification()
-{
-  Notifications bookingConfirmedNotification = Notifications
-  (
-    "Booked", 
-    "$hostelNameNotify", 
-    "$roomTypeNotify", 
-    "$bookingDateNotify",
-  );
-  notificationList.add(bookingConfirmedNotification);
-}
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -40,7 +43,8 @@ class NotificationPage extends StatefulWidget {
   State<NotificationPage> createState() => _NotificationPageState();
 }
 
-class _NotificationPageState extends State<NotificationPage> {
+class _NotificationPageState extends State<NotificationPage> 
+{
 
   @override
   Widget build(BuildContext context) 
@@ -57,47 +61,110 @@ class _NotificationPageState extends State<NotificationPage> {
         title: const Text("Notifications"),
         centerTitle: true,
       ),
-      body: ListView.builder
+      body: Column
       (
-        itemCount: notificationList.length,
-        itemBuilder: (context, i)
-        {
-          return Center
+        children: 
+        [
+          FutureBuilder
           (
-            child: Padding
-            (
-              padding: const EdgeInsets.fromLTRB(20, 20, 0, 30),
-              child: Column
-              (
-                children: [
-                  Align
-                  (
-                    alignment: Alignment.centerLeft,
-                    child: RichText
+            future: getUserNotifications(),
+            builder: (context, AsyncSnapshot snapshot) 
+            {
+              if(snapshot.data == null)
+              {
+                return const SizedBox(height: 325, child: Center(child: CircularProgressIndicator()));
+              }
+              else
+              {
+                return SingleChildScrollView
+                (
+                  child: noNotifications == true 
+                  ? Container
                     (
-                      text: TextSpan
+                      height: 400,
+                      alignment: Alignment.center,
+                      child: SingleChildScrollView
                       (
-                        text: "${Emojis.paper_bookmark}   ",
-                        style: const TextStyle(color: Colors.black, fontSize: 30, height: 1.5),
-                        children: <TextSpan>[
-                          TextSpan(text: "${notificationList[i].title.toString()} ", style: const TextStyle(fontSize: 17)),
-                          TextSpan(text: "${notificationList[i].roomTypeNotify}, " + notificationList[i].hostelNameNotify.toString(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-                          TextSpan(text: "\n              for " + notificationList[i].bookingDateNotify.toString(), style: const TextStyle(fontSize: 17))
-                        ]
-                      )
-                    ),
-                  ),
-                  const Padding
+                        child: Column
+                        (
+                          children:
+                          const [
+                            SizedBox(height: 50,),
+                            Icon(Icons.notification_important_outlined, color: Colors.deepOrange, size: 100,),
+                            SizedBox(height: 30,),
+                            Text
+                            (
+                              "You have no new notificaions",
+                              style: TextStyle
+                              (
+                                fontSize: 20
+                              ),
+                            ),
+                            
+                          ],
+                        ),
+                      ),   
+                    )
+                  : Row
                   (
-                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                    child:  Divider(color: Colors.black54, thickness: 1)
+                    children: 
+                    [
+                      Expanded
+                      (
+                        child: SizedBox
+                        (
+                          height: 750,
+                          width: 400,
+                          child: ListView.builder
+                          (
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (context, i)
+                            {
+                              return SingleChildScrollView
+                              (
+                                child: Padding
+                                (
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                  child: Column
+                                  (
+                                    children: 
+                                    [
+                                      SizedBox(height: 20,),
+                                      Row
+                                      (
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Icon(Icons.bookmark_added, size: 30,),
+                                          SizedBox
+                                          (
+                                            width: 200,
+                                            child: Text("${snapshot.data[i].notificationMessage} ${snapshot.data[i].hostelName}", style: TextStyle(fontSize: 20),)
+                                          ),
+                                          Text(TimeAgo.timeAgoSinceDate(snapshot.data[i].notificationDate)),
+                                        ],
+                                      ),
+                                      const Padding
+                                      (
+                                        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                                        child:  Divider(color: Colors.black54, thickness: 1)
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              );
+                            }
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          );
-        }
+                );
+              }
+            }
+          )
+        ],
       )
+      
     );
   }
 }
