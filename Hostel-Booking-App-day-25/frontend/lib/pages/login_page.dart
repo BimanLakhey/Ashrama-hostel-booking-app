@@ -37,7 +37,8 @@ class _LoginPageState extends State<LoginPage> {
         Cookie.cookieSession = response.headers['set-cookie'];
         Navigator.pushNamed(context, MyRoutes.homeRoute);
         loggedUserID = jsonData["user_id"].toString();
-        loggedUserAddress = jsonData["userAddress"].toString();
+        loggedUserCity = jsonData["userCity"].toString();
+        loggedUserStreet = jsonData["userStreet"].toString();
         loggedUserFName = jsonData["userFName"].toString();
         loggedUserEmail = jsonData["userEmail"].toString();
         loggedUserLName = jsonData["userLName"].toString();

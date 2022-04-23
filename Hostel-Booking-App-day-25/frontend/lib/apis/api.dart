@@ -5,7 +5,8 @@ import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:http/http.dart' as http;
 
 String? loggedUserID;
-String? loggedUserAddress;
+String? loggedUserCity;
+String? loggedUserStreet;
 String? loggedUserEmail;
 String? loggedUserFName;
 String? loggedUserLName;
@@ -167,7 +168,7 @@ Future getNearbyHostels() async
 {
   try
   {
-    var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/?hostelCity=${loggedUserAddress!.toLowerCase()}'));
+    var response = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelDetails/?hostelCity=${loggedUserCity!.toLowerCase()}'));
     var jsonData = json.decode(response.body);
     List<Hostels> hostels = [];
 

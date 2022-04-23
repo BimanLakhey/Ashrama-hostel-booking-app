@@ -45,7 +45,8 @@ class Login(APIView):
                     'userFName':serializer_class.validated_data['userFName'],
                     'userLName':serializer_class.validated_data['userLName'],
                     'userEmail':serializer_class.validated_data['userEmail'],
-                    'userAddress':serializer_class.validated_data['userAddress'],
+                    'userCity':serializer_class.validated_data['userCity'],
+                    'userStreet':serializer_class.validated_data['userStreet'],
                     'userPhone':serializer_class.validated_data['userPhone'],
                     'userPhoto':serializer_class.validated_data['userPhoto'],
                 },
@@ -171,9 +172,7 @@ class SavedHostels(generics.ListCreateAPIView):
 
 class RegisteredHostels(generics.ListCreateAPIView):
     queryset = RegisteredHostel.objects.all()
-    # hostel = Hostel.objects.get(id=hostel_id);
     serializer_class = RegisteredHostelSerializer
-    # permission_classes = (partial(CustomPermissionForUser, ['GET', 'HEAD', 'POST']))
 
     def get_object(self, pk):
         try:

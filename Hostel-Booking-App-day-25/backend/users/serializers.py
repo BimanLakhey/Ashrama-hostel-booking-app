@@ -21,7 +21,9 @@ class UserSerializer(serializers.ModelSerializer):
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())]
         )
-    userAddress = serializers.CharField(
+    userCity = serializers.CharField(
+        required=True)
+    userStreet = serializers.CharField(
         required=True)
     userPhone = serializers.CharField(
         required=True)
@@ -47,7 +49,8 @@ class UserSerializer(serializers.ModelSerializer):
             'userLName',
             'userPassword',
             'userEmail',
-            'userAddress',
+            'userCity',
+            'userStreet',
             'userPhone',
             'userPhoto',
         )        
@@ -78,7 +81,8 @@ class UserLoginSerializer(serializers.ModelSerializer):
             data["userFName"] = user.userFName
             data["userLName"] = user.userLName
             data["userEmail"] = user.userEmail
-            data["userAddress"] = user.userAddress
+            data["userCity"] = user.userCity
+            data["userStreet"] = user.userStreet
             data["userPhone"] = user.userPhone
             # image_data = base64.b64encode(user.userPhoto.read()).decode('utf-8')
             data["userPhoto"] =baseURL + user.userPhoto.url
@@ -98,7 +102,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'userLName', 
             # 'userPassword', 
             'userEmail', 
-            'userAddress',
+            'userCity',
+            'userStreet',
             # 'userPhoto', 
             'userPhone', 
         )
@@ -109,7 +114,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.userLName = validated_data['userLName']
         # instance.userPassword = validated_data['userPassword']
         instance.userEmail = validated_data['userEmail']
-        instance.userAddress = validated_data['userAddress']
+        instance.userCity = validated_data['userCity']
+        instance.userStreet = validated_data['userStreet']
         # instance.userPhoto = validated_data['userPhoto']
         instance.userPhone = validated_data['userPhone']
         instance.save()

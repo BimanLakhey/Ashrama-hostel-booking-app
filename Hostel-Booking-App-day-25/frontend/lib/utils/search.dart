@@ -1,21 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:hotel_booking_app/utils/routes.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:hotel_booking_app/apis/api.dart';
+import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
+import 'package:hotel_booking_app/utils/base_url.dart';
+import 'package:hotel_booking_app/utils/routes.dart';
+import 'package:http/http.dart' as http;
+
+int itemCount = 0;
+String? matchedHostel;
+AsyncSnapshot? snapS;
+String? hID;
+bool matched = false;
 class Search extends SearchDelegate<String>
 {
-  final testValues = [
-    "hello",
-    "world",
-    "my",
-    "name",
-    "is"
-  ];
-
-  final recentValues = [
-    "my",
-    "name",
-    "is"
-  ];
   @override
   List<Widget>? buildActions(BuildContext context) {
     return 
@@ -44,20 +42,75 @@ class Search extends SearchDelegate<String>
 
   @override
   Widget buildResults(BuildContext context) {
-    return Container();
+    return Container
+    (
+      child: GestureDetector
+      (
+        onTap: () 
+        {
+          HostelProfilePage.hostelID = hID;
+          Navigator.pushNamed(context, MyRoutes.hostelProfileRoute);
+        },
+        child: ListTile
+        (
+          leading: Icon(Icons.location_city_outlined),
+          title: Text(matchedHostel.toString()),
+        ),
+      ),
+    );
   }
 
   @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty ? recentValues : testValues;
-    return ListView.builder
+  Widget buildSuggestions(BuildContext context) 
+  {
+    itemCount = 0;
+    matchedHostel;
+    hID;
+    matched = false;
+    return FutureBuilder
     (
-      itemBuilder: (context, index) => ListTile(
-        leading: Icon(Icons.location_city_outlined),
-        title: Text(suggestionList[index]
-        ),
-      ),
-      itemCount: suggestionList.length,
+      future: getHostels(),
+      builder: (context, AsyncSnapshot snapshot)
+      {
+        if(snapshot.data == null)
+        {
+          return const Center(child: CircularProgressIndicator());
+        }
+        else
+        {
+          return ListView.builder
+          (
+            itemBuilder: (context, index) 
+            { 
+              for(int i = 0; i<= index; i++)
+              {
+                if(query == snapshot.data[index].hostelName.toString().substring(0, 3))
+                {
+                  matched= true;
+                  itemCount = 1;
+                  matchedHostel = snapshot.data[index].hostelName;
+                  hID = snapshot.data[index].id;
+                }
+              }
+              
+              return GestureDetector
+              (
+                onTap: () 
+                {
+                  HostelProfilePage.hostelID = snapshot.data[index].id;
+                  Navigator.pushNamed(context, MyRoutes.hostelProfileRoute);
+                },
+                child: ListTile
+                (
+                  leading: Icon(Icons.location_city_outlined),
+                  title: matched ? Text(matchedHostel.toString()) : Text(snapshot.data[index].hostelName),
+                ),
+              );
+            },
+            itemCount: query.isEmpty ? 0 : matched ? itemCount : snapshot.data.length,
+          );
+        }
+      },
     ); 
   }
 }

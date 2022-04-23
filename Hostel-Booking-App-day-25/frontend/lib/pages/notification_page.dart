@@ -138,7 +138,11 @@ class _NotificationPageState extends State<NotificationPage>
                                           SizedBox
                                           (
                                             width: 200,
-                                            child: Text("${snapshot.data[i].notificationMessage} ${snapshot.data[i].hostelName}", style: TextStyle(fontSize: 20),)
+                                            child: snapshot.data[i].notificationMessage.toString().substring(0, 2) == "Yo" 
+                                            ? Text("${snapshot.data[i].notificationMessage}", style: TextStyle(fontSize: 20),)
+                                            : snapshot.data[i].notificationMessage.toString().substring(0, 2) == "Pr" 
+                                            ? Text("${snapshot.data[i].notificationMessage}", style: TextStyle(fontSize: 20),)
+                                            : Text("${snapshot.data[i].notificationMessage} ${snapshot.data[i].hostelName}", style: TextStyle(fontSize: 20),)
                                           ),
                                           Text(TimeAgo.timeAgoSinceDate(snapshot.data[i].notificationDate)),
                                         ],

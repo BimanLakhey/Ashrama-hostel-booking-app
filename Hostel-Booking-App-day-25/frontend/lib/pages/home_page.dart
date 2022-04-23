@@ -35,41 +35,41 @@ class _HomePageState extends State<HomePage>
     myHostels = getHostels();
 
     super.initState();
-    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-        if(!isAllowed)
-        {
-          showDialog
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) 
+    {
+      if(!isAllowed)
+      {
+        showDialog
+        (
+          context: context, 
+          builder: (context) => AlertDialog
           (
-            context: context, 
-            builder: (context) => AlertDialog
-            (
-              title: const Text("Allow notifcations"),
-              content: const Text("Ashrama would like to send you notifications"),
-              actions: [
-                TextButton
+            title: const Text("Allow notifcations"),
+            content: const Text("Ashrama would like to send you notifications"),
+            actions: [
+              TextButton
+              (
+                onPressed: () => Navigator.pop(context), 
+                child: const Text
                 (
-                  onPressed: () => Navigator.pop(context), 
-                  child: const Text
-                  (
-                    "Don\'t allow",
-                    style: TextStyle(color: Colors.grey, fontSize: 15),
-                  )
-                ),
-                TextButton
-                (
-                  onPressed: () => AwesomeNotifications().requestPermissionToSendNotifications().then((_) => Navigator.pop(context)), 
-                  child: const Text
-                  (
-                    "Allow",
-                    style: TextStyle(color: Colors.cyan, fontSize: 15, fontWeight: FontWeight.bold),
-                  )
+                  "Don\'t allow",
+                  style: TextStyle(color: Colors.grey, fontSize: 15),
                 )
-              ],
-            )
-          );
-        }
+              ),
+              TextButton
+              (
+                onPressed: () => AwesomeNotifications().requestPermissionToSendNotifications().then((_) => Navigator.pop(context)), 
+                child: const Text
+                (
+                  "Allow",
+                  style: TextStyle(color: Colors.cyan, fontSize: 15, fontWeight: FontWeight.bold),
+                )
+              )
+            ],
+          )
+        );
       }
-    );
+    });
   }
 
   Future getAverageRating(String hostelIDD) async 
@@ -256,7 +256,10 @@ class _HomePageState extends State<HomePage>
                           (
                             primary: Colors.white
                           ),
-                          onPressed: () {myHostels = getNearbyHostels(); setState(() {});},
+                          onPressed: () 
+                          {
+                            myHostels = getNearbyHostels(); setState(() {});
+                          },
                           icon: const Icon(CupertinoIcons.placemark), 
                           label: const Text("Nearby"),
                         ),

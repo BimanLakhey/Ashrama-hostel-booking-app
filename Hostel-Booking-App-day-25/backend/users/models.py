@@ -9,7 +9,8 @@ class User(models.Model):
     userLName = models.CharField(max_length=50, null=False)
     userPassword = models.CharField(max_length=50, null=False)
     userEmail = models.CharField(max_length=50, null=False)
-    userAddress = models.CharField(max_length=100, null=False)
+    userCity = models.CharField(max_length=100, null=False)
+    userStreet = models.CharField(max_length=100, null=False, default="jwagal")
     userPhone = models.CharField(max_length=100, null=False)
     userPhoto = models.ImageField(upload_to='', null= True, default='defaultProfie.jpg')
 

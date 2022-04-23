@@ -34,6 +34,7 @@ class _HostelProfilePageState extends State<HostelProfilePage>
   String? hostelStreet;
   String? hostelPhone; 
   String? hostelTotalRooms; 
+  String? hostelOwnerID; 
   bool dataLoaded = false;
   Color borderColor = Colors.cyan;
   Color fontColor = Colors.white;
@@ -207,14 +208,53 @@ class _HostelProfilePageState extends State<HostelProfilePage>
     }
   }
 
+  Future getHostelOwnerID () async
+  {
+    try
+    {
+      var response = await http.get(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'));
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 200)
+      {
+        for(var rH in jsonData)
+        {
+          if(rH["hostelID"] == hostelID)
+          {
+            hostelOwnerID = rH["userID"];
+          }
+        }
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
+    }
+  }
+
+  void saveHostelOwnerNotification () async
+  {
+    try
+    {
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}userNotifications/'), body: {'userID': hostelOwnerID, 'hostelID': hostelID, 'notificationMessage': "Your hostel was booked by ${loggedUserFName} ${loggedUserLName}", 'notificationDate': "${DateTime.now()}"});
+    }   
+    catch(e)
+    {
+      print(e);
+    }
+  }
+
   DateTime now = DateTime.now();
   void saveNotification() async 
   {
-    print("${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute}");
     try
     {
       var response = await http.post(Uri.parse('${BaseUrl.baseUrl}userNotifications/'), body: {'userID': loggedUserID, 'hostelID': hostelID, 'notificationMessage': "Booked", 'notificationDate': "${DateTime.now()}"});
-      var jsonData = json.decode(response.body);
     }   
     catch(e)
     {
@@ -901,15 +941,17 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                                     onPressed: bookingConfirmed 
                                     ? () {}
                                     : () 
+                                    async 
                                     { 
+                                      await getHostelOwnerID();
                                       if(roomPrice != null && bookedDate != null)
                                       {
-
                                         hID = hostelID;
                                         uID = loggedUserID;
                                         bookHostel();
                                         sendMail();
                                         saveNotification();
+                                        saveHostelOwnerNotification();
                                         setState(() 
                                         {
                                           bookingConfirmed = true;  

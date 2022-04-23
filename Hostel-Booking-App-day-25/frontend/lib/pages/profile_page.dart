@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/Model/user_model.dart';
+import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:image_picker/image_picker.dart';
@@ -35,7 +36,8 @@ class _ProfilePageState extends State<ProfilePage>
   TextEditingController userLName = TextEditingController();
   TextEditingController userPassword = TextEditingController();
   TextEditingController userEmail = TextEditingController();
-  TextEditingController userAddress = TextEditingController();
+  TextEditingController userCity = TextEditingController();
+  TextEditingController userStreet = TextEditingController();
   TextEditingController userPhone = TextEditingController();
 
   bool isEnabled = false;
@@ -59,7 +61,7 @@ class _ProfilePageState extends State<ProfilePage>
   {
     try
     {
-      var userResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateUser/$userID'), body: {'username': username.text, 'userFName': userFName.text, 'userLName': userLName.text, 'userEmail':userEmail.text, 'userAddress': userAddress.text, 'userPhone': userPhone.text});
+      var userResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateUser/$userID'), body: {'username': username.text, 'userFName': userFName.text, 'userLName': userLName.text, 'userEmail':userEmail.text, 'userCity': userCity.text, 'userStreet': userStreet.text, 'userPhone': userPhone.text});
       var userJsonData = json.decode(userResponse.body);
       
       if(userResponse.statusCode == 200)
@@ -96,7 +98,8 @@ class _ProfilePageState extends State<ProfilePage>
       userFName.text = jsonData["userFName"];
       userLName.text = jsonData["userLName"];
       userEmail.text = jsonData["userEmail"];
-      userAddress.text = jsonData["userAddress"];
+      userCity.text = jsonData["userCity"];
+      userStreet.text = jsonData["userStreet"];
       userPhone.text = jsonData["userPhone"];
       profileImgUrl = jsonData["userPhoto"];
       userID = jsonData["user_id"];
@@ -111,7 +114,18 @@ class _ProfilePageState extends State<ProfilePage>
         )
       );
     }
-    
+  }
+
+  void saveNotification() async 
+  {
+    try
+    {
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}userNotifications/'), body: {'userID': loggedUserID, 'hostelID': "25", 'notificationMessage': "Profile was updated", 'notificationDate': "${DateTime.now()}"});
+    }   
+    catch(e)
+    {
+      print(e);
+    }
   }
   
   @override
@@ -200,7 +214,7 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 Container
                 (
-                  height: 600.0,
+                  // height: 700.0,
                   width: 325.0,
                   decoration: BoxDecoration
                   (
@@ -281,12 +295,26 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                         TextFormField
                         (
-                          controller: userAddress,
+                          controller: userCity,
                           decoration: InputDecoration
                           (
                             enabled: isEnabled,
-                            hintText: "Enter your address",
-                            labelText: "Address",
+                            hintText: "Enter your city",
+                            labelText: "City",
+                          ),
+                        ),
+                        const SizedBox
+                        (
+                          height: 20.0,
+                        ),
+                        TextFormField
+                        (
+                          controller: userStreet,
+                          decoration: InputDecoration
+                          (
+                            enabled: isEnabled,
+                            hintText: "Enter your street",
+                            labelText: "Street",
                           ),
                         ),
                         const SizedBox
@@ -315,6 +343,7 @@ class _ProfilePageState extends State<ProfilePage>
                             if(!isEnabled)
                             {
                               updateUser();
+                              saveNotification();
                             }
                           },
                           child: isEnabled
