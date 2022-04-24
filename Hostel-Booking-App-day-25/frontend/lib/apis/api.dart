@@ -83,7 +83,7 @@ class BookedHostels{
 }
 
 class BookingDetails{
-  final String id, userID, hostelID, roomID, roomType, bookingDate, checkingOutDate, userFName, userLName, userAddress, userPhone, userPhoto, userEmail;
+  final String id, userID, hostelID, roomID, roomType, bookingDate, checkingOutDate, userFName, userLName, userCity, userStreet, userPhone, userPhoto, userEmail;
 
   BookingDetails(
     this.id,
@@ -95,7 +95,8 @@ class BookingDetails{
     this.checkingOutDate,
     this.userFName,
     this.userLName,
-    this.userAddress,
+    this.userCity,
+    this.userStreet,
     this.userPhone,
     this.userPhoto,
     this.userEmail,
@@ -347,7 +348,8 @@ Future getBookingDetails() async
               h["checkingOutDate"], 
               h["userFName"] = u["userFName"], 
               h["userLName"] = u["userLName"], 
-              h["userAddress"] = u["userAddress"], 
+              h["userCity"] = u["userCity"], 
+              h["userStreet"] = u["userStreet"], 
               h["userPhone"] = u["userPhone"],  
               h["userPhoto"] = u["userPhoto"], 
               h["userEmail"] = u["userEmail"],  

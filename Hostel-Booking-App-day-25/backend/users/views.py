@@ -23,7 +23,7 @@ class CustomPermissionForUser(permissions.BasePermission):
         if 'user_id' in request.session.keys():
             return request.method in self.allowed_methods
 
-class Register(generics.ListCreateAPIView):
+class Register(generics.CreateAPIView):
     # get method handler
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -106,6 +106,11 @@ class HostelsDetails(generics.ListAPIView):
         'hostelStreet',
         'hostelCity',
     )
+
+    def delete(self, request, pk, format=None):
+        bookedHostel = self.get_object(pk)
+        bookedHostel.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class UpdateHostel(generics.UpdateAPIView):
     queryset = Hostel.objects.all()
@@ -199,7 +204,3 @@ class UserNotifications(generics.ListCreateAPIView):
     filter_fields = (
         'userID',
     )
-
-
-
-    

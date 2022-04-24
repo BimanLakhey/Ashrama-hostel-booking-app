@@ -3,30 +3,20 @@ import datetime
 from rest_framework.validators import UniqueValidator
 from .models import *
 from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password
 
 baseURL = "http://192.168.0.200:8000";
 
 class UserSerializer(serializers.ModelSerializer):
     
-    username = serializers.CharField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
-        ) 
-    userFName = serializers.CharField( 
-        required=True)
-    userLName = serializers.CharField(
-        required=True)
-    userPassword = serializers.CharField(max_length=50)
-    userEmail = serializers.EmailField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
-        )
-    userCity = serializers.CharField(
-        required=True)
-    userStreet = serializers.CharField(
-        required=True)
-    userPhone = serializers.CharField(
-        required=True)
+    username = serializers.CharField(required=True,validators=[UniqueValidator(queryset=User.objects.all())]) 
+    userFName = serializers.CharField(required=True)
+    userLName = serializers.CharField(required=True)
+    userPassword = serializers.CharField(write_only=True,required=True,style={'input_type': 'password'})
+    userEmail = serializers.EmailField(required=True,validators=[UniqueValidator(queryset=User.objects.all())])
+    userCity = serializers.CharField(required=True)
+    userStreet = serializers.CharField(required=True)
+    userPhone = serializers.CharField(required=True)
 
     def validate_email(self, value):
         user = self.context['request'].user
@@ -42,18 +32,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = (
-            'id',
-            'username',
-            'userFName',
-            'userLName',
-            'userPassword',
-            'userEmail',
-            'userCity',
-            'userStreet',
-            'userPhone',
-            'userPhoto',
-        )        
+        fields = ( 'id', 'username', 'userFName', 'userLName', 'userPassword', 'userEmail', 'userCity', 'userStreet', 'userPhone', 'userPhoto',)        
+        extra_kwargs = {'userPassword': {'write_only': True}}
 
 class UserLoginSerializer(serializers.ModelSerializer):
     # to accept either username or email
@@ -84,7 +64,6 @@ class UserLoginSerializer(serializers.ModelSerializer):
             data["userCity"] = user.userCity
             data["userStreet"] = user.userStreet
             data["userPhone"] = user.userPhone
-            # image_data = base64.b64encode(user.userPhoto.read()).decode('utf-8')
             data["userPhoto"] =baseURL + user.userPhoto.url
             return data;
         else:
@@ -100,11 +79,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'username', 
             'userFName', 
             'userLName', 
-            # 'userPassword', 
             'userEmail', 
             'userCity',
             'userStreet',
-            # 'userPhoto', 
             'userPhone', 
         )
         

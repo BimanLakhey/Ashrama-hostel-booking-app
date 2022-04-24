@@ -2,7 +2,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/pages/confirmation_page.dart';
 import 'package:hotel_booking_app/pages/customer_care_page.dart';
-import 'package:hotel_booking_app/pages/enter_number_page.dart';
+import 'package:hotel_booking_app/pages/enter_email_page.dart';
 import 'package:hotel_booking_app/pages/feedback_page.dart';
 import 'package:hotel_booking_app/pages/final_signup_page.dart';
 import 'package:hotel_booking_app/pages/how_ashrama_works_page.dart';
@@ -107,7 +107,7 @@ class MyApp extends StatelessWidget {
         MyRoutes.profileRoute: (context) => ProfilePage(),
         MyRoutes.confirmationRoute: (context) => ConfirmationPage(),
         MyRoutes.signinRoute: (context) => FinalSignUpPage(),
-        MyRoutes.enterNumberRoute: (context) => EnterNumberPage(),
+        MyRoutes.enterEmailPage: (context) => EnterEmailPage(),
         MyRoutes.registerHostel: (context) => RegisterHostelPage(),
         MyRoutes.hostelOwnerDetailsRoute: (context) => HostelOwnerDetailsPage(),
         MyRoutes.hostelRoomDetailsRoute: (context) => HostelRoomDetailsPage(),
@@ -118,6 +118,7 @@ class MyApp extends StatelessWidget {
         MyRoutes.customerCareRoute: (context) => CustomerCarePage(),
         MyRoutes.feedbackRoute: (context) => FeedbackPage(),
         MyRoutes.notificationsRoute: (context) => NotificationPage(),
+        MyRoutes.newPasswordRoute: (context) => ResetPage(),
       }
     );
   }

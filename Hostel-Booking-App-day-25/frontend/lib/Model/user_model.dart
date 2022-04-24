@@ -11,7 +11,8 @@ class UserModel {
   String? userLName;
   String? userEmail;
   String? userPassword;
-  String? userAddress;
+  String? userCity;
+  String? userStreet;
   String? userPhone;
   String? userPhoto;
 
@@ -22,7 +23,8 @@ class UserModel {
     this.userLName,
     this.userEmail,
     this.userPassword,
-    this.userAddress,
+    this.userCity,
+    this.userStreet,
     this.userPhone,
     this.userPhoto,
   }

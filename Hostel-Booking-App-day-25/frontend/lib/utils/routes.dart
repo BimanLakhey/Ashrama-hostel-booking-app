@@ -4,11 +4,12 @@ class MyRoutes
   static String homeRoute = "/home";
   static String registerRoute = "/register";
   static String resetRoute = "/resetPassword";
+  static String newPasswordRoute = "/newPassword";
   static String searchRoute = "/search";
   static String profileRoute = "/profile";
   static String confirmationRoute = "/confirm";
   static String signinRoute = "/sigin";
-  static String enterNumberRoute = "/enterNumber";
+  static String enterEmailPage = "/enterEmail";
   static String registerHostel = "/registerHostel";
   static String hostelOwnerDetailsRoute = "/hostelOwnerDetails";
   static String hostelRoomDetailsRoute = "/hostelRoomDetails";

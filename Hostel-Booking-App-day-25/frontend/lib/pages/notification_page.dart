@@ -80,31 +80,30 @@ class _NotificationPageState extends State<NotificationPage>
                 (
                   child: noNotifications == true 
                   ? Container
+                  (
+                    height: 400,
+                    alignment: Alignment.center,
+                    child: SingleChildScrollView
                     (
-                      height: 400,
-                      alignment: Alignment.center,
-                      child: SingleChildScrollView
+                      child: Column
                       (
-                        child: Column
-                        (
-                          children:
-                          const [
-                            SizedBox(height: 50,),
-                            Icon(Icons.notification_important_outlined, color: Colors.deepOrange, size: 100,),
-                            SizedBox(height: 30,),
-                            Text
+                        children:
+                        const [
+                          SizedBox(height: 50,),
+                          Icon(Icons.notification_important_outlined, color: Colors.deepOrange, size: 100,),
+                          SizedBox(height: 30,),
+                          Text
+                          (
+                            "You have no new notificaions",
+                            style: TextStyle
                             (
-                              "You have no new notificaions",
-                              style: TextStyle
-                              (
-                                fontSize: 20
-                              ),
+                              fontSize: 20
                             ),
-                            
-                          ],
-                        ),
-                      ),   
-                    )
+                          ),          
+                        ],
+                      ),
+                    ),   
+                  )
                   : Row
                   (
                     children: 

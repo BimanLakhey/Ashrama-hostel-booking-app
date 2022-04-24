@@ -37,14 +37,16 @@ class _SignupPageState extends State<SignupPage> {
   bool confirmNotEmpty = true;
   bool hostelNotEmpty = true;
   bool licenseNotEmpty = true;
-  bool addressNotEmpty = true;
+  bool cityNotEmpty = true;
+  bool streetNotEmpty = true;
   bool userValid = false;
 
   TextEditingController firstNameControl = TextEditingController();
   TextEditingController lastNameControl = TextEditingController();
   TextEditingController emailControl = TextEditingController();
   TextEditingController phoneNumControl = TextEditingController();
-  TextEditingController addressControl = TextEditingController();
+  TextEditingController cityContol = TextEditingController();
+  TextEditingController streetControl = TextEditingController();
   TextEditingController hostelsControl = TextEditingController();
   TextEditingController licenseControl = TextEditingController();
   TextEditingController userNameControl = TextEditingController();
@@ -165,7 +167,8 @@ class _SignupPageState extends State<SignupPage> {
       ConfirmationPage.userLName = lastNameControl.text;
       ConfirmationPage.userEmail = emailControl.text;
       ConfirmationPage.userPhone = phoneNumControl.text;
-      ConfirmationPage.userAddress = addressControl.text;
+      ConfirmationPage.userCity = cityContol.text;
+      ConfirmationPage.userStreet = streetControl.text;
       ConfirmationPage.userPassword = passwordControl.text;
       Navigator.pushNamed(context, MyRoutes.confirmationRoute);
     } 
@@ -274,15 +277,27 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-  void isAddressNotEmpty()
+  void isCityNotEmpty()
   {
-    if(addressControl.text.isNotEmpty)
+    if(cityContol.text.isNotEmpty)
     {
-      addressNotEmpty = true;
+      cityNotEmpty = true;
     }
     else
     {
-      addressNotEmpty = false;
+      cityNotEmpty = false;
+    }
+  }
+
+  void isStreetNotEmpty()
+  {
+    if(streetControl.text.isNotEmpty)
+    {
+      streetNotEmpty = true;
+    }
+    else
+    {
+      streetNotEmpty = false;
     }
   }
 
@@ -452,12 +467,26 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     TextFormField
                     (
-                      controller: addressControl,
+                      controller: cityContol,
                       decoration: InputDecoration
                       (
-                        hintText: "Enter your address",
-                        labelText: "Address",
-                        errorText: addressNotEmpty ? null : 'Address cannot be empty!'
+                        hintText: "Enter your city",
+                        labelText: "City",
+                        errorText: cityNotEmpty ? null : 'City cannot be empty!'
+                      ),
+                    ),
+                    const SizedBox
+                    (
+                      height: 20.0,
+                    ),
+                    TextFormField
+                    (
+                      controller: streetControl,
+                      decoration: InputDecoration
+                      (
+                        hintText: "Enter your street",
+                        labelText: "Street",
+                        errorText: streetNotEmpty ? null : 'Street cannot be empty!'
                       ),
                     ),
                     const SizedBox
@@ -481,11 +510,12 @@ class _SignupPageState extends State<SignupPage> {
                           isUsernameNotEmpty();
                           isPasswordNotEmpty();
                           isConfirmNotEmpty();
-                          isAddressNotEmpty();
+                          isCityNotEmpty();
+                          isStreetNotEmpty();
                           checkPasswords();
                         });
                         
-                        if(firstNameNotEmpty && lastNameNotEmpty && emailNotEmpty && usernameNotEmpty && passwordNotEmpty && confirmNotEmpty &&  addressNotEmpty)
+                        if(firstNameNotEmpty && lastNameNotEmpty && emailNotEmpty && usernameNotEmpty && passwordNotEmpty && confirmNotEmpty &&  cityNotEmpty && streetNotEmpty)
                         {
                           if(usernameTaken == false)
                           {

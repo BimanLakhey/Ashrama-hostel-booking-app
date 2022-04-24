@@ -8,6 +8,10 @@ import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/drawer.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:http/http.dart' as http;
+import 'package:mailer/mailer.dart';
+import 'dart:math' as math;
+
+import 'package:mailer/smtp_server/gmail.dart';
 // import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 class LoginPage extends StatefulWidget {
   @override
@@ -19,12 +23,10 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController userNameControl = TextEditingController();
   TextEditingController passwordControl = TextEditingController();
 
-  
   @override
   void dispose() {
     super.dispose();
   }
-
 
   void getUserData() async 
   {
@@ -212,7 +214,8 @@ class _LoginPageState extends State<LoginPage> {
                           (
                             onPressed: () 
                             {
-                              Navigator.pushNamed(context, MyRoutes.enterNumberRoute);
+
+                              Navigator.pushNamed(context, MyRoutes.enterEmailPage);
                             }, 
                             child: const Text
                             (

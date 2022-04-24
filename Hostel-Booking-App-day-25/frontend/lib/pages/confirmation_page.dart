@@ -15,7 +15,9 @@ class ConfirmationPage extends StatefulWidget {
   static String? userEmail;
   static String? userPhone;
   static String? userPassword;
-  static String? userAddress;
+  static String? userCity;
+  static String? userStreet;
+  static bool? resetVerification;
   @override
   _ConfirmationPageState createState() => _ConfirmationPageState();
 }
@@ -32,15 +34,19 @@ class _ConfirmationPageState extends State<ConfirmationPage>
   late List<DropdownMenuItem<String>> _dropDownMenuItems;
   late String? _currentOption;
   bool isValid = true;
+  bool emailTaken = false;
 
   String? otp = ConfirmationPage.otp;
+  String? userID;
   String? username = ConfirmationPage.username;
   String? userFName = ConfirmationPage.userFName;
   String? userLName = ConfirmationPage.userLName;
   String? userEmail = ConfirmationPage.userEmail;
   String? userPhone = ConfirmationPage.userPhone;
   String? userPassword = ConfirmationPage.userPassword;
-  String? userAddress = ConfirmationPage.userAddress;
+  String? userCity = ConfirmationPage.userCity;
+  String? userStreet = ConfirmationPage.userStreet;
+  bool? resetVerification = ConfirmationPage.resetVerification;
 
   @override
   void initState() {
@@ -65,10 +71,11 @@ class _ConfirmationPageState extends State<ConfirmationPage>
     return items;
   }
 
-  void signUpUser() async {
+  void signUpUser() async 
+  {
     try
     {
-      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': username!.toLowerCase(), 'userFName': userFName!.toLowerCase(), 'userLName': userLName!.toLowerCase(), 'userEmail': userEmail!.toLowerCase(), 'userPhone': userPhone!.toLowerCase(), 'userAddress': userAddress!.toLowerCase(), 'userPassword': userPassword!.toLowerCase()});
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registerUser/'), body: {'username': username!.toLowerCase(), 'userFName': userFName!.toLowerCase(), 'userLName': userLName!.toLowerCase(), 'userEmail': userEmail!.toLowerCase(), 'userPhone': userPhone!.toLowerCase(), 'userCity': userCity!.toLowerCase(), 'userStreet': userStreet!.toLowerCase(), 'userPassword': userPassword!.toLowerCase()});
       var jsonData = json.decode(response.body);
       if(response.statusCode == 201)
       {
@@ -105,6 +112,72 @@ class _ConfirmationPageState extends State<ConfirmationPage>
       );
     }
   }
+
+  Future getUserEmails() async 
+  {
+    try
+    {
+      var response = await http.get(Uri.parse('${BaseUrl.baseUrl}userDetails/'));
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 200)
+      {
+        for(var user in jsonData)
+        {
+          if(user["userEmail"] == userEmail.toString())
+          {
+            emailTaken = true;
+            userID = user["id"];
+            username = user["username"];
+            userFName = user["userFName"];
+            userLName = user["userLName"];
+            userEmail = user["userEmail"];
+            userPhone = user["userPhone"];
+            userCity = user["userCity"];
+            userStreet = user["userStreet"];
+          }
+          else
+          {
+            emailTaken = false;
+          }
+        }
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
+    }
+  }
+
+  void resetPassword() async 
+  {
+    try
+    {
+      var userResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateUser/$userID'), body: {'username': username, 'userFName': userFName, 'userLName': userLName, 'userEmail':userEmail, 'userCity': userCity, 'userStreet': userStreet, 'userPhone': userPhone, 'userPassword': userPassword});
+      var userJsonData = json.decode(userResponse.body);
+      
+      if(userResponse.statusCode == 200)
+      {
+        ScaffoldMessenger.of(context).showSnackBar
+        (
+          const SnackBar
+          (
+            content: Text('Password reset!'),
+          )
+        );
+      }
+    }
+    catch(e)
+    {
+      print("no internet");
+    }
+    
+  }
   
   @override
   Widget build(BuildContext context) 
@@ -113,7 +186,7 @@ class _ConfirmationPageState extends State<ConfirmationPage>
     (
       appBar: AppBar
       (
-        title: const Text("Confirm your number"),
+        title: const Text("Confirm your email"),
       ),
       body: SingleChildScrollView
       (
@@ -147,11 +220,12 @@ class _ConfirmationPageState extends State<ConfirmationPage>
                 showFieldAsBox: true,
                 focusedBorderColor: Colors.cyan,
                 textStyle: TextStyle(fontSize: 13),
-                onSubmit: (enteredOTP)
+                onSubmit: resetVerification == true
+                ? (enteredOTP)
                 {
-                  if (enteredOTP == otp)
+                  if (enteredOTP == otp.toString())
                   {
-                    signUpUser();
+                    Navigator.pushNamed(context, MyRoutes.resetRoute);    
                   }
                   else
                   {
@@ -163,7 +237,24 @@ class _ConfirmationPageState extends State<ConfirmationPage>
                       )
                     );
                   }
-                  
+                }
+                : (enteredOTP)
+                {
+                  if (enteredOTP == otp.toString())
+                  {
+                    signUpUser();  
+                    print("signed up!");          
+                  }
+                  else
+                  {
+                    ScaffoldMessenger.of(context).showSnackBar
+                    (
+                      const SnackBar
+                      (
+                        content: Text('Invalid OTP!'),
+                      )
+                    );
+                  }
                 },
               ),
               Padding
