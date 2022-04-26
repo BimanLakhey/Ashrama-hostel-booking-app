@@ -8,11 +8,7 @@ import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/drawer.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:http/http.dart' as http;
-import 'package:mailer/mailer.dart';
-import 'dart:math' as math;
 
-import 'package:mailer/smtp_server/gmail.dart';
-// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -23,6 +19,12 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController userNameControl = TextEditingController();
   TextEditingController passwordControl = TextEditingController();
 
+  bool usernameNotEmpty = true;
+  bool passwordNotEmpty = true;
+  bool userValid = false;
+
+
+  
   @override
   void dispose() {
     super.dispose();
@@ -36,6 +38,9 @@ class _LoginPageState extends State<LoginPage> {
       var jsonData = json.decode(response.body);
       if(response.statusCode == 200)
       {
+        setState(() {
+          userValid = false;
+        });
         Cookie.cookieSession = response.headers['set-cookie'];
         Navigator.pushNamed(context, MyRoutes.homeRoute);
         loggedUserID = jsonData["user_id"].toString();
@@ -44,39 +49,25 @@ class _LoginPageState extends State<LoginPage> {
         loggedUserFName = jsonData["userFName"].toString();
         loggedUserEmail = jsonData["userEmail"].toString();
         loggedUserLName = jsonData["userLName"].toString();
+        setState(() {
+          userModel = UserModel.fromJson({"data": jsonData});
+          DrawerPage.usernameHolder = jsonData["username"];
+          DrawerPage.passwordHolder = jsonData["userPassword"];
+          ProfilePage.usernameHolder = jsonData["username"];
+          ProfilePage.passwordHolder = jsonData["userPassword"];
+          
+        });
       }
       else
       {
-        showDialog
+        ScaffoldMessenger.of(context).showSnackBar
         (
-          context: context,
-          builder: (ctx) => AlertDialog
+          const SnackBar
           (
-            title: Text("Error"),
-            content: Text("Invalid credentials!"),
-            actions: <Widget>
-            [
-              FlatButton
-              (
-                onPressed: () 
-                {
-                  Navigator.of(ctx).pop();
-                },
-                child: Text("ok"),
-              ),
-            ],
-          ),
+            content: Text('Invalid login credentials!'),
+          )
         );
       }
-      
-      setState(() {
-        userModel = UserModel.fromJson({"data": jsonData});
-        DrawerPage.usernameHolder = jsonData["username"];
-        DrawerPage.passwordHolder = jsonData["userPassword"];
-        ProfilePage.usernameHolder = jsonData["username"];
-        ProfilePage.passwordHolder = jsonData["userPassword"];
-        
-      });
     }
     catch(e)
     {
@@ -88,8 +79,34 @@ class _LoginPageState extends State<LoginPage> {
         )
       );
     }
-    
   }
+
+  void isUsernameNotEmpty()
+  {
+
+    if(userNameControl.text.isNotEmpty)
+    {
+      usernameNotEmpty = true;
+    }
+    else
+    {
+      usernameNotEmpty = false;
+    }
+  }
+
+  void isPasswordNotEmpty()
+  {
+    if(passwordControl.text.isNotEmpty)
+    {
+      passwordNotEmpty = true;
+    }
+    else
+    {
+      passwordNotEmpty = false;
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -154,10 +171,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField
                     (
                       controller: userNameControl,
-                      decoration: const InputDecoration
+                      decoration: InputDecoration
                       ( 
                         hintText: "Enter your username",
-                        labelText: "Username"
+                        labelText: "Username",
+                        errorText: usernameNotEmpty ? null : 'Username cannot be empty!'
                       ),
                     ),
                     const SizedBox
@@ -167,10 +185,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField
                     (
                       controller: passwordControl,
-                      decoration: const InputDecoration
+                      decoration: InputDecoration
                       (
                         hintText: "Enter your password",
                         labelText: "password",
+                        errorText: passwordNotEmpty ? null : 'Password cannot be empty!'
                       ),
                       obscureText: true,
                     ),
@@ -180,10 +199,19 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     ElevatedButton
                     (
-                      onPressed: () 
-                      { 
-                        getUserData();
-                      }, 
+                      onPressed: userValid ? () {} : () 
+                      async 
+                      {
+                        setState(() 
+                        {
+                          isUsernameNotEmpty();
+                          isPasswordNotEmpty();
+                        });
+                        if(usernameNotEmpty && passwordNotEmpty)
+                        {
+                          getUserData();
+                        }
+                      },
                       child: const Text
                       (
                         "Login",

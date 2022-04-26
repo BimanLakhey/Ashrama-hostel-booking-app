@@ -13,6 +13,7 @@ urlpatterns = [
     path('registerHostel/', RegisterHostel.as_view(), name="Register Hostel"),
     path('logoutUser/', Logout.as_view(), name="Logout"),
     path('updateUser/<int:pk>', UpdateProfile.as_view(), name="Profile"),
+    path('resetPassword/<int:pk>', ResetPassword.as_view(), name="Reset password"),
     path('updateHostel/<int:pk>', UpdateHostel.as_view(), name="Hostel Profile"),
     path('userProfile/<int:pk>', ViewUserProfile.as_view(), name="User Profile"),
     path('userDetails/', UserDetails.as_view(), name="User Details"),

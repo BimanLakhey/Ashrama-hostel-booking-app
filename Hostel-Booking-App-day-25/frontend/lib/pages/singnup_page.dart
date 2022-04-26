@@ -25,6 +25,8 @@ class _SignupPageState extends State<SignupPage> {
 
   bool emailValid = true;
   bool passwordsValid = true;
+  bool usernameValid = true;
+  bool passwordValid = true;
 
   bool usernameTaken = false;
   bool emailTaken = false;
@@ -170,6 +172,7 @@ class _SignupPageState extends State<SignupPage> {
       ConfirmationPage.userCity = cityContol.text;
       ConfirmationPage.userStreet = streetControl.text;
       ConfirmationPage.userPassword = passwordControl.text;
+      ConfirmationPage.resetVerification = false;
       Navigator.pushNamed(context, MyRoutes.confirmationRoute);
     } 
     on MailerException catch (e) {
@@ -301,6 +304,30 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
+  void isUsernameValid()
+  {
+    if(userNameControl.text.length < 6 || userNameControl.text.length > 12)
+    {
+      usernameValid = false;
+    }
+    else
+    {
+      usernameValid = true;
+    }
+  }
+
+  void isPasswordValid()
+  {
+    if(passwordControl.text.length < 6 || passwordControl.text.length > 16)
+    {
+      passwordValid = false;
+    }
+    else
+    {
+      passwordValid = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) 
   {
@@ -428,7 +455,7 @@ class _SignupPageState extends State<SignupPage> {
                       (
                         hintText: "Enter your username",
                         labelText: "Username",
-                        errorText: usernameNotEmpty ? usernameTaken == false ? null : 'Username already taken!' : 'Username cannot be empty!'
+                        errorText: usernameNotEmpty ? usernameValid ? usernameTaken == false ? null : 'Username already taken!' : "Username must be in between 6 to 12\ncharacters in length" : 'Username cannot be empty!'
                       ),
                     ),
                     const SizedBox
@@ -442,7 +469,7 @@ class _SignupPageState extends State<SignupPage> {
                       (
                         hintText: "Enter your password",
                         labelText: "Password",
-                        errorText: passwordNotEmpty ? null : 'Password cannot be empty!'
+                        errorText: passwordNotEmpty ? passwordValid ? null : 'Password must be in between 6 to 16\ncharacters in length' : 'Password cannot be empty!'
                       ),
                       obscureText: true,
                     ),
@@ -512,28 +539,37 @@ class _SignupPageState extends State<SignupPage> {
                           isConfirmNotEmpty();
                           isCityNotEmpty();
                           isStreetNotEmpty();
+                          isUsernameValid();
+                          isPasswordValid();
                           checkPasswords();
                         });
                         
                         if(firstNameNotEmpty && lastNameNotEmpty && emailNotEmpty && usernameNotEmpty && passwordNotEmpty && confirmNotEmpty &&  cityNotEmpty && streetNotEmpty)
                         {
-                          if(usernameTaken == false)
+                          if(usernameValid)
                           {
-                            if (emailValid)
+                            if(usernameTaken == false)
                             {
-                              if(emailTaken == false)
+                              if (emailValid)
                               {
-                                if (passwordsValid)
+                                if(emailTaken == false)
                                 {
-                                  setState(() 
+                                  if(passwordValid == true)
                                   {
-                                    userValid = true;
-                                  });
-                                  sendOTP();
+                                    if (passwordsValid)
+                                    {
+                                      setState(() 
+                                      {
+                                        userValid = true;
+                                      });
+                                      sendOTP();
+                                    }
+                                  }
                                 }
                               }
                             }
                           }
+                          
                         }
                       },    
                       label: userValid 

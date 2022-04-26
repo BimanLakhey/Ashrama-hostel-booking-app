@@ -9,6 +9,7 @@ import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 class ManageHostelPage extends StatefulWidget {
   const ManageHostelPage({Key key}) : super(key: key);
@@ -32,12 +33,80 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
     super.dispose();
   }
 
-  TextEditingController hostelName = TextEditingController();
-  TextEditingController hostelCity = TextEditingController();
-  TextEditingController hostelStreet = TextEditingController();
-  TextEditingController hostelType = TextEditingController();
-  TextEditingController hostelPhone = TextEditingController();
-  TextEditingController hostelTotalRooms = TextEditingController();
+  TextEditingController hostelNameControl = TextEditingController();
+  TextEditingController hostelCityControl = TextEditingController();
+  TextEditingController hostelStreetControl = TextEditingController();
+  TextEditingController hostelTypeControl = TextEditingController();
+  TextEditingController hostelPhoneControl = TextEditingController();
+  TextEditingController hostelTotalRoomsControl = TextEditingController();
+
+  bool hostelNameNotEmpty = true;
+  bool hostelCityNotEmpty = true;
+  bool hostelStreetNotEmpty = true;
+  bool hostelTypeNotEmpty = true;
+  bool hostelTotalRoomsNotEmpty = true;
+  bool hostelValid = false;
+
+  void isHostelNameNotEmpty()
+  {
+    if(hostelNameControl.text.isNotEmpty)
+    {
+      hostelNameNotEmpty = true;
+    }
+    else
+    {
+      hostelNameNotEmpty = false;
+    }
+  }
+
+  void isHostelCityNotEmpty()
+  {
+    if(hostelCityControl.text.isNotEmpty)
+    {
+      hostelCityNotEmpty = true;
+    }
+    else
+    {
+      hostelCityNotEmpty = false;
+    }
+  }
+
+  void isHostelStreetNotEmpty()
+  {
+
+    if(hostelStreetControl.text.isNotEmpty)
+    {
+      hostelStreetNotEmpty = true;
+    }
+    else
+    {
+      hostelStreetNotEmpty = false;
+    }
+  }
+
+  void isHostelTypeNotEmpty()
+  {
+    if(hostelTypeControl.text.isNotEmpty)
+    {
+      hostelTypeNotEmpty = true;
+    }
+    else
+    {
+      hostelTypeNotEmpty = false;
+    }
+  }
+
+  void isHostelTotalRoomsNotEmpty()
+  {
+    if(hostelTotalRoomsControl.text.isNotEmpty)
+    {
+      hostelTotalRoomsNotEmpty = true;
+    }
+    else
+    {
+      hostelTotalRoomsNotEmpty = false;
+    }
+  }
 
   Color fontColor = Colors.white;
   Color containerColor = Colors.white;
@@ -68,13 +137,7 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
   Future myHostelDetails;
   int index = 0;
 
-  void saveTextFields()
-  {
-    setState(() 
-    {
-      isEnabled = !isEnabled;
-    });
-  }
+
 
   void getHostelData() async 
   {
@@ -89,13 +152,13 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
         
       });
       hostelID = jsonData["id"].toString();
-      hostelName.text = jsonData["hostelName"];
+      hostelNameControl.text = jsonData["hostelName"];
       hostelPhoto = jsonData["hostelPhoto"];
-      hostelCity.text = jsonData["hostelCity"];
-      hostelStreet.text = jsonData["hostelStreet"];
-      hostelPhone.text = jsonData["hostelPhone"];
-      hostelTotalRooms.text = jsonData["hostelTotalRooms"];
-      hostelType.text = jsonData["hostelType"];
+      hostelCityControl.text = jsonData["hostelCity"];
+      hostelStreetControl.text = jsonData["hostelStreet"];
+      hostelPhoneControl.text = jsonData["hostelPhone"];
+      hostelTotalRoomsControl.text = jsonData["hostelTotalRooms"];
+      hostelTypeControl.text = jsonData["hostelType"];
     }
     on SocketException
     {
@@ -114,31 +177,20 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
   {
     try
     {
-      var registerResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateHostel/$hostelID'), body: {'hostelName': hostelName.text, 'hostelCity': hostelCity.text, 'hostelStreet': hostelStreet.text, 'hostelType':hostelType.text, 'hostelPhone': hostelPhone.text, 'hostelTotalRooms': hostelTotalRooms.text});
+      var registerResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateHostel/$hostelID'), body: {'hostelName': hostelNameControl.text, 'hostelCity': hostelCityControl.text, 'hostelStreet': hostelStreetControl.text, 'hostelType':hostelTypeControl.text, 'hostelPhone': hostelPhoneControl.text, 'hostelTotalRooms': hostelTotalRoomsControl.text});
       var registerJsonData = json.decode(registerResponse.body);
       
-      if(registerResponse.statusCode == 201)
+      if(registerResponse.statusCode == 200)
       {
-        // registeredHostels();
-        showDialog
+        setState(() {
+          hostelValid = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar
         (
-          context: context,
-          builder: (ctx) => AlertDialog
+          const SnackBar
           (
-            title: const Text("Success"),
-            content: const Text("Hostel updated!"),
-            actions: <Widget>
-            [
-              FlatButton
-              (
-                onPressed: () 
-                {
-                  Navigator.pop(context);
-                },
-                child: Text("ok"),
-              ),
-            ],
-          ),
+            content: Text('Profile updated!'),
+          )
         );
       }
     }
@@ -177,7 +229,14 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
           (
             onPressed: () 
             {
-              removeHostel(hostelID);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar
+              (
+                const SnackBar
+                (
+                  content: Text('Could not delete hostel!'),
+                )
+              );
             },
             child: Text("ok"),
           ),
@@ -188,16 +247,30 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
 
   void removeHostel(String id) async 
   {
-    removeRegisteredHostel(id);
-    var response = await http.delete
-    (
-      Uri.parse('${BaseUrl.baseUrl}hostelDetails/$id'), 
-    );
-    if(response.statusCode == 204)
+    try
     {
-      hasRegisteredHostel = false;
+      removeRegisteredHostel(id);
+      var response = await http.delete
+      (
+        Uri.parse('${BaseUrl.baseUrl}hostelDetails/$id'), 
+      );
+      if(response.statusCode == 204)
+      {
+        hasRegisteredHostel = false;
+      }
+      var jsonData = json.decode(response.body);
     }
-    var jsonData = json.decode(response.body);
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Could not delete hostel!'),
+        )
+      );
+    }
+
   }
 
   void removeRegisteredHostel(String id) async 
@@ -329,15 +402,15 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                         [  
                           TextFormField
                           (
-                            controller: hostelName,
+                            controller: hostelNameControl,
                             enableInteractiveSelection: false, 
                             decoration: InputDecoration
                             (
                               hintStyle: TextStyle(color: alt? buttonFontColorAlt : buttonFontColor),
                               labelStyle: TextStyle(color: alt ? buttonFontColorAlt : buttonFontColor),
-                              enabled: isEnabled,
                               hintText: "Enter the hostel name",
                               labelText: "Hostel name",
+                              errorText: hostelNameNotEmpty ? null : 'Hostel name cannot be empty!'
                             ),
                           ),
                           const SizedBox
@@ -347,15 +420,15 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                           TextFormField
                           (
                             
-                            controller: hostelCity,
+                            controller: hostelCityControl,
                             enableInteractiveSelection: false, 
                             decoration: InputDecoration
                             (
                               hintStyle: TextStyle(color: alt? buttonFontColorAlt : buttonFontColor),
                               labelStyle: TextStyle(color: alt ? buttonFontColorAlt : buttonFontColor),
-                              enabled: isEnabled,
                               hintText: "Enter the hostel city",
                               labelText: "Hostel city",
+                              errorText: hostelCityNotEmpty ? null : 'Hostel city cannot be empty!'
                             ),
                           ),
                           const SizedBox
@@ -364,32 +437,31 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                           ),
                           TextFormField
                           (
-                            controller: hostelStreet,
+                            controller: hostelStreetControl,
                             enableInteractiveSelection: false, 
                             decoration: InputDecoration
                             (
                               hintStyle: TextStyle(color: alt? buttonFontColorAlt : buttonFontColor),
                               labelStyle: TextStyle(color: alt ? buttonFontColorAlt : buttonFontColor),
-                              enabled: isEnabled,
                               hintText: "Enter the hostel street",
                               labelText: "Hostel street",
+                              errorText: hostelStreetNotEmpty ? null : 'Hostel street cannot be empty!'
                             ),
                           ),
                           const SizedBox
                           (
                             height: 20.0,
                           ),
-                          TextFormField
+                          IntlPhoneField
                           (
-                            controller: hostelPhone,
-                            decoration: InputDecoration
+                            controller: hostelPhoneControl,
+                            showCountryFlag: false,
+                            decoration: const InputDecoration
                             (
-                              hintStyle: TextStyle(color: alt? buttonFontColorAlt : buttonFontColor),
-                              labelStyle: TextStyle(color: alt ? buttonFontColorAlt : buttonFontColor),
-                              enabled: isEnabled,
-                              hintText: "Enter the hostel phonenumber",
-                              labelText: "Hostel phone number",
+                                labelText: "Phone number",
+                                hintText: "Enter your phone number"   
                             ),
+                            initialCountryCode: 'NP',
                           ),
                           const SizedBox
                           (
@@ -398,14 +470,14 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                           TextFormField
                           (
                             cursorColor: Colors.cyan,
-                            controller: hostelType,
+                            controller: hostelTypeControl,
                             decoration: InputDecoration
                             (
                               hintStyle: TextStyle(color: alt? buttonFontColorAlt : buttonFontColor),
                               labelStyle: TextStyle(color: alt ? buttonFontColorAlt : buttonFontColor),
-                              enabled: isEnabled,
                               hintText: "Enter the hostel type",
                               labelText: "Hostel type",
+                              enabled:  false
                             ),
                           ),
                           const SizedBox
@@ -414,14 +486,14 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                           ),
                           TextFormField
                           (
-                            controller: hostelTotalRooms,
+                            controller: hostelTotalRoomsControl,
                             decoration: InputDecoration
                             (
                               hintStyle: TextStyle(color: alt? buttonFontColorAlt : buttonFontColor),
                               labelStyle: TextStyle(color: alt ? buttonFontColorAlt : buttonFontColor),
-                              enabled: isEnabled,
                               hintText: "Enter the total no. rooms",
                               labelText: "Total rooms",
+                              errorText: hostelTotalRoomsNotEmpty ? null : 'Total number of rooms cannot be empty!'
                             ),
                           ),
                           const SizedBox
@@ -434,24 +506,36 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                             (
                               primary: alt? buttonColorAlt : buttonColor
                             ),
-                            onPressed: () {
-                               saveTextFields();  
-                               if(!isEnabled)
-                               {
-                                 updateHostel();
-                               }
-                              },
-                            child: isEnabled
-                            ? Text
+                            onPressed: hostelValid ? () {} : () 
+                            {
+                              setState(() 
+                              {
+                                isHostelNameNotEmpty();
+                                isHostelCityNotEmpty();
+                                isHostelStreetNotEmpty();
+                                isHostelTotalRoomsNotEmpty();
+                                isHostelTypeNotEmpty();
+                              });
+                              if(hostelNameNotEmpty && hostelCityNotEmpty && hostelStreetNotEmpty &&  hostelTotalRoomsNotEmpty && hostelTypeNotEmpty)
+                              {
+                                setState(() 
+                                {
+                                  hostelValid = true;
+                                });
+                                updateHostel();
+                              }
+                              else
+                              {
+                                print("empty");
+                              }
+                            }, 
+                            child: hostelValid 
+                            ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2, ))
+                            : Text
                             (
                               "Save", 
                               style: TextStyle(color: alt ? buttonFontColorAlt : buttonFontColor)
-                            )
-                            : Text
-                            (
-                              "Edit", 
-                              style: TextStyle(color: alt ? buttonFontColorAlt : buttonFontColor)
-                            )                  
+                            )       
                           )
                         ],
                       ),

@@ -86,6 +86,11 @@ class UpdateProfile(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UpdateUserSerializer
 
+    
+class ResetPassword(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ResetPasswordSerializer
+
 class UserDetails(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer

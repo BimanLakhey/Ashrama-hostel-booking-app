@@ -9,6 +9,7 @@ import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 enum ImageSourceType {gallery, camera}
 
@@ -44,6 +45,91 @@ class _ProfilePageState extends State<ProfilePage>
   bool profilePhoto = false;
   late int userID;
 
+  bool usernameValid = true;
+
+  bool firstNameNotEmpty = true;
+  bool lastNameNotEmpty = true;
+  bool usernameNotEmpty = true;
+  bool confirmNotEmpty = true;
+  bool hostelNotEmpty = true;
+  bool licenseNotEmpty = true;
+  bool cityNotEmpty = true;
+  bool streetNotEmpty = true;
+  bool userValid = false;
+
+  void isFirstNameNotEmpty()
+  {
+    if(userFName.text.isNotEmpty)
+    {
+      firstNameNotEmpty = true;
+    }
+    else
+    {
+      firstNameNotEmpty = false;
+    }
+  }
+
+  void isLastNameNotEmpty()
+  {
+    if(userLName.text.isNotEmpty)
+    {
+      lastNameNotEmpty = true;
+    }
+    else
+    {
+      lastNameNotEmpty = false;
+    }
+  }
+
+  void isUsernameNotEmpty()
+  {
+
+    if(username.text.isNotEmpty)
+    {
+      usernameNotEmpty = true;
+    }
+    else
+    {
+      usernameNotEmpty = false;
+    }
+  }
+
+  void isCityNotEmpty()
+  {
+    if(userCity.text.isNotEmpty)
+    {
+      cityNotEmpty = true;
+    }
+    else
+    {
+      cityNotEmpty = false;
+    }
+  }
+
+  void isStreetNotEmpty()
+  {
+    if(userStreet.text.isNotEmpty)
+    {
+      streetNotEmpty = true;
+    }
+    else
+    {
+      streetNotEmpty = false;
+    }
+  }
+
+  void isUsernameValid()
+  {
+    if(username.text.length < 6 || username.text.length > 12)
+    {
+      usernameValid = false;
+    }
+    else
+    {
+      usernameValid = true;
+    }
+  }
+
   @override
   void initState()
   {
@@ -66,6 +152,9 @@ class _ProfilePageState extends State<ProfilePage>
       
       if(userResponse.statusCode == 200)
       {
+        setState(() {
+          userValid = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar
         (
           const SnackBar
@@ -240,9 +329,9 @@ class _ProfilePageState extends State<ProfilePage>
                           enableInteractiveSelection: false, 
                           decoration: InputDecoration
                           (
-                            enabled: isEnabled,
                             hintText: "Enter your username",
                             labelText: "username",
+                            errorText: usernameNotEmpty ? usernameValid ? null : "Username must be in between 6 to 12\ncharacters in length" : 'Username cannot be empty!'
                           ),
                         ),
                         const SizedBox
@@ -255,9 +344,9 @@ class _ProfilePageState extends State<ProfilePage>
                           enableInteractiveSelection: false, 
                           decoration: InputDecoration
                           (
-                            enabled: isEnabled,
                             hintText: "Enter your first name",
                             labelText: "First name",
+                            errorText: firstNameNotEmpty ? null : 'First name cannot be empty!'
                           ),
                         ),
                         const SizedBox
@@ -270,9 +359,9 @@ class _ProfilePageState extends State<ProfilePage>
                           enableInteractiveSelection: false, 
                           decoration: InputDecoration
                           (
-                            enabled: isEnabled,
                             hintText: "Enter your last name",
                             labelText: "last name",
+                            errorText: lastNameNotEmpty ? null : 'Lastname cannot be empty!'
                           ),
                         ),
                         const SizedBox
@@ -298,9 +387,9 @@ class _ProfilePageState extends State<ProfilePage>
                           controller: userCity,
                           decoration: InputDecoration
                           (
-                            enabled: isEnabled,
                             hintText: "Enter your city",
                             labelText: "City",
+                            errorText: cityNotEmpty ? null : 'City cannot be empty!'
                           ),
                         ),
                         const SizedBox
@@ -312,24 +401,25 @@ class _ProfilePageState extends State<ProfilePage>
                           controller: userStreet,
                           decoration: InputDecoration
                           (
-                            enabled: isEnabled,
                             hintText: "Enter your street",
                             labelText: "Street",
+                            errorText: streetNotEmpty ? null : 'Street cannot be empty!'
                           ),
                         ),
                         const SizedBox
                         (
                           height: 20.0,
                         ),
-                        TextFormField
+                        IntlPhoneField
                         (
                           controller: userPhone,
-                          decoration: InputDecoration
+                          showCountryFlag: false,
+                          decoration: const InputDecoration
                           (
-                            enabled: isEnabled,
-                            hintText: "Enter your phone number",
-                            labelText: "Phone number",
+                              labelText: "Phone number",
+                              hintText: "Enter your phone number"   
                           ),
+                          initialCountryCode: 'NP',
                         ),
                         const SizedBox
                         (
@@ -337,26 +427,37 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                         ElevatedButton
                         (
-                          onPressed: () 
+                          onPressed: userValid ? () {} : ()  
                           {
-                            saveTextFields();  
-                            if(!isEnabled)
+                            setState(() 
                             {
-                              updateUser();
-                              saveNotification();
+                              isFirstNameNotEmpty();
+                              isLastNameNotEmpty();
+                              isUsernameNotEmpty();
+                              isCityNotEmpty();
+                              isStreetNotEmpty();
+                              isUsernameValid();
+                            });
+                            if(firstNameNotEmpty && lastNameNotEmpty && usernameNotEmpty &&  cityNotEmpty && streetNotEmpty)
+                            {
+                              if(usernameValid)
+                              {
+                                setState(() 
+                                {
+                                  userValid = true;
+                                });
+                                updateUser();
+                                saveNotification();
+                              }
                             }
                           },
-                          child: isEnabled
-                          ? Text
+                          child: userValid 
+                          ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2, ))
+                          : const Text
                           (
                             "Save", 
                             style: TextStyle(color: Colors.white)
-                          )
-                          : Text
-                          (
-                            "Edit", 
-                            style: TextStyle(color: Colors.white)
-                          )                  
+                          )       
                         )
                       ],
                     ),
@@ -368,14 +469,6 @@ class _ProfilePageState extends State<ProfilePage>
         )    
       )
     );
-  }
-
-  void saveTextFields()
-  {
-    setState(() 
-    {
-      isEnabled = !isEnabled;
-    });
   }
 
   _getFromGallery() async 

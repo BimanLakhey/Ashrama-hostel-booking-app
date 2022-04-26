@@ -99,6 +99,21 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         return instance
 
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    userPassword = serializers.CharField(write_only=True,required=True,style={'input_type': 'password'})
+
+    class Meta:
+        model = User
+        fields = (
+            'userPassword', 
+        )
+        
+    def update(self, instance, validated_data):
+        instance.userPassword = validated_data['userPassword']
+        instance.save()
+
+        return instance
+
 class HostelSerializer(serializers.ModelSerializer):
 
     class Meta:

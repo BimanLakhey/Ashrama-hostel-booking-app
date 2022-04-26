@@ -77,6 +77,7 @@ class _EnterEmailPageState extends State<EnterEmailPage>
           {
             emailTaken = true;
             userValid = false;
+            break;
           }
           else
           {

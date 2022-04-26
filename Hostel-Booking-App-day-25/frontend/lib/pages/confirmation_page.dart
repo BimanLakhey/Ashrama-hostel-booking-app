@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:hotel_booking_app/pages/reset_password_page.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +30,7 @@ class _ConfirmationPageState extends State<ConfirmationPage>
     super.dispose();
   }
   
-  final List _options = ["Send via SMS", "Send via Email"];
+  final List _options = ["Send via Email", "Send via SMS"];
 
   late List<DropdownMenuItem<String>> _dropDownMenuItems;
   late String? _currentOption;
@@ -117,6 +118,7 @@ class _ConfirmationPageState extends State<ConfirmationPage>
   {
     try
     {
+      print(userEmail);
       var response = await http.get(Uri.parse('${BaseUrl.baseUrl}userDetails/'));
       var jsonData = json.decode(response.body);
       if(response.statusCode == 200)
@@ -126,14 +128,7 @@ class _ConfirmationPageState extends State<ConfirmationPage>
           if(user["userEmail"] == userEmail.toString())
           {
             emailTaken = true;
-            userID = user["id"];
-            username = user["username"];
-            userFName = user["userFName"];
-            userLName = user["userLName"];
-            userEmail = user["userEmail"];
-            userPhone = user["userPhone"];
-            userCity = user["userCity"];
-            userStreet = user["userStreet"];
+            userID = user["id"].toString();
           }
           else
           {
@@ -154,30 +149,30 @@ class _ConfirmationPageState extends State<ConfirmationPage>
     }
   }
 
-  void resetPassword() async 
-  {
-    try
-    {
-      var userResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateUser/$userID'), body: {'username': username, 'userFName': userFName, 'userLName': userLName, 'userEmail':userEmail, 'userCity': userCity, 'userStreet': userStreet, 'userPhone': userPhone, 'userPassword': userPassword});
-      var userJsonData = json.decode(userResponse.body);
+  // void resetPassword() async 
+  // {
+  //   try
+  //   {
+  //     var userResponse = await http.put(Uri.parse('${BaseUrl.baseUrl}updateUser/$userID'), body: {'username': username, 'userFName': userFName, 'userLName': userLName, 'userEmail':userEmail, 'userCity': userCity, 'userStreet': userStreet, 'userPhone': userPhone, 'userPassword': userPassword});
+  //     var userJsonData = json.decode(userResponse.body);
       
-      if(userResponse.statusCode == 200)
-      {
-        ScaffoldMessenger.of(context).showSnackBar
-        (
-          const SnackBar
-          (
-            content: Text('Password reset!'),
-          )
-        );
-      }
-    }
-    catch(e)
-    {
-      print("no internet");
-    }
+  //     if(userResponse.statusCode == 200)
+  //     {
+  //       ScaffoldMessenger.of(context).showSnackBar
+  //       (
+  //         const SnackBar
+  //         (
+  //           content: Text('Password reset!'),
+  //         )
+  //       );
+  //     }
+  //   }
+  //   catch(e)
+  //   {
+  //     print("no internet");
+  //   }
     
-  }
+  // }
   
   @override
   Widget build(BuildContext context) 
@@ -222,9 +217,16 @@ class _ConfirmationPageState extends State<ConfirmationPage>
                 textStyle: TextStyle(fontSize: 13),
                 onSubmit: resetVerification == true
                 ? (enteredOTP)
+                async 
                 {
+                  await getUserEmails();
+                  setState(() {
+                    
+                  });
                   if (enteredOTP == otp.toString())
                   {
+                    print(userID);
+                    ResetPage.userID = userID;
                     Navigator.pushNamed(context, MyRoutes.resetRoute);    
                   }
                   else
@@ -238,7 +240,7 @@ class _ConfirmationPageState extends State<ConfirmationPage>
                     );
                   }
                 }
-                : (enteredOTP)
+                : (enteredOTP) 
                 {
                   if (enteredOTP == otp.toString())
                   {
@@ -257,40 +259,40 @@ class _ConfirmationPageState extends State<ConfirmationPage>
                   }
                 },
               ),
-              Padding
-              (
-                padding: const EdgeInsets.fromLTRB(20,40,0,0),
-                child: Row
-                (
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: 
-                  [
-                    const Text
-                    (
-                      "Haven't received a code yet?",
-                    ),
-                    TextButton
-                    (
-                      onPressed: () => Navigator.pushNamed(context, MyRoutes.loginRoute),
-                      child: const Text
-                      (
-                        "Send again",
-                        style: TextStyle
-                        (
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        ),
-                      )
-                    )
-                  ]               
-                ),
-              ),
-              DropdownButton
-              (
-                value: _currentOption,
-                items: _dropDownMenuItems, 
-                onChanged: changedDropDownItem
-              )
+              // Padding
+              // (
+              //   padding: const EdgeInsets.fromLTRB(20,40,0,0),
+              //   child: Row
+              //   (
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: 
+              //     [
+              //       const Text
+              //       (
+              //         "Haven't received a code yet?",
+              //       ),
+              //       TextButton
+              //       (
+              //         onPressed: () => Navigator.pushNamed(context, MyRoutes.loginRoute),
+              //         child: const Text
+              //         (
+              //           "Send again",
+              //           style: TextStyle
+              //           (
+              //             fontWeight: FontWeight.bold,
+              //             color: Colors.black
+              //           ),
+              //         )
+              //       )
+              //     ]               
+              //   ),
+              // ),
+              // DropdownButton
+              // (
+              //   value: _currentOption,
+              //   items: _dropDownMenuItems, 
+              //   onChanged: changedDropDownItem
+              // )
             ],
           ),
         ),

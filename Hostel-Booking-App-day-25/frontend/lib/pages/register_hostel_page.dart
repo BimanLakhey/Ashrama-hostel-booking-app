@@ -22,16 +22,89 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
   late List<DropdownMenuItem<String>> _dropDownMenuItems;
   late String? _currentOption;
 
-  String? selectedHostelType;
+  String? selectedHostelType = "Hostel type";
   TextEditingController hostelNameControl = TextEditingController();
   TextEditingController hostelCityControl = TextEditingController();
   TextEditingController hostelStreetControl = TextEditingController();
-  TextEditingController hostelTypeControl = TextEditingController();
   TextEditingController hostelPhoneControl = TextEditingController();
   TextEditingController hostelTotalRooms = TextEditingController();
   var registerJsonData;
 
 
+  bool hostelNameNotEmpty = true;
+  bool hostelCityNotEmpty = true;
+  bool hostelStreetNotEmpty = true;
+  bool hostelTypeNotEmpty = true;
+  bool hostelTotalRoomsNotEmpty = true;
+  bool hostelValid = false;
+
+  void isHostelNameNotEmpty()
+  {
+    if(hostelNameControl.text.isNotEmpty)
+    {
+      hostelNameNotEmpty = true;
+    }
+    else
+    {
+      hostelNameNotEmpty = false;
+    }
+  }
+
+  void isHostelCityNotEmpty()
+  {
+    if(hostelCityControl.text.isNotEmpty)
+    {
+      hostelCityNotEmpty = true;
+    }
+    else
+    {
+      hostelCityNotEmpty = false;
+    }
+  }
+
+  void isHostelStreetNotEmpty()
+  {
+
+    if(hostelStreetControl.text.isNotEmpty)
+    {
+      hostelStreetNotEmpty = true;
+    }
+    else
+    {
+      hostelStreetNotEmpty = false;
+    }
+  }
+
+  void isHostelTypeNotEmpty()
+  {
+    if(selectedHostelType != "Hostel type")
+    {
+      hostelTypeNotEmpty = true;
+    }
+    else
+    {
+      hostelTypeNotEmpty = false;
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Please select a hostel type!'),
+        )
+      );
+    }
+  }
+
+  void isHostelTotalRoomsNotEmpty()
+  {
+    if(hostelTotalRooms.text.isNotEmpty)
+    {
+      hostelTotalRoomsNotEmpty = true;
+    }
+    else
+    {
+      hostelTotalRoomsNotEmpty = false;
+    }
+  }
 
   @override
   void initState() {
@@ -65,6 +138,9 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
   {
     try
     {
+      setState(() {
+        hostelValid = false;
+      });
       var response = await http.post(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'), body: {'hostelID': registerJsonData["id"].toString(), 'userID': loggedUserID});
       var jsonData = json.decode(response.body);
       print("registered");
@@ -175,7 +251,7 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                 onPressed: () {
                   Navigator.pushNamed(context, MyRoutes.manageHostelRoute);
                 },
-                child: Text("Manage hostel", style: TextStyle(color: Colors.white),)
+                child: const Text("Manage hostel", style: TextStyle(color: Colors.white),)
               )
             ],
           ),
@@ -189,7 +265,7 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
           (
             children: 
             [
-              SizedBox(height: 50,),
+              const SizedBox(height: 50,),
               Container
               (
                 width: 325.0,
@@ -216,10 +292,11 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                       TextFormField
                       (
                         controller: hostelNameControl,
-                        decoration: const InputDecoration
+                        decoration: InputDecoration
                         (
                           hintText: "Enter the hostel name",
-                          labelText: "Hostel name"
+                          labelText: "Hostel name",
+                          errorText: hostelNameNotEmpty ? null : 'Hostel name cannot be empty!'
                         ),
                       ),
                       const SizedBox
@@ -229,10 +306,11 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                       TextFormField
                       (
                         controller: hostelCityControl,
-                        decoration: const InputDecoration
+                        decoration: InputDecoration
                         (
                           hintText: "Enter the city name",
                           labelText: "Hostel city",
+                          errorText: hostelCityNotEmpty ? null : 'Hostel city cannot be empty!'
                         ),
                       ),
                       const SizedBox
@@ -242,10 +320,11 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                       TextFormField
                       (
                         controller: hostelStreetControl,
-                        decoration: const InputDecoration
+                        decoration: InputDecoration
                         (
                           hintText: "Enter the hostel street",
                           labelText: "Hostel street",
+                          errorText: hostelStreetNotEmpty ? null : 'Hostel street cannot be empty!'
                         ),
                       ),
                       const SizedBox
@@ -283,10 +362,11 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                       TextFormField
                       (
                         controller: hostelTotalRooms,
-                        decoration: const InputDecoration
+                        decoration: InputDecoration
                         (
                           hintText: "Enter the total number of rooms",
                           labelText: "Total rooms",
+                          errorText: hostelTotalRoomsNotEmpty ? null : 'Total number of rooms cannot be empty!'
                         ),
                       ),
                       const SizedBox
@@ -295,9 +375,24 @@ class _RegisterHostelPageState extends State<RegisterHostelPage>
                       ),
                       ElevatedButton.icon
                       (
-                        onPressed: () 
+                        onPressed: hostelValid ? () {} : () 
                         {
-                          registerHostel();
+                          setState(() 
+                          {
+                            isHostelNameNotEmpty();
+                            isHostelCityNotEmpty();
+                            isHostelStreetNotEmpty();
+                            isHostelTotalRoomsNotEmpty();
+                            isHostelTypeNotEmpty();
+                          });
+                          if(hostelNameNotEmpty && hostelCityNotEmpty && hostelStreetNotEmpty &&  hostelTotalRoomsNotEmpty && hostelTypeNotEmpty)
+                          {
+                            setState(() 
+                            {
+                              hostelValid = true;
+                            });
+                            registerHostel();
+                          }
                         }, 
                         label: const Text
                         (
