@@ -102,7 +102,7 @@ class _EnterEmailPageState extends State<EnterEmailPage>
   {
     otpGenerator();
     String email = "Ashrama.hostels@gmail.com";
-    String password = 'Hesoyam74';
+    String password = 'spikhhueqoqjosym';
 
     final smtpServer = gmail(email, password);
 

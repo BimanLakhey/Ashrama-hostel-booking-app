@@ -58,7 +58,7 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
   sendMessage() async 
   {
     String email = "Ashrama.cares@gmail.com";
-    String password = 'AshramaCare';
+    String password = 'hqvnvskvsquuzmim';
 
     final smtpServer = gmail(email, password);
 

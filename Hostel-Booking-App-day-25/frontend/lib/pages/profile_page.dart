@@ -209,7 +209,7 @@ class _ProfilePageState extends State<ProfilePage>
   {
     try
     {
-      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}userNotifications/'), body: {'userID': loggedUserID, 'hostelID': "25", 'notificationMessage': "Profile was updated", 'notificationDate': "${DateTime.now()}"});
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}userNotifications/'), body: {'userID': loggedUserID, 'hostelID': "33", 'notificationMessage': "Profile was updated", 'notificationDate': "${DateTime.now()}"});
     }   
     catch(e)
     {

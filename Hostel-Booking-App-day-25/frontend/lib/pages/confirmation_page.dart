@@ -225,7 +225,6 @@ class _ConfirmationPageState extends State<ConfirmationPage>
                   });
                   if (enteredOTP == otp.toString())
                   {
-                    print(userID);
                     ResetPage.userID = userID;
                     Navigator.pushNamed(context, MyRoutes.resetRoute);    
                   }

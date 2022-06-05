@@ -265,43 +265,43 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
                     ),
-                    SizedBox(width: 30),
-                    Padding
-                    (
-                      padding: const EdgeInsets.fromLTRB(0,0,0,25),
-                      child: Container
-                      (
-                        width: 125,
-                        height: 45,
-                        decoration: BoxDecoration
-                        (
-                          boxShadow: const 
-                          [
-                            BoxShadow
-                            (
-                              color: Colors.black54,
-                              offset: Offset(1, 5),
-                              blurRadius: 6,
-                            )
-                          ],
-                          color: Colors.cyan,
-                          border: Border.all(color: Colors.cyan, width: 2),
-                          borderRadius: BorderRadius.circular(35)
-                        ),
-                        child: TextButton.icon
-                        (
-                          style: TextButton.styleFrom
-                          (
-                            primary: Colors.white
-                          ),
-                          onPressed: () {
-                            // myHostels = getTopRatedHostels(); setState(() {});
-                          },
-                          icon: const Icon(CupertinoIcons.placemark), 
-                          label: const Text("Top rated"),
-                        ),
-                      ),
-                    ),
+                    // SizedBox(width: 30),
+                    // Padding
+                    // (
+                    //   padding: const EdgeInsets.fromLTRB(0,0,0,25),
+                    //   child: Container
+                    //   (
+                    //     width: 125,
+                    //     height: 45,
+                    //     decoration: BoxDecoration
+                    //     (
+                    //       boxShadow: const 
+                    //       [
+                    //         BoxShadow
+                    //         (
+                    //           color: Colors.black54,
+                    //           offset: Offset(1, 5),
+                    //           blurRadius: 6,
+                    //         )
+                    //       ],
+                    //       color: Colors.cyan,
+                    //       border: Border.all(color: Colors.cyan, width: 2),
+                    //       borderRadius: BorderRadius.circular(35)
+                    //     ),
+                    //     child: TextButton.icon
+                    //     (
+                    //       style: TextButton.styleFrom
+                    //       (
+                    //         primary: Colors.white
+                    //       ),
+                    //       onPressed: () {
+                    //         // myHostels = getTopRatedHostels(); setState(() {});
+                    //       },
+                    //       icon: const Icon(CupertinoIcons.placemark), 
+                    //       label: const Text("Top rated"),
+                    //     ),
+                    //   ),
+                    // ),
                     const SizedBox(width: 15),
                     
                   ],

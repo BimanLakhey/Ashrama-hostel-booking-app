@@ -73,4 +73,15 @@ class UserNotification(models.Model):
     hostelID = models.CharField(max_length=50)
     notificationMessage = models.CharField(max_length=200)
     notificationDate = models.DateTimeField()
+
+class Amenity(models.Model):
+    amenityName = models.CharField(max_length=200)
+
+class HostelAmenity(models.Model):
+    hostelID = models.CharField(max_length=50)
+    amenityID = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.id}"
+
     

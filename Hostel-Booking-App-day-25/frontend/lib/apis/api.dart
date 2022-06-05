@@ -18,9 +18,11 @@ bool noSaved = false;
 bool noCurrentlyBooked = false;
 bool noReviews = false;
 bool noNotifications = false;
+bool noAmenities = false;
 List<Hostels> hostels = [];
 List<Reviews> reviews = [];
 List<Notifications> notifications = [];
+List<HostelAmenities> amenities = [];
 
 class Hostels{
   final String id, hostelName, hostelCity, hostelStreet, hostelType, hostelPhone, hostelTotalRooms, hostelPhoto;
@@ -132,6 +134,16 @@ class Notifications
     this.roomType,
     this.notificationMessage,
     this.notificationDate
+  );
+}
+
+class HostelAmenities{
+  final String id, hostelID, amenityName;
+
+  HostelAmenities(
+    this.id,
+    this.hostelID,
+    this.amenityName,
   );
 }
 
@@ -467,3 +479,49 @@ Future getUserNotifications() async
   }
 }
 
+Future getHostelAmenities() async
+{
+  try
+  {
+    var registeredResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}registeredHostels/'), headers: {'Cookie': '${Cookie.cookieSession}'});
+    var registeredJsonData = json.decode(registeredResponse.body);
+
+    amenities = [];
+
+    for (var registeredHostel in registeredJsonData)
+    {
+      if(registeredHostel["userID"] == loggedUserID)
+      {
+        hasRegisteredHostel = true;
+        ManageHostelPage.hostelID = registeredHostel["hostelID"];
+
+        var hostelAmenityResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}hostelAmenities/?hostelID=${registeredHostel["hostelID"]}'), headers: {'Cookie': '${Cookie.cookieSession}'});
+        var hostelAmenitiesJsonData = json.decode(hostelAmenityResponse.body);
+
+        for (var hostelAmenity in hostelAmenitiesJsonData)
+        {
+          var amenityResponse = await http.get(Uri.parse('${BaseUrl.baseUrl}amenities/?id=${hostelAmenity["amenityID"]}'), headers: {'Cookie': '${Cookie.cookieSession}'});
+          var amenityJsonData = json.decode(amenityResponse.body);
+
+          for (var a in amenityJsonData)
+          {
+            HostelAmenities hostelAmenities = HostelAmenities
+            (
+              hostelAmenity["id"].toString(),
+              hostelAmenity["hostelID"],
+              hostelAmenity["amenityName"] = a["amenityName"],
+            ); 
+            amenities.add(hostelAmenities);
+          }
+        }
+        return amenities;
+      }
+    }
+  }
+  catch(e)
+  {
+    print("no data");
+  }
+
+  
+}

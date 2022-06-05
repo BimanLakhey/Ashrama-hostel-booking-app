@@ -209,3 +209,32 @@ class UserNotifications(generics.ListCreateAPIView):
     filter_fields = (
         'userID',
     )
+
+class Amenities(generics.ListCreateAPIView):
+    queryset = Amenity.objects.all()
+    serializer_class = AmenitySerializer
+    
+    filter_fields = (
+        'id',
+    )
+
+class HostelAmenities(generics.ListCreateAPIView):
+    queryset = HostelAmenity.objects.all()
+    serializer_class = HostelAmenitySerializer
+
+    # def get_object(self, pk):
+    #     try:
+    #         return SavedHostel.objects.get(pk=pk)
+    #     except SavedHostel.DoesNotExist:
+    #         raise Http404
+        
+    # def delete(self, request, pk, format=None):
+    #     savedHostel = self.get_object(pk)
+    #     savedHostel.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+
+    filter_fields = (
+        'hostelID',
+    )
+
+

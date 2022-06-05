@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/pages/hostel_profile_page.dart';
-import 'package:hotel_booking_app/utils/base_url.dart';
 import 'package:hotel_booking_app/utils/routes.dart';
-import 'package:http/http.dart' as http;
 
 int itemCount = 0;
 String? matchedHostel;

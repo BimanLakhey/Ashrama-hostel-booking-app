@@ -107,7 +107,7 @@ class _HostelProfilePageState extends State<HostelProfilePage>
   sendMail() async 
   {
     String email = "Ashrama.hostels@gmail.com";
-    String password = 'Hesoyam74';
+    String password = 'spikhhueqoqjosym';
 
     final smtpServer = gmail(email, password);
 
@@ -545,21 +545,54 @@ class _HostelProfilePageState extends State<HostelProfilePage>
                           ),
                           width: 400,
                           height: 150,
-                          child: GridView.count
+                          child: FutureBuilder
                           (
-                            childAspectRatio: 2,
-                            crossAxisCount: 3,
-                            mainAxisSpacing: 20,
-                            crossAxisSpacing: 10,
-                            children: List.generate(10, (index) 
+                            future: getHostelAmenities(),
+                            builder: (context, AsyncSnapshot snapshot) 
                             {
-                              return TextButton.icon
-                              (
-                                icon: Icon(Icons.tiktok, color: alt ? containerFontColorAlt : containerFontColor), 
-                                onPressed: () {  }, 
-                                label: Text("Amenity", style: TextStyle(color: alt ? containerFontColorAlt: containerFontColor),),
-                              );
-                            }),
+                              if(snapshot.data == null)
+                              {
+                                return const SizedBox(height: 150, child: Center(child: CircularProgressIndicator()));
+                              }
+                              else
+                              {
+                                return Expanded
+                                (
+                                  child: ListView.builder
+                                    (
+                                      physics: const BouncingScrollPhysics(),
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: snapshot.data.length,
+                                      itemBuilder: (context, i)
+                                      {
+                                        return SingleChildScrollView
+                                        (
+                                          child: Column
+                                          (
+                                            children: 
+                                            [
+                                              Align
+                                              (
+                                                alignment: Alignment.centerLeft,
+                                                child: Padding
+                                                (
+                                                  padding: const EdgeInsets.fromLTRB(20, 25, 20, 0),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.warning_amber_rounded),
+                                                      Text("  ${snapshot.data[i].amenityName}", style: const TextStyle(height: 1.5, fontSize: 18, color: Colors.black87)),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        );
+                                      },
+                                    ),
+                                );
+                              }
+                            }
                           ),
                         ),
                       ),

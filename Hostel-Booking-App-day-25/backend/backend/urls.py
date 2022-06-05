@@ -30,6 +30,9 @@ urlpatterns = [
     path('hostelDetails/<int:pk>', RegisterHostel.as_view(), name="Booked hostels"),
     path('userReviews/', UserReviews.as_view(), name="User reviews"),
     path('userNotifications/', UserNotifications.as_view(), name="User notifications"),
+    path('amenities/', Amenities.as_view(), name="Amenities"),
+    path('hostelAmenities/', HostelAmenities.as_view(), name="Hostel amenities"),
+
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

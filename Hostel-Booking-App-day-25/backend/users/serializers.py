@@ -262,5 +262,28 @@ class UserNotificationSerializer(serializers.ModelSerializer):
             'notificationDate',
         ]
 
+class AmenitySerializer(serializers.ModelSerializer):
+    amenityName = serializers.CharField()
+
+    class Meta:
+        model = Amenity
+        fields = [
+            'id',
+            'amenityName',
+        ]
+
+class HostelAmenitySerializer(serializers.ModelSerializer):
+    
+    hostelID = serializers.CharField()
+    amenityID = serializers.CharField()
+
+    class Meta:
+        model = HostelAmenity
+        fields = [
+            'id',
+            'hostelID',
+            'amenityID',
+        ]
+
 
         

@@ -21,7 +21,7 @@ class _FeedbackPageState extends State<FeedbackPage>
   sendFeedback() async 
   {
     String email = "Ashrama.feedbacks@gmail.com";
-    String password = 'AshramaFeedback';
+    String password = 'qlppegkqhyqissaw';
 
     final smtpServer = gmail(email, password);
 

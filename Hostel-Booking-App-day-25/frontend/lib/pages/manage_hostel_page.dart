@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hotel_booking_app/Model/hostel_model.dart';
 import 'package:hotel_booking_app/apis/api.dart';
 import 'package:hotel_booking_app/utils/base_url.dart';
@@ -25,6 +26,7 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
   {
     getHostelData();
     myHostelDetails = getBookingDetails();
+    hostelAmenities = getHostelAmenities();
     super.initState();
   }
 
@@ -33,12 +35,17 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
     super.dispose();
   }
 
+  Color ratingColor = const Color.fromARGB(255, 225, 220, 220);
+
+  String amenityID;
+
   TextEditingController hostelNameControl = TextEditingController();
   TextEditingController hostelCityControl = TextEditingController();
   TextEditingController hostelStreetControl = TextEditingController();
   TextEditingController hostelTypeControl = TextEditingController();
   TextEditingController hostelPhoneControl = TextEditingController();
   TextEditingController hostelTotalRoomsControl = TextEditingController();
+  TextEditingController amenityControl = TextEditingController();
 
   bool hostelNameNotEmpty = true;
   bool hostelCityNotEmpty = true;
@@ -46,6 +53,8 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
   bool hostelTypeNotEmpty = true;
   bool hostelTotalRoomsNotEmpty = true;
   bool hostelValid = false;
+
+  Future hostelAmenities;
 
   void isHostelNameNotEmpty()
   {
@@ -173,6 +182,18 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
     
   }
 
+  void saveNotification() async 
+  {
+    try
+    {
+      var response = await http.post(Uri.parse('${BaseUrl.baseUrl}userNotifications/'), body: {'userID': loggedUserID, 'hostelID': ManageHostelPage.hostelID, 'notificationMessage': "Hostel profile was updated", 'notificationDate': "${DateTime.now()}"});
+    }   
+    catch(e)
+    {
+      print(e);
+    }
+  }
+
   void updateHostel() async 
   {
     try
@@ -185,6 +206,7 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
         setState(() {
           hostelValid = false;
         });
+        saveNotification();
         ScaffoldMessenger.of(context).showSnackBar
         (
           const SnackBar
@@ -282,6 +304,72 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
     if(response.statusCode == 204)
     {
       hasRegisteredHostel = false;
+    }
+  }
+
+  void addHostelAmenity() async 
+  {
+    try
+    {
+      var response = await http.post
+      (
+        Uri.parse('${BaseUrl.baseUrl}hostelAmenities/'), 
+        body: {'hostelID': hostelID, 'amenityID': amenityID}
+      );
+      var jsonData = json.decode(response.body);
+      if(response.statusCode == 201)
+      {
+        setState(() {
+          
+        });
+      }
+      else
+      {
+        print("failed!");
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
+    }
+  }
+
+  void addAmenity() async 
+  {
+    try
+    {
+      var amenityResponse = await http.post(Uri.parse('${BaseUrl.baseUrl}amenities/'), body: {'amenityName': amenityControl.text});
+      var amenityJsonData = json.decode(amenityResponse.body);
+      if(amenityResponse.statusCode == 201)
+      {
+        var amenityResponseData = await http.get(Uri.parse('${BaseUrl.baseUrl}amenities/'));
+        var amenityResponseJsonData = json.decode(amenityResponseData.body);
+        for(var a in amenityResponseJsonData)
+        {
+          amenityID = a["id"].toString();
+        }
+        addHostelAmenity();
+      }
+      else
+      {
+        print("error code");
+      }
+    }
+    catch(e)
+    {
+      ScaffoldMessenger.of(context).showSnackBar
+      (
+        const SnackBar
+        (
+          content: Text('Not connected to the internet!'),
+        )
+      );
     }
   }
   
@@ -548,6 +636,189 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                   child: Padding
                   (
                     padding: const EdgeInsets.fromLTRB(15, 45, 0, 0),
+                    child: Text("Hostel amenities", style: TextStyle(fontSize: 20, color: alt? fontColorAlt : fontColor)),
+                  ),
+                ),
+                SizedBox
+                (
+                  height: 300,
+                  child: Column
+                  (
+                    children: 
+                    [
+                      const SizedBox
+                        (
+                          height: 25,
+                        ),
+                        Container
+                        (
+                          height: 30,
+                          color: const Color.fromARGB(255, 225, 220, 220),
+                        ),
+                        FutureBuilder
+                        (
+                          future: hostelAmenities,
+                          builder: (context, snapshot) 
+                          {
+                            if(snapshot.data == null)
+                            {
+                              return const SizedBox(height: 150, child: Center(child: CircularProgressIndicator()));
+                            }
+                            else
+                            {
+                              return Expanded
+                              (
+                                child: ListView.builder
+                                  (
+                                    physics: const BouncingScrollPhysics(),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: snapshot.data.length,
+                                    itemBuilder: (context, i)
+                                    {
+                                      return SingleChildScrollView
+                                      (
+                                        child: Column
+                                        (
+                                          children: 
+                                          [
+                                            Align
+                                            (
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding
+                                              (
+                                                padding: const EdgeInsets.fromLTRB(20, 25, 20, 0),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.warning_amber_rounded),
+                                                    Text("  ${snapshot.data[i].amenityName}", style: const TextStyle(height: 1.5, fontSize: 18, color: Colors.black87)),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      );
+                                    },
+                                  ),
+                              );
+                            }
+                          }
+                        ),
+                        Align
+                        (
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: FloatingActionButton
+                            (
+                              onPressed: () 
+                              {
+                                showModalBottomSheet
+                                (
+                                  context: context,
+                                  builder: (context) 
+                                  {
+                                    return Padding
+                                    (
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Column
+                                      (
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>
+                                        [
+                                          Row
+                                          (
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: 
+                                            [
+                                              Padding
+                                              (
+                                                padding: const EdgeInsets.fromLTRB(0,0,0,50),
+                                                child: IconButton(icon: const Icon(CupertinoIcons.xmark), onPressed: () => Navigator.pop(context))
+                                              ),
+                                              Padding
+                                              (
+                                                padding: const EdgeInsets.fromLTRB(0,0,0,50),
+                                                child: ElevatedButton
+                                                (
+                                                  onPressed:() 
+                                                  {
+                                                    addAmenity();                                                                                           
+                                                    Navigator.pop(context);
+                                                    setState(() 
+                                                    {
+                                                      hostelAmenities = getHostelAmenities();
+                                                    });           
+                                                  },
+                                                  
+                                                  child: Text
+                                                  (
+                                                    "Add",
+                                                    style: TextStyle
+                                                    (
+                                                      color: fontColor
+                                                    ),
+                                                  ),
+                                                  style: ElevatedButton.styleFrom
+                                                  (
+                                                    primary: backgroundColor,
+                                                    minimumSize: const Size(100, 30),
+                                                    side: BorderSide(width: 2, color: Colors.cyan),
+                                                  )
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 25,),
+                                          Container
+                                          (
+                                            decoration: BoxDecoration
+                                            (
+                                              border: Border.all(color: const Color.fromARGB(255, 225, 220, 220), width: 2),
+                                              borderRadius: const BorderRadius.all(Radius.circular(15))
+                                            ),
+                                            width: 400,
+                                            height: 150,
+                                            child: Padding
+                                            (
+                                              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                                              child: TextField
+                                              (
+                                                maxLines: 5,
+                                                keyboardType: TextInputType.multiline,
+                                                controller: amenityControl,
+                                                decoration: const InputDecoration
+                                                (
+                                                  border: InputBorder.none,
+                                                  hintText: "Enter amenity name"
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                );
+                              },
+                              child: Icon(CupertinoIcons.add, color: buttonFontColor,)
+                            ),
+                          ),
+                        ),
+                        Container
+                        (
+                          height: 30,
+                          color: const Color.fromARGB(255, 225, 220, 220),
+                        ),
+                      ],
+                    ),
+                  ),
+                Align
+                (
+                  alignment: Alignment.centerLeft,
+                  child: Padding
+                  (
+                    padding: const EdgeInsets.fromLTRB(15, 45, 0, 0),
                     child: Text("Your reservations", style: TextStyle(fontSize: 20, color: alt? fontColorAlt : fontColor)),
                   ),
                 ),
@@ -742,7 +1013,7 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                       child: SizedBox
                       (
                         width: 225,
-                        child: hasData 
+                        child: hasData
                         ? FutureBuilder
                         (
                           future: myHostelDetails,
@@ -879,7 +1150,7 @@ class _ManageHostelPageState extends State<ManageHostelPage> {
                             }
                           }
                         )
-                        : Text("You don't have any guests staying with you right now", textAlign: TextAlign.center, style: TextStyle(color: buttonFontColor))
+                        : Text("You don't have any guests staying with you right now", textAlign: TextAlign.center, style: TextStyle(color: Colors.black))
                       )
                     ),
                   ),
