@@ -1,6 +1,3 @@
-from functools import partial
-import http
-from unicodedata import lookup
 from django.shortcuts import redirect
 from rest_framework import generics
 from rest_framework.views import APIView

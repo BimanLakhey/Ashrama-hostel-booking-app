@@ -5,7 +5,7 @@ from .models import *
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
 
-baseURL = "http://192.168.0.200:8000";
+baseURL = "http://192.168.1.80:8000";
 
 class UserSerializer(serializers.ModelSerializer):
     
